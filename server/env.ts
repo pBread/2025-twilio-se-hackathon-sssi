@@ -19,6 +19,8 @@ export const OPENAI_API_KEY = process.env.OPENAI_API_KEY as string;
 export const PINCONE_API_KEY = process.env.PINCONE_API_KEY as string;
 export const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME as string;
 export const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID as string;
+export const TWILIO_API_KEY = process.env.TWILIO_API_KEY as string;
+export const TWILIO_API_SECRET = process.env.TWILIO_API_SECRET as string;
 export const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN as string;
 export const TWILIO_FN_BASE_URL = process.env.TWILIO_FN_BASE_URL as string;
 export const TWILIO_SYNC_SVC_SID = process.env.TWILIO_SYNC_SVC_SID as string;
@@ -29,6 +31,8 @@ if (!OPENAI_API_KEY) console.error(`Missing env var OPENAI_API_KEY`);
 if (!PINCONE_API_KEY) console.error(`Missing env var PINCONE_API_KEY`);
 if (!PINECONE_INDEX_NAME) console.error(`Missing env var PINECONE_INDEX_NAME`);
 if (!TWILIO_ACCOUNT_SID) console.error(`Missing env var TWILIO_ACCOUNT_SID`);
+if (!TWILIO_API_KEY) console.error(`Missing env var TWILIO_API_KEY`);
+if (!TWILIO_API_SECRET) console.error(`Missing env var TWILIO_API_SECRET`);
 if (!TWILIO_AUTH_TOKEN) console.error(`Missing env var TWILIO_AUTH_TOKEN`);
 if (!TWILIO_FN_BASE_URL) console.error(`Missing env var TWILIO_FN_BASE_URL`);
 if (!TWILIO_SYNC_SVC_SID) console.error(`Missing env var TWILIO_SYNC_SVC_SID`);
@@ -38,6 +42,8 @@ if (!TWILIO_SYNC_SVC_SID) console.error(`Missing env var TWILIO_SYNC_SVC_SID`);
 // delete process.env.PINCONE_API_KEY;
 // delete process.env.PINECONE_INDEX_NAME;
 // delete process.env.TWILIO_ACCOUNT_SID;
+// delete process.env.TWILIO_API_KEY;
+// delete process.env.TWILIO_API_SECRET;
 // delete process.env.TWILIO_AUTH_TOKEN;
 
 function bool(val: any) {
