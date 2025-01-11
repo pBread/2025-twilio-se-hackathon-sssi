@@ -52,7 +52,7 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {});
  User Interface
 ****************************************************/
 app.post("/sync-token", async (req, res) => {
-  const identity = req.body.identity ?? "anonymous";
+  const identity = req.body.identity ?? "anon";
 
   const token = createSyncToken(identity);
   res.status(200).json(token);
