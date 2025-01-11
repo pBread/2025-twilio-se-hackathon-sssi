@@ -5,7 +5,11 @@ import ExpressWs from "express-ws";
 import path from "path";
 import twilio from "twilio";
 import log from "./logger";
-import { createSyncToken } from "./services/sync-service";
+import {
+  createSyncToken,
+  setupSync,
+  SyncManager,
+} from "./services/sync-service";
 
 const {
   DEFAULT_FROM_NUMBER,
@@ -22,12 +26,21 @@ const {
 const { app } = ExpressWs(express());
 app.use(express.urlencoded({ extended: true })).use(express.json());
 
+const syncSetupPromise = setupSync(); // ensure the sync collections are created
+
 /****************************************************
  Twilio Voice Webhooks
 ****************************************************/
 // handles inbound calls and connects conversation-relay call leg during outbound calls
 app.post("/call-handler", async (req, res) => {
+  await syncSetupPromise;
+
   const { CallSid, From, To } = req.body;
+
+  try {
+    const sync = new SyncManager(CallSid);
+    await sync.init(); // create the sync records for this call
+  } catch (error) {}
 });
 
 // handles call status updates
