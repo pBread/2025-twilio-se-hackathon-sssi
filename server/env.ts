@@ -1,0 +1,45 @@
+// Always import this file at the top of the app's entry file (i.e. app.ts) to guarantee sensitive environment variables are securely deleted before anything else runs
+
+import "dotenv-flow/config"; // dotenv-flow supports multiple .env files for different environments (e.g., .env, .env.local).
+
+export const DEFAULT_FROM_NUMBER = process.env.DEFAULT_FROM_NUMBER;
+export const DEVELOPERS_PHONE_NUMBER = process.env.DEVELOPERS_PHONE_NUMBER;
+export const ENABLE_GOVERNANCE = bool(process.env.ENABLE_GOVERNANCE);
+export const ENABLE_RECALL = bool(process.env.ENABLE_RECALL);
+export const LLM_MODEL = process.env.LLM_MODEL;
+export const PORT = process.env.PORT ?? "3000";
+export const RECORD_CALL = bool(process.env.RECORD_CALL);
+export const STT_PROVIDER = process.env.STT_PROVIDER;
+export const TTS_PROVIDER = process.env.TTS_PROVIDER;
+export const TTS_VOICE = process.env.TTS_VOICE;
+
+// Required environment variables must be explicitly defined in `.env` files or the runtime environment
+export const HOSTNAME = process.env.HOSTNAME as string;
+export const OPENAI_API_KEY = process.env.OPENAI_API_KEY as string;
+export const PINCONE_API_KEY = process.env.PINCONE_API_KEY as string;
+export const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME as string;
+export const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID as string;
+export const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN as string;
+export const TWILIO_FN_BASE_URL = process.env.TWILIO_FN_BASE_URL as string;
+export const TWILIO_SYNC_SVC_SID = process.env.TWILIO_SYNC_SVC_SID as string;
+
+// Check for missing required environment variables and log errors to aid debugging
+if (!HOSTNAME) console.error(`Missing env var HOSTNAME`);
+if (!OPENAI_API_KEY) console.error(`Missing env var OPENAI_API_KEY`);
+if (!PINCONE_API_KEY) console.error(`Missing env var PINCONE_API_KEY`);
+if (!PINECONE_INDEX_NAME) console.error(`Missing env var PINECONE_INDEX_NAME`);
+if (!TWILIO_ACCOUNT_SID) console.error(`Missing env var TWILIO_ACCOUNT_SID`);
+if (!TWILIO_AUTH_TOKEN) console.error(`Missing env var TWILIO_AUTH_TOKEN`);
+if (!TWILIO_FN_BASE_URL) console.error(`Missing env var TWILIO_FN_BASE_URL`);
+if (!TWILIO_SYNC_SVC_SID) console.error(`Missing env var TWILIO_SYNC_SVC_SID`);
+
+// Delete sensitive credentials from process.env after they've been securely accessed. This minimizes the risk of exposure to untrusted libraries or parts of the application that might inadvertently access them. For example, this reduces the likelihood of sensitive data leaks via third-party npm packages or debugging tools.
+// delete process.env.OPENAI_API_KEY;
+// delete process.env.PINCONE_API_KEY;
+// delete process.env.PINECONE_INDEX_NAME;
+// delete process.env.TWILIO_ACCOUNT_SID;
+// delete process.env.TWILIO_AUTH_TOKEN;
+
+function bool(val: any) {
+  return /true/i.test(val ?? "false");
+}
