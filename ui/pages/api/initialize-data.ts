@@ -4,6 +4,12 @@ import { SYNC_DEMO_CONFIG } from "@shared/constants";
 import { mockDatabase } from "@shared/mock-database";
 
 const handler: NextApiHandler = async (req: NextApiRequest, res) => {
+  res.json(await getData());
+};
+
+export default handler;
+
+async function getData() {
   const client = twilio(
     process.env.TWILIO_API_KEY,
     process.env.TWILIO_API_SECRET,
@@ -17,7 +23,8 @@ const handler: NextApiHandler = async (req: NextApiRequest, res) => {
     sync.syncMaps("calls").syncMapItems.list(),
   ]);
 
-  res.json({ config: config.data, calls, ...mockDatabase });
-};
+  const result = { config: config.data, calls, ...mockDatabase };
+  return result;
+}
 
-export default handler;
+export type InitializeDataResult = Awaited<ReturnType<typeof getData>>;
