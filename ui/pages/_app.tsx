@@ -1,6 +1,6 @@
 import { Header } from "@/components/Header";
 import { Helmet } from "@/components/Helmet";
-import { AppDispatch, type AppStore, makeStore } from "@/state/store";
+import { type AppStore, makeStore } from "@/state/store";
 import { initSync } from "@/state/sync";
 import "@/styles/globals.css";
 import { isServer } from "@/util/env";

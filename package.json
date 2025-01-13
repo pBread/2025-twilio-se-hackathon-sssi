@@ -2,7 +2,7 @@
   "author": "https://github.com/pBread",
   "name": "conversation-relay-hackathon-2025",
   "scripts": {
-    "dev": "nodemon -x ts-node server/app.ts -e ts,js,json",
+    "dev": "nodemon -x ts-node server/app.ts -e ts,js,json -i flex-plugin/ -i ui/ ",
     "grok": "node scripts/ngrok.js",
     "start": "ts-node server/app.ts"
   },

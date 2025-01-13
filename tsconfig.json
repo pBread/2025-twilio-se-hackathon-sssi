@@ -13,13 +13,5 @@
     "target": "es6"
   },
   "exclude": ["node_modules", "dist"],
-  "include": [
-    "app.ts",
-    "bot/**/*",
-    "data/**/*",
-    "lib/**/*",
-    "services/**/*",
-    "server",
-    "ui"
-  ]
+  "include": ["server/**/*", "shared/**/*", "ui/**/*"]
 }

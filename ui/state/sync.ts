@@ -56,7 +56,7 @@ export function useSyncSlice() {
 export async function initSync(dispatch: AppDispatch) {
   const syncClient = await initSyncClient(dispatch);
 
-  const result = (await fetch("/api/data").then((res) =>
+  const result = (await fetch("/api/initialize-data").then((res) =>
     res.json()
   )) as Promise<{ docs: SyncDocument[]; lists: SyncList[]; maps: SyncMap[] }>;
 }
