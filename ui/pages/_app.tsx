@@ -1,4 +1,5 @@
 import { Helmet } from "@/components/Helmet";
+import { increment } from "@/state/messages";
 import { type AppStore, makeStore } from "@/state/store";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
@@ -9,6 +10,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const storeRef = useRef<AppStore | null>(null);
   if (!storeRef.current) {
     storeRef.current = makeStore();
+    storeRef.current.dispatch(increment());
   }
 
   return (

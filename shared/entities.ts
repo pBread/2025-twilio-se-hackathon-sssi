@@ -15,6 +15,7 @@ export type HumanMessage = HumanDTMF | HumanText;
 
 interface StoreRecord {
   _index?: number; // added dynamically by getMessages
+  callSid: string;
   createdAt: string;
   id: string;
   seq: number; // sequence tracks the order in which messages were added. seq is not guaranteed to be the index of a message, only that it is greater than the last message
