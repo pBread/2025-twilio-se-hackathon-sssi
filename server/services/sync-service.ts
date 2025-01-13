@@ -45,19 +45,3 @@ export async function setupSync() {
     console.log("sync", "created SyncMap to store Twilio call state");
   } catch (error) {}
 }
-
-export function createSyncToken(identity: string) {
-  const AccessToken = Twilio.jwt.AccessToken;
-  const SyncGrant = AccessToken.SyncGrant;
-
-  const token = new AccessToken(
-    TWILIO_ACCOUNT_SID,
-    TWILIO_API_KEY,
-    TWILIO_API_SECRET,
-    { identity }
-  );
-
-  token.addGrant(new SyncGrant({ serviceSid: TWILIO_SYNC_SVC_SID }));
-
-  return { identity, token: token.toJwt() };
-}

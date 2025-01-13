@@ -2,14 +2,8 @@ import * as env from "./env";
 
 import express from "express";
 import ExpressWs from "express-ws";
-import path from "path";
-import twilio from "twilio";
 import log from "./logger";
-import {
-  createSyncToken,
-  setupSync,
-  SyncManager,
-} from "./services/sync-service";
+import { setupSync, SyncManager } from "./services/sync-service";
 
 const {
   DEFAULT_FROM_NUMBER,
@@ -64,12 +58,6 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {});
 /****************************************************
  User Interface
 ****************************************************/
-app.post("/sync-token", async (req, res) => {
-  const identity = req.body.identity ?? "anon";
-
-  const token = createSyncToken(identity);
-  res.status(200).json(token);
-});
 
 /****************************************************
  Start Server
