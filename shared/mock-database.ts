@@ -1,9 +1,4 @@
-import type {
-  AgentAssistRequest,
-  EventRecord,
-  OrderRecord,
-  UserRecord,
-} from "./entities";
+import type { EventRecord, OrderRecord, UserRecord } from "./entities";
 
 const DEVELOPERS_PHONE_NUMBER =
   process.env.DEVELOPERS_PHONE_NUMBER ??
@@ -14,7 +9,6 @@ export const mockDatabase: {
   users: UserRecord[];
   orders: OrderRecord[];
   events: EventRecord[];
-  requests: AgentAssistRequest[];
 } = {
   users: [
     // Claire Dunphy has 3 kids.
@@ -607,101 +601,6 @@ export const mockDatabase: {
       talent: ["Chicago Children's Museum Staff"],
       tags: ["family-friendly"],
       unitPrice: 50,
-    },
-  ],
-
-  requests: [
-    {
-      id: "ar-123456",
-      callSid: "CA00000000000000000000000000000000",
-
-      conversationSummary:
-        "Jerry Maguire purchased two courtside tickets for the Bulls vs Celtics game. He made a mistake when booking the tickets. His guest is not available to attend this day. Jerry wants to cancel this event and plans to book Bulls tickets for another date. The tickets were booked 2 days ago, which is outside of the cancellation window for this order.",
-
-      user: {
-        id: "us-100002",
-        firstName: "Jerry",
-        lastName: "Maguire",
-        email: "jerry.mcguire@gmail.com",
-        mobilePhone: "+15556667777",
-        city: "Chicago",
-        state: "IL",
-        age: "26",
-        membership: "gold",
-        paymentMethods: [{ type: "card", lastFour: "0124" }],
-      },
-
-      event: {
-        id: "ev-100002",
-        date: "2024-02-15",
-        time: "19:00",
-        city: "Chicago",
-        state: "IL",
-        venue: "United Center",
-        category: "sports",
-        description: "Chicago Bulls vs Boston Celtics - Regular Season Game",
-        name: "Bulls vs Celtics",
-        options: [
-          {
-            id: "eo-100002",
-            eventId: "ev-100002",
-            description:
-              "VIP Courtside Experience with Pre-game Shootaround Access",
-            name: "Courtside VIP",
-            special: "discount-gold",
-            price: 350,
-            tags: ["premium", "good-seats"],
-          },
-        ],
-        talent: ["Chicago Bulls", "Boston Celtics"],
-        tags: ["basketball", "nba", "pro-sports"],
-        unitPrice: 125,
-      },
-
-      order: {
-        id: "or-100007",
-        eventId: "ev-100002",
-        userId: "us-100002",
-        confirmationNumber: "CR-24-02-07",
-        createdDateTime: "2024-01-10 10:15",
-        eventDate: "2024-02-15",
-        eventTime: "19:00",
-        eventName: "Bulls vs Celtics",
-        eventDescription:
-          "Chicago Bulls vs Boston Celtics - Regular Season Game",
-        city: "Chicago",
-        state: "IL",
-        category: "sports",
-        talent: ["Chicago Bulls", "Boston Celtics"],
-        tags: ["basketball", "nba", "pro-sports"],
-        quantity: 2,
-        unitPrice: 125,
-        options: [
-          {
-            id: "eo-100002",
-            eventId: "ev-100002",
-            description:
-              "VIP Courtside Experience with Pre-game Shootaround Access",
-            name: "Courtside VIP",
-            special: "discount-gold",
-            price: 350,
-            tags: ["premium", "good-seats"],
-          },
-        ],
-        optionUnitPrice: 350,
-        totalPrice: 950,
-        venue: "United Center",
-      },
-
-      questions: [
-        {
-          id: "aq-123456",
-          status: "new",
-          question:
-            "The customer wants to cancel this order. The cancellation policy states orders cannot be modified after 24 hours. He purchased the tickets 2 days ago. Can we make an exception?",
-          answer: "",
-        },
-      ],
     },
   ],
 };

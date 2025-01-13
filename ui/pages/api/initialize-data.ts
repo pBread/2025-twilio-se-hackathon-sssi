@@ -2,6 +2,7 @@ import { NextApiHandler, NextApiRequest } from "next";
 import twilio from "twilio";
 import { SYNC_DEMO_CONFIG } from "@shared/constants";
 import { mockDatabase } from "@shared/mock-database";
+import { DemoConfiguration, SyncCallData } from "@shared/entities";
 
 const handler: NextApiHandler = async (req: NextApiRequest, res) => {
   res.json(await getData());
@@ -23,7 +24,11 @@ async function getData() {
     sync.syncMaps("calls").syncMapItems.list(),
   ]);
 
-  const result = { config: config.data, calls, ...mockDatabase };
+  const result = {
+    config: config.data as DemoConfiguration,
+    calls: calls.map((item) => item.data as SyncCallData),
+    ...mockDatabase,
+  };
   return result;
 }
 

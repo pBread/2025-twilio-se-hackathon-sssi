@@ -1,7 +1,36 @@
+import type { ChatCompletionTool } from "openai/resources";
+
 /****************************************************
  Sync
 ****************************************************/
-interface SyncCallData {}
+export interface SyncCallData {
+  id: string; // call_12223330001_YYYY-MM-DD_HH_MM
+
+  callSid: string;
+  callStatus: string;
+  createdAt: string; // datetime
+  from: string;
+  to: string;
+
+  callContext: CallContext;
+  config: DemoConfiguration;
+}
+
+export interface DemoConfiguration {
+  isRecordingEnabled: boolean;
+
+  conscious: { instructions: string; tools: ChatCompletionTool[] };
+  subconscious: {
+    isGovernanceEnabled: boolean;
+    governanceInstructions: string;
+
+    isRecallEnabled: boolean;
+  };
+
+  relayConfig: { sttProvider: string; ttsProvider: string; ttsVoice: string };
+
+  segment: { isFetchProfileEnabled: boolean };
+}
 
 /****************************************************
  Conversation State
@@ -113,6 +142,17 @@ export type AddSystemMessage = Omit<
   SystemMessage,
   "createdAt" | "id" | "seq" | "role" | "type"
 > & { id?: string };
+
+/****************************************************
+ Context
+****************************************************/
+export interface CallContext {
+  today?: Date | string; // today's date
+  waitTime?: number;
+
+  callingFromPhoneNumber?: string;
+  user?: UserRecord;
+}
 
 /****************************************************
  Database Entities

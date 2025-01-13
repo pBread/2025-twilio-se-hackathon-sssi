@@ -6,8 +6,9 @@ import {
   TWILIO_SYNC_SVC_SID,
 } from "../env";
 import { pRateLimit } from "p-ratelimit";
-
-const CALL_MAP_NAME = "calls";
+import { SYNC_CALL_MAP_NAME, SYNC_DEMO_CONFIG } from "../../shared/constants";
+import type { DemoConfiguration, SyncCallData } from "../../shared/entities";
+import { mockHistory } from "../../shared/mock-history";
 
 const limit = pRateLimit({
   interval: 1000, // 1000 ms == 1 second
@@ -20,28 +21,80 @@ const twilio = Twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   accountSid: TWILIO_ACCOUNT_SID,
 });
 
-export class SyncManager {
-  constructor(private callSid: string) {}
-
-  init = async () => {
-    const call = { callSid: this.callSid };
-
-    await twilio.sync.v1
+export async function createSyncCall(call: SyncCallData) {
+  return limit(async () =>
+    twilio.sync.v1
       .services(TWILIO_SYNC_SVC_SID)
-      .syncMaps(CALL_MAP_NAME)
+      .syncMaps(SYNC_CALL_MAP_NAME)
       .syncMapItems.create({
-        key: this.callSid,
+        key: `${call.from}_${call.callSid}`,
         data: call,
-      });
-  };
+      })
+  );
+}
+
+export async function updateSyncCall(call: SyncCallData) {
+  return limit(async () =>
+    twilio.sync.v1
+      .services(TWILIO_SYNC_SVC_SID)
+      .syncMaps(SYNC_CALL_MAP_NAME)
+      .syncMapItems(`${call.from}_${call.callSid}`)
+      .update({ data: call })
+  );
 }
 
 export async function setupSync() {
   console.log("checking sync setup");
   try {
-    await twilio.sync.v1
-      .services(TWILIO_SYNC_SVC_SID)
-      .syncMaps.create({ uniqueName: CALL_MAP_NAME });
+    await limit(() =>
+      twilio.sync.v1.services(TWILIO_SYNC_SVC_SID).documents.create({
+        uniqueName: SYNC_DEMO_CONFIG,
+        data: mockHistory.config, // to do: update with data from demo
+      })
+    );
+    console.log("sync", "created Sync Document to store demo config");
+  } catch (error) {}
+
+  try {
+    await limit(() =>
+      twilio.sync.v1
+        .services(TWILIO_SYNC_SVC_SID)
+        .syncMaps.create({ uniqueName: SYNC_CALL_MAP_NAME })
+    );
     console.log("sync", "created SyncMap to store Twilio call state");
   } catch (error) {}
+}
+
+export async function clearSyncData() {
+  console.log("sync cleanup starting");
+  try {
+    const calls = await limit(() =>
+      twilio.sync.v1
+        .services(TWILIO_SYNC_SVC_SID)
+        .syncMaps(SYNC_CALL_MAP_NAME)
+        .syncMapItems.list()
+    );
+
+    console.log(`cleaning up sync calls: ${calls.length} records`);
+
+    await Promise.all(
+      calls.map(async (call) =>
+        limit(async () => {
+          await twilio.sync.v1
+            .services(TWILIO_SYNC_SVC_SID)
+            .syncMaps(SYNC_CALL_MAP_NAME)
+            .syncMapItems(call.key)
+            .remove();
+
+          await twilio.sync.v1
+            .services(TWILIO_SYNC_SVC_SID)
+            .syncMaps(SYNC_CALL_MAP_NAME)
+            .syncMapItems(call.data.callSid as string)
+            .remove();
+        })
+      )
+    );
+  } catch (error) {}
+
+  console.log(`sync cleanup complete`);
 }
