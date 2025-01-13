@@ -111,8 +111,8 @@ export async function clearSyncData() {
 
           await twilio.sync.v1
             .services(TWILIO_SYNC_SVC_SID)
-            .syncMaps(SYNC_CALL_MAP_NAME)
-            .syncMapItems(call.data.callSid as string)
+            .syncMaps(call.data.callSid)
+            .syncMapItems(call.data.id as string)
             .remove();
         })
       )

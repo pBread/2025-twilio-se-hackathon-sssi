@@ -1,5 +1,10 @@
 import { DemoConfiguration, StoreMessage, SyncCallData } from "./entities";
 
+const DEVELOPERS_PHONE_NUMBER =
+  process.env.DEVELOPERS_PHONE_NUMBER ??
+  process.env.NEXT_PUBLIC_DEVELOPERS_PHONE_NUMBER ??
+  "+15556667777";
+
 const config: DemoConfiguration = {
   relayConfig: {
     sttProvider: "deepgram",
@@ -252,7 +257,7 @@ const calls: SyncCallData[] = [
     id: "call-12223330001-2025-01-13",
     callSid: "CAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     callStatus: "completed",
-    from: "+12223330001",
+    from: DEVELOPERS_PHONE_NUMBER,
     to: "+18444405503",
     createdAt: new Date().toString(),
     callContext: { today: new Date().toString() },
