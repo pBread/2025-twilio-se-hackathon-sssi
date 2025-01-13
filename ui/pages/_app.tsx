@@ -1,3 +1,4 @@
+import { Header } from "@/components/Header";
 import { Helmet } from "@/components/Helmet";
 import { type AppStore, makeStore } from "@/state/store";
 import { initSyncClient } from "@/state/sync";
@@ -26,8 +27,11 @@ export default function App({ Component, pageProps }: AppProps) {
 
 function Main({ Component, pageProps }: AppProps) {
   return (
-    <main>
-      <Component {...pageProps} />
-    </main>
+    <>
+      <Header />
+      <main>
+        <Component {...pageProps} />
+      </main>
+    </>
   );
 }
