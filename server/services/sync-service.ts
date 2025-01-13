@@ -27,7 +27,7 @@ export async function addSyncCall(call: CallData) {
       .services(TWILIO_SYNC_SVC_SID)
       .syncMaps(SYNC_CALL_MAP_NAME)
       .syncMapItems.create({
-        key: `${call.from}_${call.callSid}`,
+        key: call.callSid,
         data: call,
       });
 
@@ -42,7 +42,7 @@ export async function updateSyncCall(call: CallData) {
     twilio.sync.v1
       .services(TWILIO_SYNC_SVC_SID)
       .syncMaps(SYNC_CALL_MAP_NAME)
-      .syncMapItems(`${call.from}_${call.callSid}`)
+      .syncMapItems(call.callSid)
       .update({ data: call })
   );
 }
@@ -106,7 +106,7 @@ export async function clearSyncData() {
           await twilio.sync.v1
             .services(TWILIO_SYNC_SVC_SID)
             .syncMaps(SYNC_CALL_MAP_NAME)
-            .syncMapItems(call.key)
+            .syncMapItems(call.key as string)
             .remove();
 
           await twilio.sync.v1
@@ -143,7 +143,8 @@ export async function populateSampleData() {
           try {
             await addSyncCall(call);
           } catch (error) {
-            console.log("failed to create sync call ", call.id);
+            console.log("failed to create sync call ", call);
+            console.error(error);
           }
         })
       )

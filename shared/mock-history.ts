@@ -254,7 +254,7 @@ const config: DemoConfiguration = {
 
 const calls: CallData[] = [
   {
-    id: "call-12223330001-2025-01-13",
+    id: "CAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     callSid: "CAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     callStatus: "completed",
     from: DEVELOPERS_PHONE_NUMBER,
