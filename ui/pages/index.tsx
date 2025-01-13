@@ -36,7 +36,7 @@ function CallMessages({ callSid }: { callSid: string }) {
 
   return (
     <div style={{ paddingLeft: "5px" }}>
-      Call Messages <br />{" "}
+      Call Messages <br />
       {msgIds.map((msgId) => (
         <CallMessage msgId={msgId} key={`${callSid}-${msgId}`} />
       ))}
@@ -47,5 +47,11 @@ function CallMessages({ callSid }: { callSid: string }) {
 function CallMessage({ msgId }: { msgId: string }) {
   const msg = useAppSelector((state) => getMessageById(state, msgId));
 
-  return <div>{msg.role} </div>;
+  return (
+    <div>
+      Id: {msg.id}
+      <br />
+      Role: {msg.role}
+    </div>
+  );
 }
