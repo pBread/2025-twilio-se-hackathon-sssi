@@ -1,6 +1,6 @@
 {
   "author": "https://github.com/pBread",
-  "name": "twilio-conversation-relay-ts",
+  "name": "conversation-relay-hackathon-2025",
   "scripts": {
     "dev": "nodemon -x ts-node server/app.ts -e ts,js,json",
     "grok": "node scripts/ngrok.js",
@@ -13,6 +13,7 @@
     "express": "^4.21.0",
     "express-ws": "^5.0.2",
     "openai": "^4.68.4",
+    "p-ratelimit": "^1.0.1",
     "twilio": "^5.3.5",
     "ws": "^8.18.0"
   },

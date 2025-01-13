@@ -5,8 +5,16 @@ import {
   TWILIO_API_SECRET,
   TWILIO_SYNC_SVC_SID,
 } from "../env";
+import { pRateLimit } from "p-ratelimit";
 
 const CALL_MAP_NAME = "calls";
+
+const limit = pRateLimit({
+  interval: 1000, // 1000 ms == 1 second
+  rate: 30, // 30 API calls per interval
+  concurrency: 10, // no more than 10 running at once
+  maxDelay: 2000, // an API call delayed > 2 sec is rejected
+});
 
 const twilio = Twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   accountSid: TWILIO_ACCOUNT_SID,
