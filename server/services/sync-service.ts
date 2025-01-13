@@ -1,7 +1,7 @@
 import { pRateLimit } from "p-ratelimit";
 import Twilio from "twilio";
 import { SYNC_CALL_MAP_NAME, SYNC_DEMO_CONFIG } from "../../shared/constants";
-import type { StoreMessage, CallData } from "../../shared/entities";
+import type { StoreMessage, CallRecord } from "../../shared/entities";
 import { mockHistory } from "../../shared/mock-history";
 import {
   TWILIO_ACCOUNT_SID,
@@ -21,7 +21,7 @@ const twilio = Twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   accountSid: TWILIO_ACCOUNT_SID,
 });
 
-export async function addSyncCall(call: CallData) {
+export async function addSyncCall(call: CallRecord) {
   return limit(async () => {
     await twilio.sync.v1
       .services(TWILIO_SYNC_SVC_SID)
@@ -37,7 +37,7 @@ export async function addSyncCall(call: CallData) {
   });
 }
 
-export async function updateSyncCall(call: CallData) {
+export async function updateSyncCall(call: CallRecord) {
   return limit(async () =>
     twilio.sync.v1
       .services(TWILIO_SYNC_SVC_SID)

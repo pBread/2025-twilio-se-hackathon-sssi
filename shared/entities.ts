@@ -3,8 +3,8 @@ import type { ChatCompletionTool } from "openai/resources";
 /****************************************************
  Sync
 ****************************************************/
-export interface CallData {
-  id: string; // call_12223330001_YYYY-MM-DD_HH_MM
+export interface CallRecord {
+  id: string; // callSid
 
   callSid: string;
   callStatus: string;

@@ -1,10 +1,10 @@
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
-import { CallData } from "@shared/entities";
+import { CallRecord } from "@shared/entities";
 import type { RootState } from "./store";
 
 const SLICE_NAME = "calls";
 
-const adapter = createEntityAdapter<CallData>({});
+const adapter = createEntityAdapter<CallRecord>({});
 
 export const callsSlice = createSlice({
   name: SLICE_NAME,

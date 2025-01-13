@@ -2,7 +2,7 @@ import { NextApiHandler, NextApiRequest } from "next";
 import twilio from "twilio";
 import { SYNC_DEMO_CONFIG } from "@shared/constants";
 import { mockDatabase } from "@shared/mock-database";
-import { DemoConfiguration, CallData } from "@shared/entities";
+import { DemoConfiguration, CallRecord } from "@shared/entities";
 
 const handler: NextApiHandler = async (req: NextApiRequest, res) => {
   res.json(await getData());
@@ -26,7 +26,7 @@ async function getData() {
 
   const result = {
     config: config.data as DemoConfiguration,
-    calls: calls.map((item) => item.data as CallData),
+    calls: calls.map((item) => item.data as CallRecord),
     ...mockDatabase,
   };
   return result;
