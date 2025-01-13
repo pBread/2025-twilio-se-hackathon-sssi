@@ -1,4 +1,4 @@
-import { DemoConfiguration, StoreMessage, SyncCallData } from "./entities";
+import { DemoConfiguration, StoreMessage, CallData } from "./entities";
 
 const DEVELOPERS_PHONE_NUMBER =
   process.env.DEVELOPERS_PHONE_NUMBER ??
@@ -252,7 +252,7 @@ const config: DemoConfiguration = {
   },
 };
 
-const calls: SyncCallData[] = [
+const calls: CallData[] = [
   {
     id: "call-12223330001-2025-01-13",
     callSid: "CAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",

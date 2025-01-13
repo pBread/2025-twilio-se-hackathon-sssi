@@ -10,6 +10,7 @@ import {
 import { useAppSelector } from "./hooks";
 import type { AppDispatch, RootState } from "./store";
 import { InitializeDataResult } from "@/pages/api/initialize-data";
+import { addManyCalls } from "./calls";
 
 let syncClient: SyncClient | undefined;
 
@@ -60,6 +61,8 @@ export async function initSync(dispatch: AppDispatch) {
   const result = (await fetch("/api/initialize-data").then((res) =>
     res.json()
   )) as InitializeDataResult;
+
+  dispatch(addManyCalls(result.calls));
 }
 
 /****************************************************

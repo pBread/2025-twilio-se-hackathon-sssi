@@ -1,6 +1,7 @@
 import { configureStore, Middleware } from "@reduxjs/toolkit";
-import { messagesSlice } from "./messages";
 import { createLogger } from "redux-logger";
+import { callsSlice } from "./calls";
+import { messagesSlice } from "./messages";
 import { syncSlice } from "./sync";
 
 const middleware: Middleware[] = [];
@@ -12,6 +13,7 @@ export const makeStore = () => {
       getDefaultMiddleware().concat(createLogger()),
 
     reducer: {
+      [callsSlice.name]: callsSlice.reducer,
       [messagesSlice.name]: messagesSlice.reducer,
       [syncSlice.name]: syncSlice.reducer,
     },
