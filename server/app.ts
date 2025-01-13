@@ -3,7 +3,11 @@ import * as env from "./env";
 import express from "express";
 import ExpressWs from "express-ws";
 import log from "./logger";
-import { setupSync } from "./services/sync-service";
+import {
+  clearSyncData,
+  populateSampleData,
+  setupSync,
+} from "./services/sync-service";
 
 const {
   DEFAULT_FROM_NUMBER,
@@ -56,7 +60,13 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {});
 /****************************************************
  User Interface
 ****************************************************/
-app.get("/api/reset", async () => {});
+app.get("/api/reset", async (req, res) => {
+  await setupSync();
+  await clearSyncData();
+  await populateSampleData();
+
+  res.send("complete");
+});
 
 /****************************************************
  Start Server
