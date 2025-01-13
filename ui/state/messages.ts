@@ -5,18 +5,14 @@ const SLICE_NAME = "messages";
 
 export const messagesSlice = createSlice({
   name: SLICE_NAME,
-  initialState: { counter: 0 },
-  reducers: {
-    increment(state) {
-      state.counter++;
-    },
-  },
+  initialState: {},
+  reducers: {},
 });
 
 /****************************************************
  Actions
 ****************************************************/
-export const { increment } = messagesSlice.actions;
+export const {} = messagesSlice.actions;
 
 /****************************************************
  Selectors

@@ -1,6 +1,12 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import { type ConnectionState, SyncClient } from "twilio-sync";
+import {
+  type ConnectionState,
+  SyncClient,
+  SyncDocument,
+  SyncList,
+  SyncMap,
+} from "twilio-sync";
 import { useAppSelector } from "./hooks";
 import type { AppDispatch, RootState } from "./store";
 
@@ -45,6 +51,17 @@ export function useSyncSlice() {
 }
 
 /****************************************************
+ Initialize Data
+****************************************************/
+export async function initSync(dispatch: AppDispatch) {
+  const syncClient = await initSyncClient(dispatch);
+
+  const result = (await fetch("/api/data").then((res) =>
+    res.json()
+  )) as Promise<{ docs: SyncDocument[]; lists: SyncList[]; maps: SyncMap[] }>;
+}
+
+/****************************************************
  Client
 ****************************************************/
 export function useSyncClient() {
@@ -55,7 +72,7 @@ export function useSyncClient() {
   return syncClient as SyncClient;
 }
 
-export async function initSyncClient(dispatch: AppDispatch) {
+async function initSyncClient(dispatch: AppDispatch) {
   let token: string;
   try {
     token = await fetchToken();

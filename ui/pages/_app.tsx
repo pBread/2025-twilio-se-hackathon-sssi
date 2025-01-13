@@ -1,7 +1,7 @@
 import { Header } from "@/components/Header";
 import { Helmet } from "@/components/Helmet";
-import { type AppStore, makeStore } from "@/state/store";
-import { initSyncClient } from "@/state/sync";
+import { AppDispatch, type AppStore, makeStore } from "@/state/store";
+import { initSync } from "@/state/sync";
 import "@/styles/globals.css";
 import { isServer } from "@/util/env";
 import type { AppProps } from "next/app";
@@ -12,7 +12,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const storeRef = useRef<AppStore | null>(null);
   if (!storeRef.current) {
     storeRef.current = makeStore();
-    if (!isServer) initSyncClient(storeRef.current.dispatch);
+    if (!isServer) initSync(storeRef.current.dispatch);
   }
 
   return (
