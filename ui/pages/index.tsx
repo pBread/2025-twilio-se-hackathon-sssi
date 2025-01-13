@@ -48,10 +48,8 @@ function CallMessage({ msgId }: { msgId: string }) {
   const msg = useAppSelector((state) => getMessageById(state, msgId));
 
   return (
-    <div>
-      Id: {msg.id}
-      <br />
-      Role: {msg.role}
+    <div style={{ paddingLeft: "5px" }}>
+      Id: {msg.id} -- Role: {msg.role}
     </div>
   );
 }
