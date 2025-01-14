@@ -11,7 +11,7 @@ import {
   TWILIO_SYNC_SVC_SID,
 } from "../env";
 import log from "../logger";
-import { makeId } from "../util";
+import { makeId } from "../utils/misc";
 
 const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 

@@ -28,7 +28,11 @@ export interface Annotation {
 export interface DemoConfiguration {
   isRecordingEnabled: boolean;
 
-  conscious: { instructions: string; tools: ChatCompletionTool[] };
+  conscious: {
+    instructions: string;
+    tools: ChatCompletionTool[];
+    model: string;
+  };
   subconscious: {
     isGovernanceEnabled: boolean;
     governanceInstructions: string;

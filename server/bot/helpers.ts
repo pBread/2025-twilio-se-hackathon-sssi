@@ -1,5 +1,15 @@
-import { CallContext } from "../../shared/entities";
+import type { CallContext } from "../../shared/entities";
 import log from "../logger";
+import type { ConversationStore } from "../services/conversation-store";
+import type { DatabaseService } from "../services/database-service";
+import type { RelayService } from "../services/relay-service";
+
+export interface FunctionServices {
+  ctx: CallContext;
+  db: DatabaseService;
+  relay: RelayService;
+  store: ConversationStore;
+}
 
 export function injectContext(prompt: string, ctx: CallContext) {
   let _p = prompt;

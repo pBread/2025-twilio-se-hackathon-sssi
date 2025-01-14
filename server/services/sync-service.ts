@@ -18,6 +18,8 @@ import {
   SYNC_CONFIG_NAME,
 } from "../../shared/sync";
 import {
+  ENABLE_GOVERNANCE,
+  ENABLE_RECALL,
   TWILIO_ACCOUNT_SID,
   TWILIO_API_KEY,
   TWILIO_API_SECRET,
@@ -25,6 +27,9 @@ import {
 } from "../env";
 import log from "../logger";
 import diff from "deep-diff";
+import { relayConfig } from "../bot/relay-config";
+import bot from "../bot/conscious";
+import governanceBot from "../bot/subconscious/governance";
 
 const limit = pRateLimit({
   interval: 1000, // 1000 ms == 1 second
@@ -43,7 +48,22 @@ const sync = twilio.sync.v1.services(TWILIO_SYNC_SVC_SID);
 const syncDemoConfigApi = sync.documents(SYNC_CONFIG_NAME);
 const syncCallMapApi = sync.syncMaps(SYNC_CALL_MAP_NAME);
 
-const defaultDemoConfig = mockHistory.config;
+const defaultDemoConfig: DemoConfiguration = {
+  ...mockHistory.config,
+  relayConfig,
+  conscious: {
+    instructions: bot.getInstructions(mockHistory.calls[0].callContext),
+    tools: bot.tools,
+    model: bot.model,
+  },
+  subconscious: {
+    isGovernanceEnabled: ENABLE_GOVERNANCE,
+    isRecallEnabled: ENABLE_RECALL,
+    governanceInstructions: governanceBot.getInstructions(
+      mockHistory.calls[0].callContext
+    ),
+  },
+};
 
 export let demoConfig: DemoConfiguration = JSON.parse(
   JSON.stringify(defaultDemoConfig)
