@@ -1,12 +1,12 @@
 import { pRateLimit } from "p-ratelimit";
 import Twilio from "twilio";
-import { SYNC_CALL_MAP_NAME, SYNC_CONFIG_NAME } from "../../shared/constants";
 import type {
-  StoreMessage,
   CallRecord,
   LogRecord,
+  StoreMessage,
 } from "../../shared/entities";
 import { mockHistory } from "../../shared/mock-history";
+import { SYNC_CALL_MAP_NAME, SYNC_CONFIG_NAME } from "../../shared/sync";
 import {
   TWILIO_ACCOUNT_SID,
   TWILIO_API_KEY,
