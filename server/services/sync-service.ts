@@ -45,7 +45,9 @@ const syncCallMapApi = sync.syncMaps(SYNC_CALL_MAP_NAME);
 
 const defaultDemoConfig = mockHistory.config;
 
-export let demoConfig = JSON.parse(JSON.stringify(defaultDemoConfig)); // to do: update with data from demo
+export let demoConfig: DemoConfiguration = JSON.parse(
+  JSON.stringify(defaultDemoConfig)
+); // to do: update with data from demo
 
 /****************************************************
  Setup Sync
@@ -145,7 +147,7 @@ function createSyncToken(identity: string) {
 /****************************************************
  Higher Level
 ****************************************************/
-async function initCall(call: CallRecord) {
+export async function initCall(call: CallRecord) {
   console.log("init call", call.callSid);
   await createSyncLogList(call.callSid)
     .then(() => console.log("createSyncLogList success"))

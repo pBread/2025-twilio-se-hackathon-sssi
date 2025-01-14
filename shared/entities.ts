@@ -14,6 +14,15 @@ export interface CallRecord {
 
   callContext: CallContext;
   config: DemoConfiguration;
+  feedback: Annotation[];
+}
+
+export interface Annotation {
+  id: string;
+  target: [number, number]; // message indexes this annoation is targeting
+  comment: string;
+  polarity: "bad" | "neutral" | "good";
+  messages?: StoreMessage[];
 }
 
 export interface DemoConfiguration {
@@ -154,11 +163,12 @@ export type AddSystemMessage = Omit<
  Context
 ****************************************************/
 export interface CallContext {
-  today?: Date | string; // today's date
+  today: Date | string; // today's date
   waitTime?: number;
 
   callingFromPhoneNumber?: string;
   user?: UserRecord;
+  annotations: Annotation[];
 }
 
 /****************************************************

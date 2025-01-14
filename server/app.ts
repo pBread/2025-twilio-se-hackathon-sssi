@@ -2,14 +2,16 @@ import * as env from "./env";
 
 import express from "express";
 import ExpressWs from "express-ws";
-import { CallContext } from "../shared/entities";
+import { CallContext, CallRecord } from "../shared/entities";
+import { getGreeting } from "./bot/greetings";
 import log from "./logger";
 import { DatabaseService } from "./services/database-service";
 import {
   clearSyncData,
+  demoConfig,
+  initCall,
   populateSampleData,
   setupSync,
-  demoConfig,
 } from "./services/sync-service";
 
 const {
@@ -50,11 +52,53 @@ app.post("/call-handler", async (req, res) => {
       callingFromPhoneNumber: From,
       waitTime: Math.floor(Math.random() * 15) + 3,
       today: new Date().toLocaleString(),
+      annotations: [],
     };
 
     const db = await dbPromise;
     let user = await db.users.getByChannel(From);
     if (user) ctx.user = user;
+
+    const callData: CallRecord = {
+      id: CallSid,
+      callSid: CallSid,
+      callStatus: "new",
+      createdAt: new Date().toLocaleString(),
+      from: From,
+      to: To,
+
+      callContext: ctx,
+      config: demoConfig,
+      feedback: [],
+    };
+
+    await initCall(callData);
+
+    const greeting = getGreeting(ctx);
+
+    const twiml = `\
+<Response>
+    <Connect action="${TWILIO_FN_BASE_URL}/live-agent-handoff">
+        <ConversationRelay url="wss://${HOSTNAME}/convo-relay/${CallSid}" 
+          ttsProvider="${demoConfig.relayConfig.ttsProvider}" 
+          voice="${demoConfig.relayConfig.ttsVoice}"
+          
+          transcriptionProvider="${demoConfig.relayConfig.sttProvider}"
+
+          welcomeGreeting="${greeting}"
+          welcomeGreetingInterruptible="true"
+
+          dtmfDetection="true"
+          interruptByDtmf="true"
+          >
+              <Parameter name="greeting" value="${greeting}"/>
+              <Parameter name="context" value='${JSON.stringify(ctx)}'/>
+          </ConversationRelay>
+    </Connect>
+</Response>`;
+    log.info("/call-handler", `responding with twiml\n`, twiml);
+
+    res.status(200).type("text/xml").end(twiml);
   } catch (error) {
     log.error("/call-handler", "unknown error", error);
 

@@ -1,0 +1,36 @@
+import { CallContext } from "../../shared/entities";
+import log from "../logger";
+
+export function injectContext(prompt: string, ctx: CallContext) {
+  let _p = prompt;
+
+  // Inject dates
+  const dt = ctx.today ? new Date(ctx.today) : new Date();
+  _p = _p.replace("{{dateTime}}", dt.toLocaleString());
+  _p = _p.replace(
+    "{{date}}",
+    `${dt.getFullYear()}-${dt.getMonth() + 1}-${dt.getDate()}`
+  );
+  _p = _p.replace("{{dateTime}}", dt.toLocaleTimeString());
+
+  // Inject context variables
+  _p = _p.replace(/{{\s*([\w.]+)\s*}}/g, (match, key: string) => {
+    if (key in ctx) {
+      const value = ctx[key as keyof CallContext];
+
+      if (value === undefined || value === null) return "";
+
+      return `${value}`;
+    } else {
+      log.warn(
+        `bot\t {{${key}}} included in a prompt, but no variable (${key}) exists in context`
+      );
+      return "";
+    }
+  });
+
+  // Inject annotations into the prompt
+  _p = _p.replace("{{annotations}}", JSON.stringify(ctx.annotations ?? []));
+
+  return _p;
+}
