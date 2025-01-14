@@ -112,7 +112,7 @@ app.post("/call-status", async (req, res) => {
   const callSid = req.body.CallSid;
   const callStatus = req.body.CallStatus;
 
-  updateSyncCallItem(callSid, {callStatus})
+  updateSyncCallItem(callSid, { callStatus }).catch(() => {});
 
   log.info(
     "/call-status",
@@ -125,7 +125,12 @@ app.post("/call-status", async (req, res) => {
 /****************************************************
  Conversation Relay Websocket
 ****************************************************/
-app.ws("/convo-relay/:callSid", async (ws, req) => {});
+app.ws("/convo-relay/:callSid", async (ws, req) => {
+  const { callSid } = req.params;
+
+  log.info(`/convo-relay`, `websocket initializing, CallSid ${callSid}`);
+  updateSyncCallItem(callSid, { callStatus: "connected" }).catch(() => {});
+});
 
 /****************************************************
  Misc API

@@ -26,7 +26,8 @@ function CallDisplay({ callSid }: { callSid: string }) {
     <>
       <div style={{ paddingLeft: "5px" }}>
         <b>Call Sid:</b> <Link href={`/calls/${callSid}`}>{call.callSid}</Link>{" "}
-        <b>From:</b> {call.from} <b>To:</b> {call.to}
+        <b>From:</b> {call.from} <b>To:</b> {call.to} <b>Status:</b>{" "}
+        {call.callStatus}
         <br />
         {call.createdAt}
       </div>
