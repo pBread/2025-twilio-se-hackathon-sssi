@@ -23,6 +23,7 @@ import {
   TWILIO_API_SECRET,
   TWILIO_SYNC_SVC_SID,
 } from "../env";
+import { SyncClient } from "twilio-sync";
 
 const limit = pRateLimit({
   interval: 1000, // 1000 ms == 1 second
@@ -35,6 +36,8 @@ const twilio = Twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   accountSid: TWILIO_ACCOUNT_SID,
 });
 
+let syncWsClient: SyncClient | undefined;
+
 const sync = twilio.sync.v1.services(TWILIO_SYNC_SVC_SID);
 const syncDemoConfigApi = sync.documents(SYNC_CONFIG_NAME);
 const syncCallMapApi = sync.syncMaps(SYNC_CALL_MAP_NAME);
@@ -45,12 +48,10 @@ const syncCallMapApi = sync.syncMaps(SYNC_CALL_MAP_NAME);
 export async function setupSync() {
   console.log("setting up sync");
 
-  try {
-    const svc = await sync.fetch();
-    if (!svc.webhookUrl) {
-      await setSyncSvcWebhookUrl(HOSTNAME);
-    }
-  } catch (error) {}
+  // try {
+  //   const svc = await sync.fetch();
+  //   if (!svc.webhookUrl) await setSyncSvcWebhookUrl(HOSTNAME);
+  // } catch (error) {}
 
   try {
     await limit(() =>
@@ -69,22 +70,22 @@ export async function setupSync() {
   } catch (error) {}
 }
 
-export async function setSyncSvcWebhookUrl(hostname = HOSTNAME) {
-  console.log(`setting sync webhook url using hostname: ${hostname}`);
-  const svc = await sync.fetch();
+// export async function setSyncSvcWebhookUrl(hostname = HOSTNAME) {
+//   console.log(`setting sync webhook url using hostname: ${hostname}`);
+//   const svc = await sync.fetch();
 
-  const webhookUrl = `https://${HOSTNAME}/api/sync-webhook`;
-  if (svc.webhookUrl === webhookUrl) {
-    console.log(
-      `sync service (${svc.friendlyName}) webhookUrl is already set to ${webhookUrl}`
-    );
-  } else {
-    console.log(
-      `updating sync service (${svc.friendlyName}) webhookURL to ${webhookUrl}. it was ${svc.webhookUrl}`
-    );
-    await sync.update({ webhookUrl });
-  }
-}
+//   const webhookUrl = `https://${HOSTNAME}/api/sync-webhook`;
+//   if (svc.webhookUrl === webhookUrl) {
+//     console.log(
+//       `sync service (${svc.friendlyName}) webhookUrl is already set to ${webhookUrl}`
+//     );
+//   } else {
+//     console.log(
+//       `updating sync service (${svc.friendlyName}) webhookURL to ${webhookUrl}. it was ${svc.webhookUrl}`
+//     );
+//     await sync.update({ webhookUrl });
+//   }
+// }
 
 /****************************************************
  Higher Level

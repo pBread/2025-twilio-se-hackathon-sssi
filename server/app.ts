@@ -8,7 +8,6 @@ import { DatabaseService } from "./services/database-service";
 import {
   clearSyncData,
   populateSampleData,
-  setSyncSvcWebhookUrl,
   setupSync,
 } from "./services/sync-service";
 
@@ -101,22 +100,6 @@ app.get("/api/clear", async (req, res) => {
 app.get("/api/populate", async (req, res) => {
   await setupSync();
   await populateSampleData();
-
-  res.send("complete");
-});
-
-app.get("/api/set-sync-webhook", async (req, res) => {
-  log.debug("/api/sync-webhook", req.body);
-
-  const hostname = (req.query.hostname as string) ?? HOSTNAME;
-
-  await setSyncSvcWebhookUrl(hostname);
-
-  res.send("complete");
-});
-
-app.post("/api/sync-webhook", async (req, res) => {
-  log.debug("/api/sync-webhook", req.body);
 
   res.send("complete");
 });
