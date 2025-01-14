@@ -1,5 +1,6 @@
 import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
+import { getCallLogs } from "@/state/logs";
 import { getCallMessages } from "@/state/messages";
 import { Paper, Title } from "@mantine/core";
 import { useRouter } from "next/router";
@@ -25,12 +26,13 @@ function Conscious() {
     <Paper>
       <Title order={3}>Conscious Bot</Title>
 
-      <Messages />
+      <MessagesList />
+      <LogsList />
     </Paper>
   );
 }
 
-function Messages() {
+function MessagesList() {
   const router = useRouter();
   const callSid = router.query.callSid as string;
 
@@ -44,7 +46,31 @@ function Messages() {
         <li key={`${msg.id}-938jd`}>
           {msg.role} - {msg.id} - {msg._index}
         </li>
-      ))}{" "}
+      ))}
+    </div>
+  );
+}
+
+function LogsList() {
+  const router = useRouter();
+  const callSid = router.query.callSid as string;
+
+  const call = useAppSelector((state) => selectCallById(state, callSid));
+  const logs = useAppSelector((state) => getCallLogs(state, callSid));
+
+  return (
+    <div style={{ paddingLeft: "5px" }}>
+      Logs
+      {logs
+        .map((item) => ({
+          ...item,
+          createdAt: new Date(item.createdAt).toLocaleString(),
+        }))
+        .map((item) => (
+          <li key={`${item.id}-938jd`}>
+            {item._index} - {item.createdAt}
+          </li>
+        ))}
     </div>
   );
 }
