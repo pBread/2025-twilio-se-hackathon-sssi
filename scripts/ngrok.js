@@ -1,6 +1,6 @@
 require("dotenv-flow/config");
 
-const { HOSTNAME, PORT = "3000" } = process.env;
+const { HOSTNAME, PORT = "3001" } = process.env;
 
 async function execNgrok(args = []) {
   return new Promise((resolve, reject) => {
