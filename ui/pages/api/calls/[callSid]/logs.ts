@@ -19,13 +19,18 @@ async function getData(callSid: string) {
 
   const sync = client.sync.v1.services(process.env.TWILIO_SYNC_SVC_SID);
 
-  const items = await sync.syncLists(callSid).syncListItems.list();
+  try {
+    const items = await sync.syncLists(callSid).syncListItems.list();
 
-  const result = items.map((item, _index) => ({
-    _index,
-    ...item.data,
-  })) as LogRecord[];
-  return result;
+    const result = items.map((item, _index) => ({
+      _index,
+      ...item.data,
+    })) as LogRecord[];
+    return result;
+  } catch (error) {
+    console.error(`unable to fetch call logs for ${callSid}`);
+    return [];
+  }
 }
 
 export type GetMessages = Awaited<ReturnType<typeof getData>>;

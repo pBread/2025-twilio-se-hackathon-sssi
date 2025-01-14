@@ -75,6 +75,13 @@ app.get("/api/clear", async (req, res) => {
   res.send("complete");
 });
 
+app.get("/api/populate", async (req, res) => {
+  await setupSync();
+  await populateSampleData();
+
+  res.send("complete");
+});
+
 /****************************************************
  Start Server
 ****************************************************/

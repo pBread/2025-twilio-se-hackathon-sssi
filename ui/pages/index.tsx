@@ -23,34 +23,14 @@ function CallDisplay({ callSid }: { callSid: string }) {
   const call = useAppSelector((state) => selectCallById(state, callSid));
 
   return (
-    <div style={{ paddingLeft: "5px" }}>
-      Call Sid: <Link href={`/calls/${callSid}`}>{call.callSid}</Link>
+    <>
+      <div style={{ paddingLeft: "5px" }}>
+        <b>Call Sid:</b> <Link href={`/calls/${callSid}`}>{call.callSid}</Link>{" "}
+        <b>From:</b> {call.from} <b>To:</b> {call.to}
+        <br />
+        {call.createdAt}
+      </div>
       <br />
-      From: {call.from}
-      <CallMessages callSid={callSid} />
-    </div>
-  );
-}
-
-function CallMessages({ callSid }: { callSid: string }) {
-  const msgIds = useAppSelector((state) => getCallMessageIds(state, callSid));
-
-  return (
-    <div style={{ paddingLeft: "5px" }}>
-      Call Messages <br />
-      {msgIds.map((msgId) => (
-        <CallMessage msgId={msgId} key={`${callSid}-${msgId}`} />
-      ))}
-    </div>
-  );
-}
-
-function CallMessage({ msgId }: { msgId: string }) {
-  const msg = useAppSelector((state) => getMessageById(state, msgId));
-
-  return (
-    <div style={{ paddingLeft: "5px" }}>
-      Id: {msg.id} -- Role: {msg.role} -- seq {msg._index}
-    </div>
+    </>
   );
 }

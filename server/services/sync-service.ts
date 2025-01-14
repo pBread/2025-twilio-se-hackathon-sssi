@@ -33,12 +33,46 @@ export async function addSyncCall(call: CallRecord) {
       .syncMapItems.create({
         key: call.callSid,
         data: call,
-      });
+      })
+      .catch((err) =>
+        console.log(`could not create syncCallMapItem: ${call.callSid}`, err)
+      );
 
     await twilio.sync.v1
       .services(TWILIO_SYNC_SVC_SID)
-      .syncMaps.create({ uniqueName: call.callSid });
+      .syncMaps.create({ uniqueName: call.callSid })
+      .catch((err) =>
+        console.log(
+          `could not create syncMap for messages: ${call.callSid}`,
+          err
+        )
+      );
+
+    await twilio.sync.v1
+      .services(TWILIO_SYNC_SVC_SID)
+      .syncLists.create({ uniqueName: call.callSid })
+      .catch((err) =>
+        console.log(`could not create syncList for logs: ${call.callSid}`, err)
+      );
   });
+}
+
+export async function removeSyncCallItem(callSid: string) {
+  try {
+    await limit(async () =>
+      twilio.sync.v1
+        .services(TWILIO_SYNC_SVC_SID)
+        .syncMaps(SYNC_CALL_MAP_NAME)
+        .syncMapItems(callSid)
+        .remove()
+    );
+  } catch (error) {}
+}
+
+export async function obliterateSyncCall(callSid: string) {
+  await removeSyncCallItem(callSid);
+  await removeSyncCallMsgMap(callSid);
+  await removeSyncLogsList(callSid);
 }
 
 export async function updateSyncCall(call: CallRecord) {
@@ -70,6 +104,30 @@ export async function updateSyncCallMsg(msg: StoreMessage) {
   );
 }
 
+export async function removeSyncCallMsg(msg: StoreMessage) {
+  return limit(async () =>
+    twilio.sync.v1
+      .services(TWILIO_SYNC_SVC_SID)
+      .syncMaps(msg.callSid)
+      .syncMapItems(msg.id)
+      .remove()
+  );
+}
+
+export async function removeSyncCallMsgMap(callSid: string) {
+  return limit(async () => {
+    const msgMap = await twilio.sync.v1
+      .services(TWILIO_SYNC_SVC_SID)
+      .syncMaps(callSid)
+      .fetch();
+
+    await twilio.sync.v1
+      .services(TWILIO_SYNC_SVC_SID)
+      .syncMaps(msgMap.sid)
+      .remove();
+  });
+}
+
 export async function addSyncLog(log: LogRecord) {
   return limit(async () =>
     twilio.sync.v1
@@ -77,6 +135,20 @@ export async function addSyncLog(log: LogRecord) {
       .syncLists(log.callSid)
       .syncListItems.create({ data: log })
   );
+}
+
+export async function removeSyncLogsList(callSid: string) {
+  return limit(async () => {
+    const logList = await twilio.sync.v1
+      .services(TWILIO_SYNC_SVC_SID)
+      .syncLists(callSid)
+      .fetch();
+
+    await twilio.sync.v1
+      .services(TWILIO_SYNC_SVC_SID)
+      .syncLists(logList.sid)
+      .remove();
+  });
 }
 
 export async function setupSync() {
@@ -103,7 +175,9 @@ export async function setupSync() {
 
 export async function clearSyncData() {
   console.log("sync cleanup starting");
+
   try {
+    console.log("delete call map items");
     const calls = await limit(() =>
       twilio.sync.v1
         .services(TWILIO_SYNC_SVC_SID)
@@ -111,29 +185,8 @@ export async function clearSyncData() {
         .syncMapItems.list()
     );
 
-    console.log(`cleaning up ${calls.length} calls`);
-
     await Promise.all(
-      calls.map(async (call) =>
-        limit(async () => {
-          await twilio.sync.v1
-            .services(TWILIO_SYNC_SVC_SID)
-            .syncMaps(SYNC_CALL_MAP_NAME)
-            .syncMapItems(call.key as string)
-            .remove();
-
-          await twilio.sync.v1
-            .services(TWILIO_SYNC_SVC_SID)
-            .syncMaps(call.data.callSid)
-            .syncMapItems(call.data.id as string)
-            .remove();
-
-          await twilio.sync.v1
-            .services(TWILIO_SYNC_SVC_SID)
-            .syncLists(call.data.callSid)
-            .remove();
-        })
-      )
+      calls.map((call) => obliterateSyncCall(call.data.callSid))
     );
   } catch (error) {}
 
@@ -161,7 +214,7 @@ export async function populateSampleData() {
           try {
             await addSyncCall(call);
           } catch (error) {
-            console.log("failed to create sync call ", call);
+            console.log("failed to create sync call ", call.callSid);
             console.error(error);
           }
         })
@@ -176,5 +229,20 @@ export async function populateSampleData() {
         .flat()
         .map((msg) => addSyncCallMsg(msg))
     );
-  } catch (error) {}
+  } catch (error) {
+    console.log("failed to add sync call message ");
+    console.error(error);
+  }
+
+  try {
+    console.log("populating call logs");
+    await Promise.all(
+      Object.values(mockHistory.callLogs)
+        .flat()
+        .map((msg) => addSyncLog(msg))
+    );
+  } catch (error) {
+    console.log("failed to add sync call logs ");
+    console.error(error);
+  }
 }

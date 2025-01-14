@@ -1,4 +1,9 @@
-import { DemoConfiguration, StoreMessage, CallRecord } from "./entities";
+import {
+  DemoConfiguration,
+  StoreMessage,
+  CallRecord,
+  LogRecord,
+} from "./entities";
 
 const DEVELOPERS_PHONE_NUMBER =
   process.env.DEVELOPERS_PHONE_NUMBER ??
@@ -254,8 +259,8 @@ const config: DemoConfiguration = {
 
 const calls: CallRecord[] = [
   {
-    id: "CAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    callSid: "CAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    id: "CA00000000000000000000000000000001",
+    callSid: "CA00000000000000000000000000000001",
     callStatus: "completed",
     from: DEVELOPERS_PHONE_NUMBER,
     to: "+18444405503",
@@ -799,4 +804,24 @@ const callMessages: Record<string, StoreMessage[]> = {
   ].map((msg) => ({ ...msg, callSid: calls[0].callSid } as StoreMessage)),
 };
 
-export const mockHistory = { calls, callMessages, config };
+const callLogs: Record<string, LogRecord[]> = {
+  [calls[0].callSid]: [
+    { _index: 0, createdAt: new Date(), id: "log-0" },
+    { _index: 1, createdAt: new Date(), id: "log-1" },
+    { _index: 2, createdAt: new Date(), id: "log-2" },
+    { _index: 3, createdAt: new Date(), id: "log-3" },
+  ].map(
+    (item) =>
+      ({
+        ...item,
+        callSid: calls[0].callSid,
+      } as LogRecord)
+  ),
+};
+
+export const mockHistory = {
+  callLogs,
+  callMessages,
+  calls,
+  config,
+};
