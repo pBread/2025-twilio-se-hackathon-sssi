@@ -34,3 +34,7 @@ header {
 .icon-primary {
   color: var(--mantine-primary-color-filled);
 }
+
+.section {
+  padding: 8px;
+}

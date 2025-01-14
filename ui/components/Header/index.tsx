@@ -1,7 +1,14 @@
+import { selectCallById } from "@/state/calls";
+import { useAppSelector } from "@/state/hooks";
 import { useSyncSlice } from "@/state/sync";
-import { Loader } from "@mantine/core";
+import { Loader, Paper, Skeleton, Text } from "@mantine/core";
+import Link from "next/link";
 
-export function Header() {
+export function Header({ callSid }: { callSid?: string }) {
+  const syncSlice = useSyncSlice();
+
+  const isConnected = syncSlice.connectionState === "connected";
+
   return (
     <header>
       <img className="header-logo" alt="logo" src={"/logo.png"} />
@@ -9,9 +16,33 @@ export function Header() {
       <div className="header-section"></div>
 
       <div className="header-section">
-        <Connection />
+        {isConnected || <Connection />}
+        {isConnected && callSid && <CallDetails callSid={callSid} />}
       </div>
     </header>
+  );
+}
+
+function CallDetails({ callSid }: { callSid?: string }) {
+  const call = useAppSelector((state) => selectCallById(state, callSid));
+
+  return (
+    <Skeleton visible={!call} style={{ minWidth: "200px" }}>
+      <Paper className="section" style={{ display: "flex", gap: "8px" }}>
+        <div style={{ display: "flex", gap: "4px", flexDirection: "column" }}>
+          <Text size="sm">From: {call?.from}</Text>
+          <Text size="sm">
+            {"To:".padEnd(6, " ")} {call?.to}
+          </Text>
+        </div>
+        <div style={{ display: "flex", gap: "4px", flexDirection: "column" }}>
+          <Text size="sm">
+            <Link href="/">Call Sid</Link>
+          </Text>
+          <Text size="sm">Status: {call?.callStatus}</Text>
+        </div>
+      </Paper>
+    </Skeleton>
   );
 }
 

@@ -29,12 +29,12 @@ export default function App(props: AppProps) {
   );
 }
 
-function Main({ Component, pageProps }: AppProps) {
+function Main({ Component, pageProps, router }: AppProps) {
   useAddCallListeners();
 
   return (
     <>
-      <Header />
+      <Header callSid={router.query.callSid as string | undefined} />
       <main>
         <Component {...pageProps} />
       </main>
