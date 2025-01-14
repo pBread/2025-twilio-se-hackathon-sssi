@@ -1,6 +1,6 @@
 import { NextApiHandler, NextApiRequest } from "next";
 import twilio from "twilio";
-import { SYNC_CONFIG_NAME } from "@shared/constants";
+import { SYNC_CONFIG_NAME } from "@shared/sync";
 import { mockDatabase } from "@shared/mock-database";
 import { DemoConfiguration, CallRecord } from "@shared/entities";
 

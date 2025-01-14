@@ -146,7 +146,7 @@ async function getAllSyncLogLists() {
   return items.filter((item) => isLogListName(item.uniqueName));
 }
 
-async function getCallLogs(callSid: string) {
+export async function getCallLogs(callSid: string) {
   const uniqueName = logListName(callSid);
   return sync
     .syncLists(uniqueName)
@@ -177,7 +177,7 @@ async function getAllSyncMsgMaps() {
   return maps.filter((item) => isMsgMapName(item.uniqueName));
 }
 
-async function getCallMessages(callSid: string) {
+export async function getCallMessages(callSid: string) {
   const uniqueName = msgMapName(callSid);
   return sync
     .syncMaps(uniqueName)

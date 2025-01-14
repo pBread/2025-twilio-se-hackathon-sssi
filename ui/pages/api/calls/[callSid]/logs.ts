@@ -1,4 +1,5 @@
 import { LogRecord } from "@shared/entities";
+import { logListName } from "@shared/sync";
 import { NextApiHandler, NextApiRequest } from "next";
 import twilio from "twilio";
 
@@ -20,7 +21,8 @@ async function getData(callSid: string) {
   const sync = client.sync.v1.services(process.env.TWILIO_SYNC_SVC_SID);
 
   try {
-    const items = await sync.syncLists(callSid).syncListItems.list();
+    const uniqueName = logListName(callSid);
+    const items = await sync.syncLists(uniqueName).syncListItems.list();
 
     const result = items.map((item, _index) => ({
       _index,
