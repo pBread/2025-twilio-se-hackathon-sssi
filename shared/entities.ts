@@ -32,6 +32,13 @@ export interface DemoConfiguration {
   segment: { isFetchProfileEnabled: boolean };
 }
 
+export interface LogRecord {
+  _index?: number;
+  callSid: string;
+  createdAt: string | Date;
+  id: string;
+}
+
 /****************************************************
  Conversation State
 ****************************************************/

@@ -1,7 +1,11 @@
 import { pRateLimit } from "p-ratelimit";
 import Twilio from "twilio";
 import { SYNC_CALL_MAP_NAME, SYNC_CONFIG_NAME } from "../../shared/constants";
-import type { StoreMessage, CallRecord } from "../../shared/entities";
+import type {
+  StoreMessage,
+  CallRecord,
+  LogRecord,
+} from "../../shared/entities";
 import { mockHistory } from "../../shared/mock-history";
 import {
   TWILIO_ACCOUNT_SID,
@@ -66,6 +70,15 @@ export async function updateSyncCallMsg(msg: StoreMessage) {
   );
 }
 
+export async function addSyncLog(log: LogRecord) {
+  return limit(async () =>
+    twilio.sync.v1
+      .services(TWILIO_SYNC_SVC_SID)
+      .syncLists(log.callSid)
+      .syncListItems.create({ data: log })
+  );
+}
+
 export async function setupSync() {
   console.log("checking sync setup");
   try {
@@ -83,15 +96,6 @@ export async function setupSync() {
       twilio.sync.v1
         .services(TWILIO_SYNC_SVC_SID)
         .syncMaps.create({ uniqueName: SYNC_CALL_MAP_NAME })
-    );
-    console.log("sync", "created SyncMap to store Twilio call state");
-  } catch (error) {}
-
-  try {
-    await limit(() =>
-      twilio.sync.v1
-        .services(TWILIO_SYNC_SVC_SID)
-        .syncStreams.create({ uniqueName: SYNC_CALL_MAP_NAME })
     );
     console.log("sync", "created SyncMap to store Twilio call state");
   } catch (error) {}
@@ -122,6 +126,11 @@ export async function clearSyncData() {
             .services(TWILIO_SYNC_SVC_SID)
             .syncMaps(call.data.callSid)
             .syncMapItems(call.data.id as string)
+            .remove();
+
+          await twilio.sync.v1
+            .services(TWILIO_SYNC_SVC_SID)
+            .syncLists(call.data.callSid)
             .remove();
         })
       )

@@ -87,7 +87,7 @@ export function useSyncClient() {
   return syncClient as SyncClient;
 }
 
-export function useAddCallMsgListeners(callSid: string) {
+export function useAddCallListeners(callSid: string) {
   const connectionState = useSyncSlice().connectionState;
   const status = useSyncSlice().callMessageListeners[callSid];
   const dispatch = useAppDispatch();
@@ -121,7 +121,7 @@ export function useAddCallMsgListeners(callSid: string) {
   }, [connectionState, status]);
 }
 
-export function useAddCallListeners() {
+export function useAddCallMapListeners() {
   const connectionState = useSyncSlice().connectionState;
   const dispatch = useAppDispatch();
 

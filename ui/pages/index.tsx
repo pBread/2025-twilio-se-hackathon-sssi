@@ -5,7 +5,7 @@ import {
   getCallMessageIds,
   getMessageById,
 } from "@/state/messages";
-import { useAddCallMsgListeners } from "@/state/sync";
+import { useAddCallListeners } from "@/state/sync";
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -41,7 +41,7 @@ function CallDisplay({ callSid }: { callSid: string }) {
 function CallMessages({ callSid }: { callSid: string }) {
   const dispatch = useAppDispatch();
 
-  useAddCallMsgListeners(callSid);
+  useAddCallListeners(callSid);
 
   useEffect(() => {
     dispatch(fetchCallMessages(callSid));

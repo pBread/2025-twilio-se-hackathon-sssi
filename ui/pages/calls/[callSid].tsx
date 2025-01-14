@@ -1,12 +1,14 @@
 import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
-import { getCallMessageIds, getCallMessages } from "@/state/messages";
+import { getCallMessages } from "@/state/messages";
+import { useAddCallListeners } from "@/state/sync";
 import { Paper, Title } from "@mantine/core";
 import { useRouter } from "next/router";
 
 export default function LiveCall() {
   const router = useRouter();
   const callSid = router.query.callSid as string;
+  useAddCallListeners(callSid);
 
   return (
     <div style={{ display: "flex", gap: "8px" }}>

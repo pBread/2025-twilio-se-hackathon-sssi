@@ -1,11 +1,9 @@
 import {
-  createEntityAdapter,
-  createSelector,
-  createSlice,
   createAsyncThunk,
+  createEntityAdapter,
+  createSlice,
 } from "@reduxjs/toolkit";
 import { StoreMessage } from "@shared/entities";
-import { useAppSelector } from "./hooks";
 import type { RootState } from "./store";
 
 const SLICE_NAME = "messages";
