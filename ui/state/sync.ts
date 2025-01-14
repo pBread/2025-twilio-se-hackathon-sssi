@@ -1,16 +1,10 @@
+import { InitializeDataResult } from "@/pages/api/initialize-data";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import {
-  type ConnectionState,
-  SyncClient,
-  SyncDocument,
-  SyncList,
-  SyncMap,
-} from "twilio-sync";
+import { type ConnectionState, SyncClient } from "twilio-sync";
+import { addManyCalls } from "./calls";
 import { useAppSelector } from "./hooks";
 import type { AppDispatch, RootState } from "./store";
-import { InitializeDataResult } from "@/pages/api/initialize-data";
-import { addManyCalls } from "./calls";
 
 let syncClient: SyncClient | undefined;
 
