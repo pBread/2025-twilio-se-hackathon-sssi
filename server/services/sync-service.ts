@@ -1,12 +1,14 @@
 import { pRateLimit } from "p-ratelimit";
 import Twilio from "twilio";
-import type {
-  CallRecord,
-  LogRecord,
-  StoreMessage,
-} from "../../shared/entities";
+import type { CallRecord, StoreMessage } from "../../shared/entities";
 import { mockHistory } from "../../shared/mock-history";
-import { SYNC_CALL_MAP_NAME, SYNC_CONFIG_NAME } from "../../shared/sync";
+import {
+  callMapItemName,
+  logListName,
+  msgMapName,
+  SYNC_CALL_MAP_NAME,
+  SYNC_CONFIG_NAME,
+} from "../../shared/sync";
 import {
   TWILIO_ACCOUNT_SID,
   TWILIO_API_KEY,
@@ -25,224 +27,109 @@ const twilio = Twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   accountSid: TWILIO_ACCOUNT_SID,
 });
 
-export async function addSyncCall(call: CallRecord) {
-  return limit(async () => {
-    await twilio.sync.v1
-      .services(TWILIO_SYNC_SVC_SID)
-      .syncMaps(SYNC_CALL_MAP_NAME)
-      .syncMapItems.create({
-        key: call.callSid,
-        data: call,
-      })
-      .catch((err) =>
-        console.log(`could not create syncCallMapItem: ${call.callSid}`, err)
-      );
+const sync = twilio.sync.v1.services(TWILIO_SYNC_SVC_SID);
+const syncConfigApi = sync.documents(SYNC_CONFIG_NAME);
+const syncCallMapApi = sync.syncMaps(SYNC_CALL_MAP_NAME);
 
-    await twilio.sync.v1
-      .services(TWILIO_SYNC_SVC_SID)
-      .syncMaps.create({ uniqueName: call.callSid })
-      .catch((err) =>
-        console.log(
-          `could not create syncMap for messages: ${call.callSid}`,
-          err
-        )
-      );
-
-    await twilio.sync.v1
-      .services(TWILIO_SYNC_SVC_SID)
-      .syncLists.create({ uniqueName: call.callSid })
-      .catch((err) =>
-        console.log(`could not create syncList for logs: ${call.callSid}`, err)
-      );
-  });
-}
-
-export async function removeSyncCallItem(callSid: string) {
-  try {
-    await limit(async () =>
-      twilio.sync.v1
-        .services(TWILIO_SYNC_SVC_SID)
-        .syncMaps(SYNC_CALL_MAP_NAME)
-        .syncMapItems(callSid)
-        .remove()
-    );
-  } catch (error) {}
-}
-
-export async function obliterateSyncCall(callSid: string) {
-  await removeSyncCallItem(callSid);
-  await removeSyncCallMsgMap(callSid);
-  await removeSyncLogsList(callSid);
-}
-
-export async function updateSyncCall(call: CallRecord) {
-  return limit(async () =>
-    twilio.sync.v1
-      .services(TWILIO_SYNC_SVC_SID)
-      .syncMaps(SYNC_CALL_MAP_NAME)
-      .syncMapItems(call.callSid)
-      .update({ data: call })
-  );
-}
-
-export async function addSyncCallMsg(msg: StoreMessage) {
-  return limit(async () =>
-    twilio.sync.v1
-      .services(TWILIO_SYNC_SVC_SID)
-      .syncMaps(msg.callSid)
-      .syncMapItems.create({ key: msg.id, data: msg })
-  );
-}
-
-export async function updateSyncCallMsg(msg: StoreMessage) {
-  return limit(async () =>
-    twilio.sync.v1
-      .services(TWILIO_SYNC_SVC_SID)
-      .syncMaps(msg.callSid)
-      .syncMapItems(msg.id)
-      .update({ data: msg })
-  );
-}
-
-export async function removeSyncCallMsg(msg: StoreMessage) {
-  return limit(async () =>
-    twilio.sync.v1
-      .services(TWILIO_SYNC_SVC_SID)
-      .syncMaps(msg.callSid)
-      .syncMapItems(msg.id)
-      .remove()
-  );
-}
-
-export async function removeSyncCallMsgMap(callSid: string) {
-  return limit(async () => {
-    const msgMap = await twilio.sync.v1
-      .services(TWILIO_SYNC_SVC_SID)
-      .syncMaps(callSid)
-      .fetch();
-
-    await twilio.sync.v1
-      .services(TWILIO_SYNC_SVC_SID)
-      .syncMaps(msgMap.sid)
-      .remove();
-  });
-}
-
-export async function addSyncLog(log: LogRecord) {
-  return limit(async () =>
-    twilio.sync.v1
-      .services(TWILIO_SYNC_SVC_SID)
-      .syncLists(log.callSid)
-      .syncListItems.create({ data: log })
-  );
-}
-
-export async function removeSyncLogsList(callSid: string) {
-  return limit(async () => {
-    const logList = await twilio.sync.v1
-      .services(TWILIO_SYNC_SVC_SID)
-      .syncLists(callSid)
-      .fetch();
-
-    await twilio.sync.v1
-      .services(TWILIO_SYNC_SVC_SID)
-      .syncLists(logList.sid)
-      .remove();
-  });
-}
-
+/****************************************************
+ Setup Sync
+****************************************************/
 export async function setupSync() {
-  console.log("checking sync setup");
+  console.log("setting up sync");
   try {
     await limit(() =>
-      twilio.sync.v1.services(TWILIO_SYNC_SVC_SID).documents.create({
+      sync.documents.create({
         uniqueName: SYNC_CONFIG_NAME,
         data: mockHistory.config, // to do: update with data from demo
       })
     );
-    console.log("sync", "created Sync Document to store demo config");
+
+    console.log("created sync document for demo config");
   } catch (error) {}
 
   try {
-    await limit(() =>
-      twilio.sync.v1
-        .services(TWILIO_SYNC_SVC_SID)
-        .syncMaps.create({ uniqueName: SYNC_CALL_MAP_NAME })
-    );
-    console.log("sync", "created SyncMap to store Twilio call state");
+    await limit(() => sync.syncMaps.create({ uniqueName: SYNC_CALL_MAP_NAME }));
+    console.log("created sync map to store call details");
   } catch (error) {}
 }
 
-export async function clearSyncData() {
-  console.log("sync cleanup starting");
+/****************************************************
+ Higher Level
+****************************************************/
 
-  try {
-    console.log("delete call map items");
-    const calls = await limit(() =>
-      twilio.sync.v1
-        .services(TWILIO_SYNC_SVC_SID)
-        .syncMaps(SYNC_CALL_MAP_NAME)
-        .syncMapItems.list()
-    );
-
-    await Promise.all(
-      calls.map((call) => obliterateSyncCall(call.data.callSid))
-    );
-  } catch (error) {}
-
-  console.log(`sync cleanup complete`);
+/****************************************************
+ Call Map Items
+****************************************************/
+async function addSyncCallItem(call: CallRecord) {
+  const key = callMapItemName(call.callSid);
+  return syncCallMapApi.syncMapItems.create({
+    key,
+    data: call,
+  });
 }
 
-export async function populateSampleData() {
-  try {
-    console.log("resetting demo configuration");
-
-    await limit(() =>
-      twilio.sync.v1
-        .services(TWILIO_SYNC_SVC_SID)
-        .documents(SYNC_CONFIG_NAME)
-        .update({ data: mockHistory.config })
-    );
-  } catch (error) {}
-
-  try {
-    console.log("populating calls");
-
-    await Promise.all(
-      mockHistory.calls.map((call) =>
-        limit(async () => {
-          try {
-            await addSyncCall(call);
-          } catch (error) {
-            console.log("failed to create sync call ", call.callSid);
-            console.error(error);
-          }
-        })
-      )
-    );
-  } catch (error) {}
-
-  try {
-    console.log("populating call messages");
-    await Promise.all(
-      Object.values(mockHistory.callMessages)
-        .flat()
-        .map((msg) => addSyncCallMsg(msg))
-    );
-  } catch (error) {
-    console.log("failed to add sync call message ");
-    console.error(error);
-  }
-
-  try {
-    console.log("populating call logs");
-    await Promise.all(
-      Object.values(mockHistory.callLogs)
-        .flat()
-        .map((msg) => addSyncLog(msg))
-    );
-  } catch (error) {
-    console.log("failed to add sync call logs ");
-    console.error(error);
-  }
+async function updateSyncCallItem(call: CallRecord) {
+  const key = callMapItemName(call.callSid);
+  return syncCallMapApi.syncMapItems(key).update({ data: call });
 }
+
+async function removeSyncCallItem(callSid: string) {
+  const key = callMapItemName(callSid);
+  return syncCallMapApi.syncMapItems(key).remove();
+}
+
+/****************************************************
+ Logs
+****************************************************/
+async function createSyncLogList(callSid: string) {
+  const uniqueName = logListName(callSid);
+  return sync.syncLists.create({ uniqueName });
+}
+
+async function destroySyncLogList(callSid: string) {
+  const uniqueName = logListName(callSid);
+  return sync.syncLists(uniqueName).remove();
+}
+
+async function addSyncLogItem(msg: StoreMessage) {
+  const uniqueName = logListName(msg.callSid);
+  return sync.syncLists(uniqueName).syncListItems.create({ data: msg });
+}
+
+/****************************************************
+ Messages
+****************************************************/
+async function createSyncMsgMap(callSid: string) {
+  const uniqueName = msgMapName(callSid);
+  return sync.syncMaps.create({ uniqueName });
+}
+
+async function destroySyncMsgMap(callSid: string) {
+  const uniqueName = msgMapName(callSid);
+  return sync.syncMaps(uniqueName).remove();
+}
+
+async function addSyncMsgItem(msg: StoreMessage) {
+  const uniqueName = msgMapName(msg.callSid);
+  return sync
+    .syncMaps(uniqueName)
+    .syncMapItems.create({ key: msg.id, data: msg });
+}
+
+async function updateSyncMsgItem(msg: StoreMessage) {
+  const uniqueName = msgMapName(msg.callSid);
+  return sync.syncMaps(uniqueName).syncMapItems(msg.id).update({ data: msg });
+}
+
+async function removeSyncMsgItem(msg: StoreMessage) {
+  const uniqueName = msgMapName(msg.callSid);
+
+  return sync.syncMaps(uniqueName).syncMapItems(msg.id).remove();
+}
+
+/****************************************************
+ Demo Data Management
+****************************************************/
+export async function clearSyncData() {}
+
+export async function populateSampleData() {}
