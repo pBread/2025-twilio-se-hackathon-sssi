@@ -1,7 +1,8 @@
 import { InitializeDataResult } from "@/pages/api/initialize-data";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import { SYNC_CALL_MAP_NAME } from "@shared/sync";
+import { logListName, msgMapName, SYNC_CALL_MAP_NAME } from "@shared/sync";
+import { DemoConfiguration } from "@shared/entities";
 import { useEffect } from "react";
 import { type ConnectionState, SyncClient } from "twilio-sync";
 import {
@@ -11,7 +12,7 @@ import {
   updateOneCall,
 } from "./calls";
 import { useAppDispatch, useAppSelector } from "./hooks";
-import { fetchCallLogs } from "./logs";
+import { addOneLog, fetchCallLogs } from "./logs";
 import {
   addOneMessage,
   fetchCallMessages,
@@ -29,17 +30,23 @@ const identity =
 interface InitialState {
   connectionState: ConnectionState;
   callMessageListeners: Record<string, "new" | "done">;
+  demo?: DemoConfiguration;
 }
 
 const initialState: InitialState = {
   connectionState: "unknown",
   callMessageListeners: {},
+  demo: undefined,
 };
 
 export const syncSlice = createSlice({
   name: SLICE_NAME,
   initialState,
   reducers: {
+    setDemoConfig(state, { payload }: PayloadAction<DemoConfiguration>) {
+      state.demo = payload;
+    },
+
     setCallMsgListener(
       state,
       { payload }: PayloadAction<{ callSid: string; status: "new" | "done" }>
@@ -56,7 +63,8 @@ export const syncSlice = createSlice({
 /****************************************************
  Actions
 ****************************************************/
-export const { setCallMsgListener, setSyncConnectionState } = syncSlice.actions;
+export const { setCallMsgListener, setDemoConfig, setSyncConnectionState } =
+  syncSlice.actions;
 
 /****************************************************
  Selectors
@@ -73,13 +81,12 @@ export function useSyncSlice() {
  Initialize Data
 ****************************************************/
 export async function initSync(dispatch: AppDispatch) {
-  const syncClient = await initSyncClient(dispatch);
-
   const result = (await fetch("/api/initialize-data").then((res) =>
     res.json()
   )) as InitializeDataResult;
 
   dispatch(addManyCalls(result.calls));
+  dispatch(setDemoConfig(result.config));
 }
 
 /****************************************************
@@ -115,8 +122,17 @@ export function useAddCallListeners(callSid?: string) {
     if (status) return;
     dispatch(setCallMsgListener({ callSid, status: "new" }));
 
+    const listUniqueName = logListName(callSid);
+    syncClient.map(listUniqueName).then((list) => {
+      list.on("itemAdded", (ev) => {
+        console.log("call logs itemAdded", ev);
+        dispatch(addOneLog(ev.item.data));
+      });
+    });
+
+    const mapUniqueName = msgMapName(callSid);
     syncClient
-      .map(callSid)
+      .map(mapUniqueName)
       .then((map) => {
         map.on("itemAdded", (ev) => {
           console.log("call msgs itemAdded", ev);
