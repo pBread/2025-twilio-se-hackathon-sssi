@@ -9,6 +9,7 @@ import {
   clearSyncData,
   populateSampleData,
   setupSync,
+  demoConfig,
 } from "./services/sync-service";
 
 const {

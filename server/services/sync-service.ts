@@ -1,5 +1,6 @@
 import { pRateLimit } from "p-ratelimit";
 import Twilio from "twilio";
+import { SyncClient } from "twilio-sync";
 import type {
   CallRecord,
   DemoConfiguration,
@@ -17,13 +18,12 @@ import {
   SYNC_CONFIG_NAME,
 } from "../../shared/sync";
 import {
-  HOSTNAME,
   TWILIO_ACCOUNT_SID,
   TWILIO_API_KEY,
   TWILIO_API_SECRET,
   TWILIO_SYNC_SVC_SID,
 } from "../env";
-import { SyncClient } from "twilio-sync";
+import log from "../logger";
 
 const limit = pRateLimit({
   interval: 1000, // 1000 ms == 1 second
@@ -42,6 +42,8 @@ const sync = twilio.sync.v1.services(TWILIO_SYNC_SVC_SID);
 const syncDemoConfigApi = sync.documents(SYNC_CONFIG_NAME);
 const syncCallMapApi = sync.syncMaps(SYNC_CALL_MAP_NAME);
 
+export let demoConfig = JSON.parse(JSON.stringify(mockHistory.config)); // to do: update with data from demo
+
 /****************************************************
  Setup Sync
 ****************************************************/
@@ -52,7 +54,7 @@ export async function setupSync() {
     await limit(() =>
       sync.documents.create({
         uniqueName: SYNC_CONFIG_NAME,
-        data: mockHistory.config, // to do: update with data from demo
+        data: demoConfig,
       })
     );
 
@@ -63,6 +65,63 @@ export async function setupSync() {
     await limit(() => sync.syncMaps.create({ uniqueName: SYNC_CALL_MAP_NAME }));
     console.log("created sync map to store call details");
   } catch (error) {}
+
+  try {
+    console.log("sync websocket client initializing");
+    await initSyncClient();
+    console.log("sync websocket client connected");
+  } catch (error) {}
+}
+
+async function initSyncClient() {
+  const identity =
+    "server-" +
+    Math.floor(Math.random() * 9999)
+      .toString()
+      .padStart(4, "0");
+
+  const token = createSyncToken(identity);
+
+  syncWsClient = new SyncClient(token.token);
+
+  syncWsClient.on("tokenAboutToExpire", () =>
+    syncWsClient?.updateToken(createSyncToken(identity).token)
+  );
+
+  await syncWsClient
+    .document(SYNC_CONFIG_NAME)
+    .then((doc) => {
+      demoConfig = doc.data as DemoConfiguration;
+
+      doc.on("updated", (ev) => {
+        log.info("sync", "sync document update via websocket", ev);
+
+        demoConfig = ev.data;
+      });
+    })
+    .catch();
+
+  syncWsClient?.on("connectionStateChanged", (state) => {
+    log.info("sync", `sync websocket client status: ${state}`);
+  });
+}
+
+function createSyncToken(identity: string) {
+  const AccessToken = Twilio.jwt.AccessToken;
+  const SyncGrant = AccessToken.SyncGrant;
+
+  const token = new AccessToken(
+    TWILIO_ACCOUNT_SID,
+    TWILIO_API_KEY,
+    TWILIO_API_SECRET,
+    { identity }
+  );
+
+  token.addGrant(
+    new SyncGrant({ serviceSid: process.env.TWILIO_SYNC_SVC_SID })
+  );
+
+  return { identity, token: token.toJwt() };
 }
 
 /****************************************************
@@ -254,7 +313,7 @@ export async function clearSyncData() {
 export async function populateSampleData() {
   console.log("populateSampleData");
 
-  await updateDemoConfig(mockHistory.config);
+  await updateDemoConfig(demoConfig);
 
   await Promise.all(mockHistory.calls.map(initCall)).then(() =>
     console.log("populated call records")
