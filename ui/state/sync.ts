@@ -2,9 +2,22 @@ import { InitializeDataResult } from "@/pages/api/initialize-data";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { type ConnectionState, SyncClient } from "twilio-sync";
-import { addManyCalls } from "./calls";
-import { useAppSelector } from "./hooks";
+import {
+  addManyCalls,
+  removeOneCall,
+  setOneCall,
+  updateOneCall,
+} from "./calls";
+import { useAppDispatch, useAppSelector } from "./hooks";
 import type { AppDispatch, RootState } from "./store";
+import { useEffect } from "react";
+import { SYNC_CALL_MAP_NAME, SYNC_DEMO_CONFIG } from "@shared/constants";
+import {
+  addOneMessage,
+  removeOneMessage,
+  setOneMessage,
+  updateOneMessage,
+} from "./messages";
 
 let syncClient: SyncClient | undefined;
 
@@ -14,16 +27,25 @@ const identity =
 
 interface InitialState {
   connectionState: ConnectionState;
+  callMessageListeners: Record<string, "new" | "done">;
 }
 
 const initialState: InitialState = {
   connectionState: "unknown",
+  callMessageListeners: {},
 };
 
 export const syncSlice = createSlice({
   name: SLICE_NAME,
   initialState,
   reducers: {
+    setCallMsgListener(
+      state,
+      { payload }: PayloadAction<{ callSid: string; status: "new" | "done" }>
+    ) {
+      state.callMessageListeners[payload.callSid] = payload.status;
+    },
+
     setSyncConnectionState(state, { payload }: PayloadAction<ConnectionState>) {
       state.connectionState = payload;
     },
@@ -33,7 +55,7 @@ export const syncSlice = createSlice({
 /****************************************************
  Actions
 ****************************************************/
-export const { setSyncConnectionState } = syncSlice.actions;
+export const { setCallMsgListener, setSyncConnectionState } = syncSlice.actions;
 
 /****************************************************
  Selectors
@@ -68,6 +90,66 @@ export function useSyncClient() {
   if (connectionState === "unknown") return;
 
   return syncClient as SyncClient;
+}
+
+export function useAddCallMsgListeners(callSid: string) {
+  const connectionState = useSyncSlice().connectionState;
+  const status = useSyncSlice().callMessageListeners[callSid];
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (connectionState !== "connected") return;
+    if (status) return;
+    dispatch(setCallMsgListener({ callSid, status: "new" }));
+
+    syncClient
+      .map(callSid)
+      .then((map) => {
+        map.on("itemAdded", (ev) => {
+          console.log("call msgs itemAdded", ev);
+          dispatch(addOneMessage(ev.item.data));
+        });
+
+        map.on("itemUpdated", (ev) => {
+          console.log("call msgs itemUpdated", ev);
+          dispatch(setOneMessage(ev.item.data));
+        });
+
+        map.on("itemRemoved", (ev) => {
+          console.log("call msgs itemRemoved", ev);
+          dispatch(removeOneMessage(ev.key));
+        });
+      })
+      .then(() => {
+        dispatch(setCallMsgListener({ callSid, status: "done" }));
+      });
+  }, [connectionState, status]);
+}
+
+export function useAddCallListeners() {
+  const connectionState = useSyncSlice().connectionState;
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (connectionState !== "connected") return;
+
+    syncClient.map(SYNC_CALL_MAP_NAME).then((map) => {
+      map.on("itemAdded", (ev) => {
+        console.log("SYNC_CALL_MAP_NAME itemAdded", ev);
+        dispatch(setOneCall(ev.item.data));
+      });
+
+      map.on("itemUpdated", (ev) => {
+        console.log("SYNC_CALL_MAP_NAME itemUpdated", ev);
+        dispatch(updateOneCall(ev.item.data));
+      });
+
+      map.on("itemRemoved", (ev) => {
+        console.log("SYNC_CALL_MAP_NAME itemRemoved", ev);
+        dispatch(removeOneCall(ev.key));
+      });
+    });
+  }, [connectionState]);
 }
 
 async function initSyncClient(dispatch: AppDispatch) {

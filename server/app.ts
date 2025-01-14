@@ -68,6 +68,13 @@ app.get("/api/reset", async (req, res) => {
   res.send("complete");
 });
 
+app.get("/api/clear", async (req, res) => {
+  await setupSync();
+  await clearSyncData();
+
+  res.send("complete");
+});
+
 /****************************************************
  Start Server
 ****************************************************/

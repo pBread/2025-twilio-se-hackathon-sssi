@@ -2,9 +2,10 @@ import { selectCallById, selectCallIds } from "@/state/calls";
 import { useAppDispatch, useAppSelector } from "@/state/hooks";
 import {
   fetchCallMessages,
+  getCallMessageIds,
   getMessageById,
-  selectCallMessageIds,
 } from "@/state/messages";
+import { useAddCallMsgListeners } from "@/state/sync";
 import { useEffect } from "react";
 
 export default function Home() {
@@ -39,13 +40,13 @@ function CallDisplay({ callSid }: { callSid: string }) {
 function CallMessages({ callSid }: { callSid: string }) {
   const dispatch = useAppDispatch();
 
+  useAddCallMsgListeners(callSid);
+
   useEffect(() => {
     dispatch(fetchCallMessages(callSid));
   }, [callSid]);
 
-  const msgIds = useAppSelector((state) =>
-    selectCallMessageIds(state, callSid)
-  );
+  const msgIds = useAppSelector((state) => getCallMessageIds(state, callSid));
 
   return (
     <div style={{ paddingLeft: "5px" }}>

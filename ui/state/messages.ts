@@ -98,16 +98,10 @@ export const {
   selectTotal: getMessageTotal,
 } = adapter.getSelectors(getSlice);
 
-export const selectCallMessageIds = createSelector(
-  [getAllMessages, (_, callSid: string) => callSid],
-  (messages, callSid) =>
-    messages
-      .filter((message) => message.callSid === callSid)
-      .map((message) => message.id)
-);
-
-export function useCallMessageIds(callSid: string) {
-  return useAppSelector((state) => selectCallMessageIds(state, callSid));
+export function getCallMessageIds(state: RootState, callSid: string) {
+  return getAllMessages(state)
+    .filter((message) => message.callSid === callSid)
+    .map((message) => message.id);
 }
 
 /****************************************************

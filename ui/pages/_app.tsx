@@ -1,7 +1,7 @@
 import { Header } from "@/components/Header";
 import { Helmet } from "@/components/Helmet";
 import { type AppStore, makeStore } from "@/state/store";
-import { initSync } from "@/state/sync";
+import { initSync, useAddCallListeners } from "@/state/sync";
 import "@/styles/globals.css";
 import { isServer } from "@/util/env";
 import { MantineProvider } from "@mantine/core";
@@ -30,6 +30,8 @@ export default function App({ Component, pageProps }: AppProps) {
 }
 
 function Main({ Component, pageProps }: AppProps) {
+  useAddCallListeners();
+
   return (
     <>
       <Header />
