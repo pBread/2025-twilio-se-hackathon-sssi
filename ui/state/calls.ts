@@ -4,7 +4,12 @@ import type { RootState } from "./store";
 
 const SLICE_NAME = "calls";
 
-const adapter = createEntityAdapter<CallRecord>({});
+const adapter = createEntityAdapter<CallRecord>({
+  sortComparer: (a, b) =>
+    new Date(b.createdAt)
+      .toISOString()
+      .localeCompare(new Date(a.createdAt).toISOString()),
+});
 
 export const callsSlice = createSlice({
   name: SLICE_NAME,
