@@ -4,6 +4,8 @@ import { type AppStore, makeStore } from "@/state/store";
 import { initSync } from "@/state/sync";
 import "@/styles/globals.css";
 import { isServer } from "@/util/env";
+import { MantineProvider } from "@mantine/core";
+import "@mantine/core/styles.css";
 import type { AppProps } from "next/app";
 import { useRef } from "react";
 import { Provider } from "react-redux";
@@ -18,9 +20,11 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Helmet />
-      <Provider store={storeRef.current}>
-        <Main Component={Component} {...pageProps} />
-      </Provider>
+      <MantineProvider>
+        <Provider store={storeRef.current}>
+          <Main Component={Component} {...pageProps} />
+        </Provider>
+      </MantineProvider>
     </>
   );
 }
