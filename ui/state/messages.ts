@@ -10,7 +10,9 @@ import type { RootState } from "./store";
 
 const SLICE_NAME = "messages";
 
-const adapter = createEntityAdapter<StoreMessage>({});
+const adapter = createEntityAdapter<StoreMessage>({
+  sortComparer: (a, b) => a._index - b._index,
+});
 
 interface InitialState {
   loadingStates: Record<string, "loading" | "succeeded" | "failed">;

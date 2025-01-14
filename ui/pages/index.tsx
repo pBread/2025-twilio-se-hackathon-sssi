@@ -62,7 +62,7 @@ function CallMessage({ msgId }: { msgId: string }) {
 
   return (
     <div style={{ paddingLeft: "5px" }}>
-      Id: {msg.id} -- Role: {msg.role}
+      Id: {msg.id} -- Role: {msg.role} -- seq {msg._index}
     </div>
   );
 }
