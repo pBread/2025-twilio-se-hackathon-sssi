@@ -4,6 +4,7 @@ import {
   CallRecord,
   LogRecord,
 } from "./entities";
+import { mockDatabase } from "./mock-database";
 
 const DEVELOPERS_PHONE_NUMBER =
   process.env.DEVELOPERS_PHONE_NUMBER ??
@@ -271,6 +272,7 @@ const calls: CallRecord[] = [
       annotations: [],
       waitTime: 6,
       callingFromPhoneNumber: DEVELOPERS_PHONE_NUMBER,
+      user: mockDatabase.users[0],
     },
     feedback: [],
     config: {
@@ -814,17 +816,40 @@ const callMessages: Record<string, StoreMessage[]> = {
 
 const callLogs: Record<string, LogRecord[]> = {
   [calls[0].callSid]: [
-    { _index: 0, createdAt: new Date(), id: "log-0" },
-    { _index: 1, createdAt: new Date(), id: "log-1" },
-    { _index: 2, createdAt: new Date(), id: "log-2" },
-    { _index: 3, createdAt: new Date(), id: "log-3" },
-  ].map(
-    (item) =>
-      ({
-        ...item,
-        callSid: calls[0].callSid,
-      } as LogRecord)
-  ),
+    {
+      callSid: calls[0].callSid,
+      _index: 0,
+      id: "log-0",
+      createdAt: new Date(),
+
+      data: { user: mockDatabase.users[0] },
+      type: "segment-fetched-profile",
+    },
+    {
+      callSid: calls[0].callSid,
+      _index: 1,
+      id: "log-1",
+      createdAt: new Date(),
+      data: { body: "miscellanious log..." },
+      type: "misc",
+    },
+    {
+      callSid: calls[0].callSid,
+      _index: 2,
+      id: "log-2",
+      createdAt: new Date(),
+      data: { body: "another miscellanious log..." },
+      type: "misc",
+    },
+    {
+      callSid: calls[0].callSid,
+      _index: 3,
+      id: "log-3",
+      createdAt: new Date(),
+      data: { body: "and another miscellanious log..." },
+      type: "misc",
+    },
+  ],
 };
 
 export const mockHistory = {

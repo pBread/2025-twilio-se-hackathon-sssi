@@ -2,12 +2,13 @@ import * as env from "./env";
 
 import express from "express";
 import ExpressWs from "express-ws";
-import { CallContext, CallRecord } from "../shared/entities";
+import { CallContext, CallRecord, UserRecord } from "../shared/entities";
 import { getGreeting } from "./bot/greetings";
 import log from "./logger";
 import { CallService } from "./services/call-service";
 import { ConversationStore } from "./services/conversation-store";
 import { DatabaseService } from "./services/database-service";
+import { RelayService } from "./services/relay-service";
 import {
   clearSyncData,
   demoConfig,
@@ -16,7 +17,6 @@ import {
   setupSync,
   updateSyncCallItem,
 } from "./services/sync-service";
-import { RelayService } from "./services/relay-service";
 
 const {
   DEFAULT_FROM_NUMBER,
@@ -62,7 +62,16 @@ app.post("/call-handler", async (req, res) => {
     };
 
     const db = await dbPromise;
-    let user = await db.users.getByChannel(From);
+    let user: UserRecord | undefined;
+
+    if (demoConfig.isRecordingEnabled) {
+      log.info("/call-handler", `fetching segment profile`);
+      user = await db.users.getByChannel(From);
+    } else
+      log.warn(
+        `/call-handler`,
+        "did not fetch segment profile because it is disabled"
+      );
     if (user) ctx.user = user;
 
     const callData: CallRecord = {

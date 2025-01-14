@@ -50,7 +50,11 @@ export interface LogRecord {
   callSid: string;
   createdAt: string | Date;
   id: string;
+  data: { body?: string; user?: UserRecord };
+  type: LogTypes;
 }
+
+type LogTypes = "misc" | "segment-fetched-profile";
 
 /****************************************************
  Conversation State

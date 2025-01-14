@@ -68,7 +68,7 @@ function LogsList() {
         }))
         .map((item) => (
           <li key={`${item.id}-938jd`}>
-            {item._index} - {item.createdAt}
+            {item._index} - {item.type} - {item.createdAt}
           </li>
         ))}
     </div>
