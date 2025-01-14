@@ -24,12 +24,13 @@ header {
 }
 
 .header-logo {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   width: var(--logo-width);
   height: auto;
 }
 
 .header-section {
+}
+
+.icon-primary {
+  color: var(--mantine-primary-color-filled);
 }
