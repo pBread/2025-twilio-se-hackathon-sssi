@@ -252,6 +252,12 @@ export async function updateSyncCallItem(
   );
 }
 
+export async function setSyncCallItem(call: CallRecord) {
+  const key = callMapItemName(call.callSid);
+
+  return limit(() => syncCallMapApi.syncMapItems(key).update({ data: call }));
+}
+
 async function removeSyncCallItem(callSid: string) {
   const key = callMapItemName(callSid);
   return limit(() => syncCallMapApi.syncMapItems(key).remove());
