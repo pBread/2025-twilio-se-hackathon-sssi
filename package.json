@@ -15,6 +15,7 @@
     "openai": "^4.68.4",
     "p-ratelimit": "^1.0.1",
     "twilio": "^5.3.5",
+    "twilio-sync": "^3.3.5",
     "ws": "^8.18.0"
   },
   "devDependencies": {
