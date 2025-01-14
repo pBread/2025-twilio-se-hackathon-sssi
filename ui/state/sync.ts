@@ -81,6 +81,8 @@ export function useSyncSlice() {
  Initialize Data
 ****************************************************/
 export async function initSync(dispatch: AppDispatch) {
+  initSyncClient(dispatch);
+
   const result = (await fetch("/api/initialize-data").then((res) =>
     res.json()
   )) as InitializeDataResult;
