@@ -48,11 +48,6 @@ const syncCallMapApi = sync.syncMaps(SYNC_CALL_MAP_NAME);
 export async function setupSync() {
   console.log("setting up sync");
 
-  // try {
-  //   const svc = await sync.fetch();
-  //   if (!svc.webhookUrl) await setSyncSvcWebhookUrl(HOSTNAME);
-  // } catch (error) {}
-
   try {
     await limit(() =>
       sync.documents.create({
@@ -69,23 +64,6 @@ export async function setupSync() {
     console.log("created sync map to store call details");
   } catch (error) {}
 }
-
-// export async function setSyncSvcWebhookUrl(hostname = HOSTNAME) {
-//   console.log(`setting sync webhook url using hostname: ${hostname}`);
-//   const svc = await sync.fetch();
-
-//   const webhookUrl = `https://${HOSTNAME}/api/sync-webhook`;
-//   if (svc.webhookUrl === webhookUrl) {
-//     console.log(
-//       `sync service (${svc.friendlyName}) webhookUrl is already set to ${webhookUrl}`
-//     );
-//   } else {
-//     console.log(
-//       `updating sync service (${svc.friendlyName}) webhookURL to ${webhookUrl}. it was ${svc.webhookUrl}`
-//     );
-//     await sync.update({ webhookUrl });
-//   }
-// }
 
 /****************************************************
  Higher Level
