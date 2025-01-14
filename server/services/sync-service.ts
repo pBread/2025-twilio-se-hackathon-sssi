@@ -358,7 +358,7 @@ export async function clearSyncData() {
     logLists.map((list) => destroySyncLogList(list.uniqueName))
   );
   const msgMaps = await getAllSyncMsgMaps();
-  await Promise.all(msgMaps.map((map) => destroySyncLogList(map.uniqueName)));
+  await Promise.all(msgMaps.map((map) => destroySyncMsgMap(map.uniqueName)));
 }
 
 export async function populateSampleData() {
