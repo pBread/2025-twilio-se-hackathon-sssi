@@ -1,6 +1,6 @@
 import { NextApiHandler, NextApiRequest } from "next";
 import twilio from "twilio";
-import { SYNC_DEMO_CONFIG } from "@shared/constants";
+import { SYNC_CONFIG_NAME } from "@shared/constants";
 import { mockDatabase } from "@shared/mock-database";
 import { DemoConfiguration, CallRecord } from "@shared/entities";
 
@@ -20,7 +20,7 @@ async function getData() {
   const sync = client.sync.v1.services(process.env.TWILIO_SYNC_SVC_SID);
 
   const [config, calls] = await Promise.all([
-    sync.documents(SYNC_DEMO_CONFIG).fetch(),
+    sync.documents(SYNC_CONFIG_NAME).fetch(),
     sync.syncMaps("calls").syncMapItems.list(),
   ]);
 

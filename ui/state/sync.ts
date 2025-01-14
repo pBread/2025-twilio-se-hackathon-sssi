@@ -1,6 +1,8 @@
 import { InitializeDataResult } from "@/pages/api/initialize-data";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
+import { SYNC_CALL_MAP_NAME } from "@shared/constants";
+import { useEffect } from "react";
 import { type ConnectionState, SyncClient } from "twilio-sync";
 import {
   addManyCalls,
@@ -9,15 +11,8 @@ import {
   updateOneCall,
 } from "./calls";
 import { useAppDispatch, useAppSelector } from "./hooks";
+import { addOneMessage, removeOneMessage, setOneMessage } from "./messages";
 import type { AppDispatch, RootState } from "./store";
-import { useEffect } from "react";
-import { SYNC_CALL_MAP_NAME, SYNC_DEMO_CONFIG } from "@shared/constants";
-import {
-  addOneMessage,
-  removeOneMessage,
-  setOneMessage,
-  updateOneMessage,
-} from "./messages";
 
 let syncClient: SyncClient | undefined;
 

@@ -1,6 +1,6 @@
 import { pRateLimit } from "p-ratelimit";
 import Twilio from "twilio";
-import { SYNC_CALL_MAP_NAME, SYNC_DEMO_CONFIG } from "../../shared/constants";
+import { SYNC_CALL_MAP_NAME, SYNC_CONFIG_NAME } from "../../shared/constants";
 import type { StoreMessage, CallRecord } from "../../shared/entities";
 import { mockHistory } from "../../shared/mock-history";
 import {
@@ -71,7 +71,7 @@ export async function setupSync() {
   try {
     await limit(() =>
       twilio.sync.v1.services(TWILIO_SYNC_SVC_SID).documents.create({
-        uniqueName: SYNC_DEMO_CONFIG,
+        uniqueName: SYNC_CONFIG_NAME,
         data: mockHistory.config, // to do: update with data from demo
       })
     );
@@ -83,6 +83,15 @@ export async function setupSync() {
       twilio.sync.v1
         .services(TWILIO_SYNC_SVC_SID)
         .syncMaps.create({ uniqueName: SYNC_CALL_MAP_NAME })
+    );
+    console.log("sync", "created SyncMap to store Twilio call state");
+  } catch (error) {}
+
+  try {
+    await limit(() =>
+      twilio.sync.v1
+        .services(TWILIO_SYNC_SVC_SID)
+        .syncStreams.create({ uniqueName: SYNC_CALL_MAP_NAME })
     );
     console.log("sync", "created SyncMap to store Twilio call state");
   } catch (error) {}
@@ -129,7 +138,7 @@ export async function populateSampleData() {
     await limit(() =>
       twilio.sync.v1
         .services(TWILIO_SYNC_SVC_SID)
-        .documents(SYNC_DEMO_CONFIG)
+        .documents(SYNC_CONFIG_NAME)
         .update({ data: mockHistory.config })
     );
   } catch (error) {}
