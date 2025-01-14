@@ -64,23 +64,17 @@ export async function setupSync() {
 ****************************************************/
 async function initCall(call: CallRecord) {
   console.log("init call", call.callSid);
-  await limit(() =>
-    createSyncLogList(call.callSid)
-      .then(() => console.log("createSyncLogList success"))
-      .catch((err) => console.error("createSyncLogList error", err))
-  );
+  await createSyncLogList(call.callSid)
+    .then(() => console.log("createSyncLogList success"))
+    .catch((err) => console.error("createSyncLogList error", err));
 
-  await limit(() =>
-    createSyncMsgMap(call.callSid)
-      .then(() => console.log("createSyncMsgMap success"))
-      .catch((err) => console.error("createSyncMsgMap error", err))
-  );
+  await createSyncMsgMap(call.callSid)
+    .then(() => console.log("createSyncMsgMap success"))
+    .catch((err) => console.error("createSyncMsgMap error", err));
 
-  await limit(() =>
-    addSyncCallItem(call)
-      .then(() => console.log("addSyncCallItem success"))
-      .catch((err) => console.error("addSyncCallItem error", err))
-  );
+  await addSyncCallItem(call)
+    .then(() => console.log("addSyncCallItem success"))
+    .catch((err) => console.error("addSyncCallItem error", err));
 }
 
 async function destroyCall(callSid: string) {
@@ -108,109 +102,123 @@ async function destroyCall(callSid: string) {
 ****************************************************/
 async function addSyncCallItem(call: CallRecord) {
   const key = callMapItemName(call.callSid);
-  return syncCallMapApi.syncMapItems.create({
-    key,
-    data: call,
-  });
+  return limit(() =>
+    syncCallMapApi.syncMapItems.create({
+      key,
+      data: call,
+    })
+  );
 }
 
 async function getAllCallItems() {
-  return syncCallMapApi.syncMapItems
-    .list()
-    .then((res) => res.map((item) => item.data) as CallRecord[]);
+  return limit(() =>
+    syncCallMapApi.syncMapItems
+      .list()
+      .then((res) => res.map((item) => item.data) as CallRecord[])
+  );
 }
 
 async function getCallItem(callSid: string) {
   const key = callMapItemName(callSid);
-  return syncCallMapApi
-    .syncMapItems(key)
-    .fetch()
-    .then((res) => res.data as CallRecord);
+  return limit(() =>
+    syncCallMapApi
+      .syncMapItems(key)
+      .fetch()
+      .then((res) => res.data as CallRecord)
+  );
 }
 
 async function updateSyncCallItem(call: CallRecord) {
   const key = callMapItemName(call.callSid);
-  return syncCallMapApi.syncMapItems(key).update({ data: call });
+  return limit(() => syncCallMapApi.syncMapItems(key).update({ data: call }));
 }
 
 async function removeSyncCallItem(callSid: string) {
   const key = callMapItemName(callSid);
-  return syncCallMapApi.syncMapItems(key).remove();
+  return limit(() => syncCallMapApi.syncMapItems(key).remove());
 }
 
 /****************************************************
  Logs
 ****************************************************/
 async function getAllSyncLogLists() {
-  const items = await sync.syncLists.list();
+  const items = await limit(() => sync.syncLists.list());
   return items.filter((item) => isLogListName(item.uniqueName));
 }
 
 export async function getCallLogs(callSid: string) {
   const uniqueName = logListName(callSid);
-  return sync
-    .syncLists(uniqueName)
-    .syncListItems.list()
-    .then((res) => res.map((item) => item.data) as LogRecord[]);
+  return limit(() =>
+    sync
+      .syncLists(uniqueName)
+      .syncListItems.list()
+      .then((res) => res.map((item) => item.data) as LogRecord[])
+  );
 }
 
 async function createSyncLogList(callSid: string) {
   const uniqueName = logListName(callSid);
-  return sync.syncLists.create({ uniqueName });
+  return limit(() => sync.syncLists.create({ uniqueName }));
 }
 
 async function destroySyncLogList(callSid: string) {
   const uniqueName = logListName(callSid);
-  return sync.syncLists(uniqueName).remove();
+  return limit(() => sync.syncLists(uniqueName).remove());
 }
 
 async function addSyncLogItem(log: LogRecord) {
   const uniqueName = logListName(log.callSid);
-  return sync.syncLists(uniqueName).syncListItems.create({ data: log });
+  return limit(() =>
+    sync.syncLists(uniqueName).syncListItems.create({ data: log })
+  );
 }
 
 /****************************************************
  Messages
 ****************************************************/
 async function getAllSyncMsgMaps() {
-  const maps = await sync.syncMaps.list();
+  const maps = await limit(() => sync.syncMaps.list());
   return maps.filter((item) => isMsgMapName(item.uniqueName));
 }
 
 export async function getCallMessages(callSid: string) {
   const uniqueName = msgMapName(callSid);
-  return sync
-    .syncMaps(uniqueName)
-    .syncMapItems.list()
-    .then((res) => res.map((item) => item.data));
+  return limit(() =>
+    sync
+      .syncMaps(uniqueName)
+      .syncMapItems.list()
+      .then((res) => res.map((item) => item.data))
+  );
 }
 
 async function createSyncMsgMap(callSid: string) {
   const uniqueName = msgMapName(callSid);
-  return sync.syncMaps.create({ uniqueName });
+  return limit(() => sync.syncMaps.create({ uniqueName }));
 }
 
 async function destroySyncMsgMap(callSid: string) {
   const uniqueName = msgMapName(callSid);
-  return sync.syncMaps(uniqueName).remove();
+  return limit(() => sync.syncMaps(uniqueName).remove());
 }
 
 async function addSyncMsgItem(msg: StoreMessage) {
   const uniqueName = msgMapName(msg.callSid);
-  return sync
-    .syncMaps(uniqueName)
-    .syncMapItems.create({ key: msg.id, data: msg });
+  return limit(() =>
+    sync.syncMaps(uniqueName).syncMapItems.create({ key: msg.id, data: msg })
+  );
 }
 
 async function updateSyncMsgItem(msg: StoreMessage) {
   const uniqueName = msgMapName(msg.callSid);
-  return sync.syncMaps(uniqueName).syncMapItems(msg.id).update({ data: msg });
+  return limit(() =>
+    sync.syncMaps(uniqueName).syncMapItems(msg.id).update({ data: msg })
+  );
 }
 
 async function removeSyncMsgItem(msg: StoreMessage) {
   const uniqueName = msgMapName(msg.callSid);
 
-  return sync.syncMaps(uniqueName).syncMapItems(msg.id).remove();
+  return limit(() => sync.syncMaps(uniqueName).syncMapItems(msg.id).remove());
 }
 
 /****************************************************
