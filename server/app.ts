@@ -16,6 +16,7 @@ import {
   setupSync,
   updateSyncCallItem,
 } from "./services/sync-service";
+import { RelayService } from "./services/relay-service";
 
 const {
   DEFAULT_FROM_NUMBER,
@@ -142,6 +143,7 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
 
   const call = new CallService(callSid);
   const store = new ConversationStore(callData);
+  const relay = new RelayService(callSid, ws);
 
   if (store.call.config.isRecordingEnabled)
     call
@@ -152,6 +154,8 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
           : log.warn("call", `recording failed, code: ${res.call.errorCode}`)
       );
   else log.warn("call", "call is not being recorded");
+
+  relay.onSetup((ev) => {});
 });
 
 /****************************************************
