@@ -1,9 +1,15 @@
 import { pRateLimit } from "p-ratelimit";
 import Twilio from "twilio";
-import type { CallRecord, StoreMessage } from "../../shared/entities";
+import type {
+  CallRecord,
+  LogRecord,
+  StoreMessage,
+} from "../../shared/entities";
 import { mockHistory } from "../../shared/mock-history";
 import {
   callMapItemName,
+  isLogListName,
+  isMsgMapName,
   logListName,
   msgMapName,
   SYNC_CALL_MAP_NAME,
@@ -56,6 +62,46 @@ export async function setupSync() {
 /****************************************************
  Higher Level
 ****************************************************/
+async function initCall(call: CallRecord) {
+  console.log("init call", call.callSid);
+  await limit(() =>
+    createSyncLogList(call.callSid)
+      .then(() => console.log("createSyncLogList success"))
+      .catch((err) => console.error("createSyncLogList error", err))
+  );
+
+  await limit(() =>
+    createSyncMsgMap(call.callSid)
+      .then(() => console.log("createSyncMsgMap success"))
+      .catch((err) => console.error("createSyncMsgMap error", err))
+  );
+
+  await limit(() =>
+    addSyncCallItem(call)
+      .then(() => console.log("addSyncCallItem success"))
+      .catch((err) => console.error("addSyncCallItem error", err))
+  );
+}
+
+async function destroyCall(callSid: string) {
+  await limit(() =>
+    destroySyncLogList(callSid)
+      .then(() => console.log(`destroySyncLogList success ${callSid}`))
+      .catch((err) => console.error("destroySyncLogList error", err))
+  );
+
+  await limit(() =>
+    destroySyncMsgMap(callSid)
+      .then(() => console.log(`destroySyncMsgMap success ${callSid}`))
+      .catch((err) => console.error("destroySyncMsgMap error", err))
+  );
+
+  await limit(() =>
+    removeSyncCallItem(callSid)
+      .then(() => console.log(`removeSyncCallItem success ${callSid}`))
+      .catch((err) => console.error("removeSyncCallItem error", err))
+  );
+}
 
 /****************************************************
  Call Map Items
@@ -66,6 +112,20 @@ async function addSyncCallItem(call: CallRecord) {
     key,
     data: call,
   });
+}
+
+async function getAllCallItems() {
+  return syncCallMapApi.syncMapItems
+    .list()
+    .then((res) => res.map((item) => item.data) as CallRecord[]);
+}
+
+async function getCallItem(callSid: string) {
+  const key = callMapItemName(callSid);
+  return syncCallMapApi
+    .syncMapItems(key)
+    .fetch()
+    .then((res) => res.data as CallRecord);
 }
 
 async function updateSyncCallItem(call: CallRecord) {
@@ -81,6 +141,19 @@ async function removeSyncCallItem(callSid: string) {
 /****************************************************
  Logs
 ****************************************************/
+async function getAllSyncLogLists() {
+  const items = await sync.syncLists.list();
+  return items.filter((item) => isLogListName(item.uniqueName));
+}
+
+async function getCallLogs(callSid: string) {
+  const uniqueName = logListName(callSid);
+  return sync
+    .syncLists(uniqueName)
+    .syncListItems.list()
+    .then((res) => res.map((item) => item.data) as LogRecord[]);
+}
+
 async function createSyncLogList(callSid: string) {
   const uniqueName = logListName(callSid);
   return sync.syncLists.create({ uniqueName });
@@ -91,14 +164,27 @@ async function destroySyncLogList(callSid: string) {
   return sync.syncLists(uniqueName).remove();
 }
 
-async function addSyncLogItem(msg: StoreMessage) {
-  const uniqueName = logListName(msg.callSid);
-  return sync.syncLists(uniqueName).syncListItems.create({ data: msg });
+async function addSyncLogItem(log: LogRecord) {
+  const uniqueName = logListName(log.callSid);
+  return sync.syncLists(uniqueName).syncListItems.create({ data: log });
 }
 
 /****************************************************
  Messages
 ****************************************************/
+async function getAllSyncMsgMaps() {
+  const maps = await sync.syncMaps.list();
+  return maps.filter((item) => isMsgMapName(item.uniqueName));
+}
+
+async function getCallMessages(callSid: string) {
+  const uniqueName = msgMapName(callSid);
+  return sync
+    .syncMaps(uniqueName)
+    .syncMapItems.list()
+    .then((res) => res.map((item) => item.data));
+}
+
 async function createSyncMsgMap(callSid: string) {
   const uniqueName = msgMapName(callSid);
   return sync.syncMaps.create({ uniqueName });
@@ -130,6 +216,30 @@ async function removeSyncMsgItem(msg: StoreMessage) {
 /****************************************************
  Demo Data Management
 ****************************************************/
-export async function clearSyncData() {}
+export async function clearSyncData() {
+  console.log("clearSyncData");
 
-export async function populateSampleData() {}
+  const calls = await getAllCallItems();
+  await Promise.all(calls.map((call) => destroyCall(call.callSid)));
+
+  const logLists = await getAllSyncLogLists();
+  await Promise.all(
+    logLists.map((list) => destroySyncLogList(list.uniqueName))
+  );
+  const msgMaps = await getAllSyncMsgMaps();
+  await Promise.all(msgMaps.map((map) => destroySyncLogList(map.uniqueName)));
+}
+
+export async function populateSampleData() {
+  console.log("populateSampleData");
+
+  await Promise.all(mockHistory.calls.map(initCall)).then(() =>
+    console.log("populated call records")
+  );
+  await Promise.all(
+    Object.values(mockHistory.callLogs).flat().map(addSyncLogItem)
+  ).then(() => console.log("populated call logs"));
+  await Promise.all(
+    Object.values(mockHistory.callMessages).flat().map(addSyncMsgItem)
+  ).then(() => console.log("populated messages"));
+}
