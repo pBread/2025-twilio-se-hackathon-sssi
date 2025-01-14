@@ -2,6 +2,7 @@ import { pRateLimit } from "p-ratelimit";
 import Twilio from "twilio";
 import type {
   CallRecord,
+  DemoConfiguration,
   LogRecord,
   StoreMessage,
 } from "../../shared/entities";
@@ -16,6 +17,7 @@ import {
   SYNC_CONFIG_NAME,
 } from "../../shared/sync";
 import {
+  HOSTNAME,
   TWILIO_ACCOUNT_SID,
   TWILIO_API_KEY,
   TWILIO_API_SECRET,
@@ -34,7 +36,7 @@ const twilio = Twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
 });
 
 const sync = twilio.sync.v1.services(TWILIO_SYNC_SVC_SID);
-const syncConfigApi = sync.documents(SYNC_CONFIG_NAME);
+const syncDemoConfigApi = sync.documents(SYNC_CONFIG_NAME);
 const syncCallMapApi = sync.syncMaps(SYNC_CALL_MAP_NAME);
 
 /****************************************************
@@ -42,6 +44,14 @@ const syncCallMapApi = sync.syncMaps(SYNC_CALL_MAP_NAME);
 ****************************************************/
 export async function setupSync() {
   console.log("setting up sync");
+
+  try {
+    const svc = await sync.fetch();
+    if (!svc.webhookUrl) {
+      await setSyncSvcWebhookUrl(HOSTNAME);
+    }
+  } catch (error) {}
+
   try {
     await limit(() =>
       sync.documents.create({
@@ -57,6 +67,23 @@ export async function setupSync() {
     await limit(() => sync.syncMaps.create({ uniqueName: SYNC_CALL_MAP_NAME }));
     console.log("created sync map to store call details");
   } catch (error) {}
+}
+
+export async function setSyncSvcWebhookUrl(hostname = HOSTNAME) {
+  console.log(`setting sync webhook url using hostname: ${hostname}`);
+  const svc = await sync.fetch();
+
+  const webhookUrl = `https://${HOSTNAME}/api/sync-webhook`;
+  if (svc.webhookUrl === webhookUrl) {
+    console.log(
+      `sync service (${svc.friendlyName}) webhookUrl is already set to ${webhookUrl}`
+    );
+  } else {
+    console.log(
+      `updating sync service (${svc.friendlyName}) webhookURL to ${webhookUrl}. it was ${svc.webhookUrl}`
+    );
+    await sync.update({ webhookUrl });
+  }
 }
 
 /****************************************************
@@ -95,6 +122,13 @@ async function destroyCall(callSid: string) {
       .then(() => console.log(`removeSyncCallItem success ${callSid}`))
       .catch((err) => console.error("removeSyncCallItem error", err))
   );
+}
+
+/****************************************************
+ Demo Configuration
+****************************************************/
+async function updateDemoConfig(config: DemoConfiguration) {
+  return limit(() => syncDemoConfigApi.update({ data: config }));
 }
 
 /****************************************************
@@ -240,6 +274,8 @@ export async function clearSyncData() {
 
 export async function populateSampleData() {
   console.log("populateSampleData");
+
+  await updateDemoConfig(mockHistory.config);
 
   await Promise.all(mockHistory.calls.map(initCall)).then(() =>
     console.log("populated call records")
