@@ -1,6 +1,11 @@
 import { selectCallById, selectCallIds } from "@/state/calls";
-import { useAppSelector } from "@/state/hooks";
-import { getMessageById, useCallMessageIds } from "@/state/messages";
+import { useAppDispatch, useAppSelector } from "@/state/hooks";
+import {
+  fetchCallMessages,
+  getMessageById,
+  selectCallMessageIds,
+} from "@/state/messages";
+import { useEffect } from "react";
 
 export default function Home() {
   const callIds = useAppSelector(selectCallIds);
@@ -32,7 +37,15 @@ function CallDisplay({ callSid }: { callSid: string }) {
 }
 
 function CallMessages({ callSid }: { callSid: string }) {
-  const msgIds = useCallMessageIds(callSid);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchCallMessages(callSid));
+  }, [callSid]);
+
+  const msgIds = useAppSelector((state) =>
+    selectCallMessageIds(state, callSid)
+  );
 
   return (
     <div style={{ paddingLeft: "5px" }}>
