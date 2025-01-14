@@ -1,7 +1,14 @@
-import { CallContext } from "../../shared/entities";
+import {
+  CallContext,
+  CallRecord,
+  DemoConfiguration,
+} from "../../shared/entities";
 
 export class ConversationStore {
-  constructor() {}
+  call: CallRecord;
+  constructor(config: CallRecord) {
+    this.call = JSON.parse(JSON.stringify(config)) as CallRecord;
+  }
 
   setContext = (ctx: Partial<CallContext>) => {};
 }

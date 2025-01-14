@@ -5,6 +5,8 @@ import ExpressWs from "express-ws";
 import { CallContext, CallRecord } from "../shared/entities";
 import { getGreeting } from "./bot/greetings";
 import log from "./logger";
+import { CallService } from "./services/call-service";
+import { ConversationStore } from "./services/conversation-store";
 import { DatabaseService } from "./services/database-service";
 import {
   clearSyncData,
@@ -36,6 +38,8 @@ const dbPromise = new DatabaseService().init();
 /****************************************************
  Twilio Voice Webhooks
 ****************************************************/
+const tempCache = new Map<string, CallRecord>(); // transfers callData between webhook & websocket
+
 // handles inbound calls and connects conversation-relay call leg during outbound calls
 app.post("/call-handler", async (req, res) => {
   await syncSetupPromise;
@@ -72,6 +76,8 @@ app.post("/call-handler", async (req, res) => {
       config: demoConfig,
       feedback: [],
     };
+
+    tempCache.set(CallSid, callData);
 
     await initCall(callData);
 
@@ -130,6 +136,22 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
 
   log.info(`/convo-relay`, `websocket initializing, CallSid ${callSid}`);
   updateSyncCallItem(callSid, { callStatus: "connected" }).catch(() => {});
+
+  const callData = tempCache.get(callSid) as CallRecord;
+  tempCache.delete(callSid);
+
+  const call = new CallService(callSid);
+  const store = new ConversationStore(callData);
+
+  if (store.call.config.isRecordingEnabled)
+    call
+      .startRecording()
+      .then((res) =>
+        res.status === "success"
+          ? log.info("call", `started call recording, url: ${res.mediaUrl}`)
+          : log.warn("call", `recording failed, code: ${res.call.errorCode}`)
+      );
+  else log.warn("call", "call is not being recorded");
 });
 
 /****************************************************
