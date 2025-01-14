@@ -42,7 +42,9 @@ const sync = twilio.sync.v1.services(TWILIO_SYNC_SVC_SID);
 const syncDemoConfigApi = sync.documents(SYNC_CONFIG_NAME);
 const syncCallMapApi = sync.syncMaps(SYNC_CALL_MAP_NAME);
 
-export let demoConfig = JSON.parse(JSON.stringify(mockHistory.config)); // to do: update with data from demo
+const defaultDemoConfig = mockHistory.config;
+
+export let demoConfig = JSON.parse(JSON.stringify(defaultDemoConfig)); // to do: update with data from demo
 
 /****************************************************
  Setup Sync
@@ -298,6 +300,10 @@ async function removeSyncMsgItem(msg: StoreMessage) {
 ****************************************************/
 export async function clearSyncData() {
   console.log("clearSyncData");
+
+  demoConfig = JSON.parse(JSON.stringify(defaultDemoConfig));
+
+  await updateDemoConfig(demoConfig);
 
   const calls = await getAllCallItems();
   await Promise.all(calls.map((call) => destroyCall(call.callSid)));
