@@ -127,7 +127,6 @@ export function useAddCallListeners(callSid?: string) {
     const listUniqueName = logListName(callSid);
     syncClient.map(listUniqueName).then((list) => {
       list.on("itemAdded", (ev) => {
-        console.log("call logs itemAdded", ev);
         dispatch(addOneLog(ev.item.data));
       });
     });
@@ -137,17 +136,14 @@ export function useAddCallListeners(callSid?: string) {
       .map(mapUniqueName)
       .then((map) => {
         map.on("itemAdded", (ev) => {
-          console.log("call msgs itemAdded", ev);
           dispatch(addOneMessage(ev.item.data));
         });
 
         map.on("itemUpdated", (ev) => {
-          console.log("call msgs itemUpdated", ev);
           dispatch(setOneMessage(ev.item.data));
         });
 
         map.on("itemRemoved", (ev) => {
-          console.log("call msgs itemRemoved", ev);
           dispatch(removeOneMessage(ev.key));
         });
       })
@@ -166,17 +162,14 @@ export function useAddCallMapListeners() {
 
     syncClient.map(SYNC_CALL_MAP_NAME).then((map) => {
       map.on("itemAdded", (ev) => {
-        console.log("SYNC_CALL_MAP_NAME itemAdded", ev);
         dispatch(setOneCall(ev.item.data));
       });
 
       map.on("itemUpdated", (ev) => {
-        console.log("SYNC_CALL_MAP_NAME itemUpdated", ev);
-        dispatch(updateOneCall(ev.item.data));
+        dispatch(setOneCall(ev.item.data));
       });
 
       map.on("itemRemoved", (ev) => {
-        console.log("SYNC_CALL_MAP_NAME itemRemoved", ev);
         dispatch(removeOneCall(ev.key));
       });
     });
