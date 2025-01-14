@@ -24,6 +24,7 @@ import {
   TWILIO_SYNC_SVC_SID,
 } from "../env";
 import log from "../logger";
+import diff from "deep-diff";
 
 const limit = pRateLimit({
   interval: 1000, // 1000 ms == 1 second
@@ -96,7 +97,22 @@ async function initSyncClient() {
       demoConfig = doc.data as DemoConfiguration;
 
       doc.on("updated", (ev) => {
-        log.info("sync", "sync document update via websocket", ev);
+        const delta = diff(demoConfig, ev.data);
+        const kind = {
+          A: "array change",
+          D: "deleted",
+          E: "edited",
+          N: "New",
+        };
+
+        if (delta)
+          log.info(
+            "sync",
+            `demo configuration updated:`,
+            delta
+              .map((item) => `(${kind[item.kind]} ${item.path?.join(".")})`)
+              .join(",")
+          );
 
         demoConfig = ev.data;
       });
