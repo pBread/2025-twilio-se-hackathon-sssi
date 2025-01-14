@@ -12,6 +12,7 @@ import {
   initCall,
   populateSampleData,
   setupSync,
+  updateSyncCallItem,
 } from "./services/sync-service";
 
 const {
@@ -109,11 +110,13 @@ app.post("/call-handler", async (req, res) => {
 // handles call status updates
 app.post("/call-status", async (req, res) => {
   const callSid = req.body.CallSid;
-  const status = req.body.CallStatus;
+  const callStatus = req.body.CallStatus;
+
+  updateSyncCallItem(callSid, {callStatus})
 
   log.info(
     "/call-status",
-    `call status updated to ${status}, CallSid ${callSid}`
+    `call status updated to ${callStatus}, CallSid ${callSid}`
   );
 
   res.status(200).send();

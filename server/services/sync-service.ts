@@ -240,9 +240,16 @@ async function getCallItem(callSid: string) {
   );
 }
 
-async function updateSyncCallItem(call: CallRecord) {
-  const key = callMapItemName(call.callSid);
-  return limit(() => syncCallMapApi.syncMapItems(key).update({ data: call }));
+export async function updateSyncCallItem(
+  callSid: string,
+  update: Partial<CallRecord>
+) {
+  const key = callMapItemName(callSid);
+  const call = await getCallItem(callSid);
+
+  return limit(() =>
+    syncCallMapApi.syncMapItems(key).update({ data: { ...call, ...update } })
+  );
 }
 
 async function removeSyncCallItem(callSid: string) {
