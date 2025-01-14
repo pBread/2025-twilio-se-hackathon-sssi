@@ -265,7 +265,13 @@ const calls: CallRecord[] = [
     from: DEVELOPERS_PHONE_NUMBER,
     to: "+18444405503",
     createdAt: new Date().toString(),
-    callContext: { today: new Date().toString() },
+    callContext: {
+      today: new Date().toLocaleString(),
+      annotations: [],
+      waitTime: 6,
+      callingFromPhoneNumber: DEVELOPERS_PHONE_NUMBER,
+    },
+    feedback: [],
     config: {
       relayConfig: {
         sttProvider: "deepgram",
