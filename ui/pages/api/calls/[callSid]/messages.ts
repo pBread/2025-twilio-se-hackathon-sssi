@@ -4,7 +4,6 @@ import twilio from "twilio";
 const handler: NextApiHandler = async (req: NextApiRequest, res) => {
   const callSid = req.query.callSid as string;
 
-  console.log("GetMessages API callSid", callSid);
   res.json(await getData(callSid));
 };
 
@@ -20,7 +19,7 @@ async function getData(callSid: string) {
   const sync = client.sync.v1.services(process.env.TWILIO_SYNC_SVC_SID);
 
   const msgItems = await sync.syncMaps(callSid).syncMapItems.list();
-  console.log("GetMessages API msgItems", msgItems);
+
   const result = msgItems.map((item) => item.data);
   return result;
 }
