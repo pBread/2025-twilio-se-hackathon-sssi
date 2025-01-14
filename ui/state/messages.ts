@@ -104,6 +104,10 @@ export function getCallMessageIds(state: RootState, callSid: string) {
     .map((message) => message.id);
 }
 
+export function getCallMessages(state: RootState, callSid: string) {
+  return getAllMessages(state).filter((message) => message.callSid === callSid);
+}
+
 /****************************************************
  Actions
 ****************************************************/

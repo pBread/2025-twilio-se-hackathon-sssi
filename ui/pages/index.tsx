@@ -6,6 +6,7 @@ import {
   getMessageById,
 } from "@/state/messages";
 import { useAddCallMsgListeners } from "@/state/sync";
+import Link from "next/link";
 import { useEffect } from "react";
 
 export default function Home() {
@@ -29,7 +30,7 @@ function CallDisplay({ callSid }: { callSid: string }) {
 
   return (
     <div style={{ paddingLeft: "5px" }}>
-      Call Sid: {call.callSid}
+      Call Sid: <Link href={`/calls/${callSid}`}>{call.callSid}</Link>
       <br />
       From: {call.from}
       <CallMessages callSid={callSid} />

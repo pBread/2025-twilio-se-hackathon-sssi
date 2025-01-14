@@ -1,3 +1,6 @@
+import { selectCallById } from "@/state/calls";
+import { useAppSelector } from "@/state/hooks";
+import { getCallMessageIds, getCallMessages } from "@/state/messages";
 import { Paper, Title } from "@mantine/core";
 import { useRouter } from "next/router";
 
@@ -20,15 +23,36 @@ export default function LiveCall() {
 function Conscious() {
   return (
     <Paper>
-      <Title order={3}>Consciousness</Title>
+      <Title order={3}>Conscious Bot</Title>
+
+      <Messages />
     </Paper>
+  );
+}
+
+function Messages() {
+  const router = useRouter();
+  const callSid = router.query.callSid as string;
+
+  const call = useAppSelector((state) => selectCallById(state, callSid));
+  const msgs = useAppSelector((state) => getCallMessages(state, callSid));
+
+  return (
+    <div style={{ paddingLeft: "5px" }}>
+      Messages
+      {msgs.map((msg) => (
+        <li key={`${msg.id}-938jd`}>
+          {msg.role} - {msg.id} - {msg._index}
+        </li>
+      ))}{" "}
+    </div>
   );
 }
 
 function Subconsciousness() {
   return (
     <Paper>
-      <Title order={3}>Subconsciousness</Title>
+      <Title order={3}>Subconscious Bot</Title>
     </Paper>
   );
 }

@@ -11,8 +11,9 @@ export function Header({ callSid }: { callSid?: string }) {
 
   return (
     <header>
-      <img className="header-logo" alt="logo" src={"/logo.png"} />
-
+      <Link href="/">
+        <img className="header-logo" alt="logo" src={"/logo.png"} />
+      </Link>
       <div className="header-section"></div>
 
       <div className="header-section">
@@ -37,7 +38,7 @@ function CallDetails({ callSid }: { callSid?: string }) {
         </div>
         <div style={{ display: "flex", gap: "4px", flexDirection: "column" }}>
           <Text size="sm">
-            <Link href="/">Call Sid</Link>
+            <Link href={`/calls/${callSid}`}>Call Sid</Link>
           </Text>
           <Text size="sm">Status: {call?.callStatus}</Text>
         </div>
