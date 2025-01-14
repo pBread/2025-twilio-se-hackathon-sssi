@@ -2,7 +2,9 @@ import * as env from "./env";
 
 import express from "express";
 import ExpressWs from "express-ws";
+import { CallContext } from "../shared/entities";
 import log from "./logger";
+import { DatabaseService } from "./services/database-service";
 import {
   clearSyncData,
   populateSampleData,
@@ -25,6 +27,7 @@ const { app } = ExpressWs(express());
 app.use(express.urlencoded({ extended: true })).use(express.json());
 
 const syncSetupPromise = setupSync(); // ensure the sync collections are created
+const dbPromise = new DatabaseService().init();
 
 /****************************************************
  Twilio Voice Webhooks
@@ -34,9 +37,28 @@ app.post("/call-handler", async (req, res) => {
   await syncSetupPromise;
 
   const { CallSid, From, To } = req.body;
+  log.setCallSid(CallSid); // resets the logger & scoped it to this call
+
+  log.info(
+    "/call-handler",
+    `handling call from ${From} to ${To}, CallSid ${CallSid}`
+  );
 
   try {
-  } catch (error) {}
+    let ctx: CallContext = {
+      callingFromPhoneNumber: From,
+      waitTime: Math.floor(Math.random() * 15) + 3,
+      today: new Date().toLocaleString(),
+    };
+
+    const db = await dbPromise;
+    let user = await db.users.getByChannel(From);
+    if (user) ctx.user = user;
+  } catch (error) {
+    log.error("/call-handler", "unknown error", error);
+
+    res.status(500).json({ status: "error", error });
+  }
 });
 
 // handles call status updates
