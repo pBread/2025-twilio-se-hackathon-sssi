@@ -3,6 +3,7 @@ import { createLogger } from "redux-logger";
 import { callsSlice } from "./calls";
 import { messagesSlice } from "./messages";
 import { syncSlice } from "./sync";
+import { logsSlice } from "./logs";
 
 const middleware: Middleware[] = [];
 if (process.env.NODE_ENV === "development") middleware.push(createLogger());
@@ -14,6 +15,7 @@ export const makeStore = () => {
 
     reducer: {
       [callsSlice.name]: callsSlice.reducer,
+      [logsSlice.name]: logsSlice.reducer,
       [messagesSlice.name]: messagesSlice.reducer,
       [syncSlice.name]: syncSlice.reducer,
     },

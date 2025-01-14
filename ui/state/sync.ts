@@ -11,8 +11,14 @@ import {
   updateOneCall,
 } from "./calls";
 import { useAppDispatch, useAppSelector } from "./hooks";
-import { addOneMessage, removeOneMessage, setOneMessage } from "./messages";
+import {
+  addOneMessage,
+  fetchCallMessages,
+  removeOneMessage,
+  setOneMessage,
+} from "./messages";
 import type { AppDispatch, RootState } from "./store";
+import { fetchCallLogs } from "./logs";
 
 let syncClient: SyncClient | undefined;
 
@@ -87,12 +93,24 @@ export function useSyncClient() {
   return syncClient as SyncClient;
 }
 
-export function useAddCallListeners(callSid: string) {
+export function useFetchCallData(callSid?: string) {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (!callSid) return;
+
+    dispatch(fetchCallLogs(callSid));
+    dispatch(fetchCallMessages(callSid));
+  }, [callSid]);
+}
+
+export function useAddCallListeners(callSid?: string) {
   const connectionState = useSyncSlice().connectionState;
   const status = useSyncSlice().callMessageListeners[callSid];
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    if (!callSid) return;
     if (connectionState !== "connected") return;
     if (status) return;
     dispatch(setCallMsgListener({ callSid, status: "new" }));
@@ -118,7 +136,7 @@ export function useAddCallListeners(callSid: string) {
       .then(() => {
         dispatch(setCallMsgListener({ callSid, status: "done" }));
       });
-  }, [connectionState, status]);
+  }, [callSid, connectionState, status]);
 }
 
 export function useAddCallMapListeners() {

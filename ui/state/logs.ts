@@ -19,7 +19,7 @@ interface InitialState {
 
 export const fetchCallLogs = createAsyncThunk(
   `${SLICE_NAME}/api/calls/[callSid]/logs`,
-  async (callSid: string) => {
+  async (callSid?: string) => {
     const res = await fetch(`/api/calls/${callSid}/logs`);
     if (!res.ok) throw Error("Failed to fetch call logs");
 
@@ -27,6 +27,8 @@ export const fetchCallLogs = createAsyncThunk(
   },
   {
     condition: (callSid, { getState }) => {
+      if (!callSid) return false;
+
       const loadState = getLogLoadingStatus(getState() as RootState, callSid);
       return !loadState;
     },
