@@ -2,8 +2,9 @@ import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
 import { getCallLogs } from "@/state/logs";
 import { getCallMessages, getMessageById } from "@/state/messages";
-import { Button, Paper, Table, Title } from "@mantine/core";
+import { Button, Paper, Table, Text, Title } from "@mantine/core";
 import { BotMessage, HumanMessage } from "@shared/entities";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -188,8 +189,86 @@ function LogsList() {
 
 function Subconsciousness() {
   return (
-    <Paper style={paperStyle}>
-      <Title order={3}>Subconscious Bot</Title>
-    </Paper>
+    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+      <Paper style={paperStyle}>
+        <Title order={3}>Subconscious Bots</Title>
+      </Paper>
+      <Paper style={paperStyle}>
+        <Title order={4}>Recall</Title>
+        <Title order={6}>5 Most Similar Conversations</Title>
+        <RecallContainer />
+      </Paper>
+      <Paper style={paperStyle}>
+        <Title order={4}>Governance</Title>
+      </Paper>
+    </div>
+  );
+}
+
+function RecallContainer() {
+  const router = useRouter();
+  const callSid = router.query.callSid;
+
+  const items = [
+    {
+      summary:
+        "Donec et fermentum ipsum. Maecenas et finibus augue, ut convallis tellus. Morbi cursus magna non sapien ultricies, eu aliquam nibh commodo. Aliquam et congue dolor. Fusce elit lacus, fermentum eu leo ac, vestibulum bibendum justo. Integer nec sodales diam. Pellentesque magna ipsum, consequat non euismod at, semper vitae justo. Nulla sollicitudin pretium erat, bibendum cursus nibh sollicitudin at. Praesent ac purus in ante tincidunt molestie.",
+      similarity: 0.98,
+      annotations: 3,
+      id: "2n32sdf",
+    },
+    {
+      summary:
+        "Fusce efficitur neque dolor, eu porta leo tempor id. Etiam elementum, risus a venenatis consequat, tortor purus sodales diam, sed scelerisque erat sem vel nibh. Suspendisse potenti. Morbi sit amet lacus id mi volutpat feugiat sed eu tellus. Nulla eu tristique neque. Morbi quis egestas ex, vitae dignissim nulla. Suspendisse nec purus vel augue viverra tempor.",
+      similarity: 0.98,
+      annotations: 3,
+      id: "128dn84",
+    },
+    {
+      summary:
+        "vel vulputate dui feugiat eget. Nunc blandit est a elementum imperdiet. Sed fringilla, massa et viverra fringilla, nulla est consectetur risus, quis tincidunt elit tellus nec justo. ",
+      similarity: 0.75,
+      annotations: 3,
+      id: "dkw830",
+    },
+    {
+      summary: "User inquires about the time of an upcoming event.",
+      similarity: 0.65,
+      annotations: 3,
+      id: "82jd92",
+    },
+    {
+      summary: "User inquires about the time of an upcoming event.",
+      similarity: 0.22,
+      annotations: 3,
+      id: "dk39j",
+    },
+  ];
+
+  return (
+    <Table verticalSpacing={2}>
+      <Table.Thead>
+        <Table.Tr>
+          <Table.Td>Summary</Table.Td>
+          <Table.Td>Similarity</Table.Td>
+          <Table.Td>Annotations</Table.Td>
+        </Table.Tr>
+      </Table.Thead>
+      <Table.Tbody style={{ fontSize: "12px" }}>
+        {items.map((item) => (
+          <Table.Tr key={`834j-${item.id}`}>
+            <Table.Td>
+              <Link href={`/calls/${callSid}`}>{item.summary}</Link>
+            </Table.Td>
+            <Table.Td>
+              <Link href={`/calls/${callSid}`}>{item.similarity}</Link>
+            </Table.Td>
+            <Table.Td>
+              <Link href={`/calls/${callSid}`}>{item.annotations}</Link>
+            </Table.Td>
+          </Table.Tr>
+        ))}
+      </Table.Tbody>
+    </Table>
   );
 }
