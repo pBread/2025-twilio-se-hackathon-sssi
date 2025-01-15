@@ -50,7 +50,6 @@ export interface DemoConfiguration {
 
   conscious: {
     instructions: string;
-    tools: ChatCompletionTool[];
     model: string;
   };
   subconscious: {

@@ -70,7 +70,6 @@ const defaultDemoConfig: DemoConfiguration = {
   relayConfig,
   conscious: {
     instructions: bot.getInstructions(sampleData.calls[0].callContext),
-    tools: bot.tools,
     model: bot.model,
   },
   subconscious: {

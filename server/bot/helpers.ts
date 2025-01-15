@@ -23,6 +23,14 @@ export function injectContext(prompt: string, ctx: CallContext) {
   );
   _p = _p.replace("{{dateTime}}", dt.toLocaleTimeString());
 
+  // Inject annotations into the prompt
+  _p = _p.replace(
+    "{{recallSuggestions}}",
+    ctx.suggestions
+      .map((suggestion, idx) => `(${idx + 1}) ${suggestion}`)
+      .join("\n")
+  );
+
   // Inject context variables
   _p = _p.replace(/{{\s*([\w.]+)\s*}}/g, (match, key: string) => {
     if (key in ctx) {
@@ -38,14 +46,6 @@ export function injectContext(prompt: string, ctx: CallContext) {
       return "";
     }
   });
-
-  // Inject annotations into the prompt
-  _p = _p.replace(
-    "{{recallSuggestions}}",
-    ctx.suggestions
-      .map((suggestion, idx) => `(${idx + 1}) ${suggestion}`)
-      .join("\n")
-  );
 
   return _p;
 }
