@@ -1,11 +1,22 @@
-export function makeId(prefix = "", code?: string) {
-  const CODE_LENGTH = 7;
-  const _code = code
-    ? code.padStart(CODE_LENGTH, "0")
-    : (Math.random() * CODE_LENGTH * 10).toFixed().padStart(CODE_LENGTH, "0");
+export function makeId(prefix = "") {
+  const CODE_LENGTH = 10;
+  const code = randStr(CODE_LENGTH);
 
-  if (prefix) return `${prefix}-${_code}`;
-  return _code;
+  if (prefix) return `${prefix}-${code}`;
+  return code;
+}
+
+function randStr(length: number) {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    result += chars[randomIndex];
+  }
+
+  return result;
 }
 
 export function makeTimestamp() {

@@ -77,7 +77,7 @@ export class ConversationStore {
 
   addBotDTMF = (params: AddBotDTMF): BotDTMF => {
     const seq = this.seq++;
-    const id = params.id ?? makeId("bot", `${seq}`);
+    const id = params.id ?? makeId("bot");
     const msg: BotDTMF = {
       ...params,
       callSid: this.call.callSid,
@@ -99,7 +99,7 @@ export class ConversationStore {
 
   addBotText = (params: AddBotText): BotText => {
     const seq = this.seq++;
-    const id = params.id ?? makeId("bot", `${seq}`);
+    const id = params.id ?? makeId("bot");
     const msg: BotText = {
       ...params,
       callSid: this.call.callSid,
@@ -165,7 +165,7 @@ export class ConversationStore {
 
   addHumanDTMF = (params: AddHumanDTMF): HumanDTMF => {
     const seq = this.seq++;
-    const id = params.id ?? makeId("human", `${seq}`);
+    const id = params.id ?? makeId("human");
     const msg: HumanDTMF = {
       ...params,
       callSid: this.call.callSid,
@@ -187,7 +187,7 @@ export class ConversationStore {
 
   addHumanText = (params: AddHumanText): HumanText => {
     const seq = this.seq++;
-    const id = params.id ?? makeId("human", `${seq}`);
+    const id = params.id ?? makeId("human");
     const msg: HumanText = {
       ...params,
       callSid: this.call.callSid,
@@ -209,7 +209,7 @@ export class ConversationStore {
 
   addSystemMessage = (params: AddSystemMessage): SystemMessage => {
     const seq = this.seq++;
-    const id = params.id ?? makeId("sys", `${seq}`);
+    const id = params.id ?? makeId("sys");
     const msg: SystemMessage = {
       ...params,
       callSid: this.call.callSid,

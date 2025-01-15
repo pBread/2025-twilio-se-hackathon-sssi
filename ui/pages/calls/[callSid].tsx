@@ -32,6 +32,13 @@ function Conscious() {
   );
 }
 
+function MessageTable() {
+  const router = useRouter();
+  const callSid = router.query.callSid as string;
+
+  const msgs = useAppSelector;
+}
+
 function MessagesList() {
   const router = useRouter();
   const callSid = router.query.callSid as string;
