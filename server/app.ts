@@ -104,7 +104,7 @@ app.post("/call-handler", async (req, res) => {
       createdAt: new Date().toLocaleString(),
       from: From,
       to: To,
-
+      summary: "Unknown call reason",
       callContext: ctx,
       config,
       feedback: [],

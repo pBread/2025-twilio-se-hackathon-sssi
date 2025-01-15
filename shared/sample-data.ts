@@ -267,6 +267,7 @@ const calls: CallRecord[] = [
     from: DEVELOPERS_PHONE_NUMBER,
     to: "+18444405503",
     createdAt: new Date().toString(),
+    summary: "Customer called in to modify an order.",
     callContext: {
       today: new Date().toLocaleString(),
       similarCalls: [
@@ -548,6 +549,7 @@ const calls: CallRecord[] = [
     callStatus: "completed",
     from: DEVELOPERS_PHONE_NUMBER,
     to: "+18444405503",
+    summary: "Customer called in to modify an order.",
     createdAt: new Date().toString(),
     callContext: {
       today: new Date().toLocaleString(),

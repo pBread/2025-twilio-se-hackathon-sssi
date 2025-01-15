@@ -14,3 +14,7 @@
 ### Update Table to Show Multiple Invocation Requests
 
 - Right now, the Turns table doesn't show multiple parralel tool requests. It should.
+
+### Add Summarization
+
+- Update the call with a period summarization.

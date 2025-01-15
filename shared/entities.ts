@@ -11,6 +11,7 @@ export interface CallRecord {
   createdAt: string; // datetime
   from: string;
   to: string;
+  summary: string;
 
   callContext: CallContext;
   config: DemoConfiguration;
