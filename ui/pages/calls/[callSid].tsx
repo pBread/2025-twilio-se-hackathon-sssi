@@ -25,14 +25,14 @@ function Conscious() {
       <Title order={3}>Conscious Bot</Title>
 
       <Title order={4}>Turns</Title>
-      <MessageTable />
+      <TurnsTable />
       <MessagesList />
       <LogsList />
     </Paper>
   );
 }
 
-function MessageTable() {
+function TurnsTable() {
   const router = useRouter();
   const callSid = router.query.callSid as string;
 

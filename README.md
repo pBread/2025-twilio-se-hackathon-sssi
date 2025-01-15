@@ -10,3 +10,7 @@
 ### Sync Service
 
 - Add select or create a Sync Service to the demo UI
+
+### Update Table to Show Multiple Invocation Requests
+
+- Right now, the Turns table doesn't show multiple parralel tool requests. It should.
