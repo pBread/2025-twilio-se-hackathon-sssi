@@ -8,7 +8,7 @@ import type {
   LogRecord,
   StoreMessage,
 } from "../../shared/entities";
-import { mockHistory } from "../../shared/mock-history";
+import { sampleData } from "../../shared/sample-data";
 import {
   callMapItemName,
   isLogListName,
@@ -66,10 +66,10 @@ const syncDemoConfigApi = sync.documents(SYNC_CONFIG_NAME);
 const syncCallMapApi = sync.syncMaps(SYNC_CALL_MAP_NAME);
 
 const defaultDemoConfig: DemoConfiguration = {
-  ...mockHistory.config,
+  ...sampleData.config,
   relayConfig,
   conscious: {
-    instructions: bot.getInstructions(mockHistory.calls[0].callContext),
+    instructions: bot.getInstructions(sampleData.calls[0].callContext),
     tools: bot.tools,
     model: bot.model,
   },
@@ -77,7 +77,7 @@ const defaultDemoConfig: DemoConfiguration = {
     isGovernanceEnabled: ENABLE_GOVERNANCE,
     isRecallEnabled: ENABLE_RECALL,
     governanceInstructions: governanceBot.getInstructions(
-      mockHistory.calls[0].callContext
+      sampleData.calls[0].callContext
     ),
   },
 };
@@ -413,13 +413,13 @@ export async function populateSampleData() {
 
   await updateDemoConfig(demoConfig);
 
-  await Promise.all(mockHistory.calls.map(initCall)).then(() =>
+  await Promise.all(sampleData.calls.map(initCall)).then(() =>
     console.log("populated call records")
   );
   await Promise.all(
-    Object.values(mockHistory.callLogs).flat().map(addSyncLogItem)
+    Object.values(sampleData.callLogs).flat().map(addSyncLogItem)
   ).then(() => console.log("populated call logs"));
   await Promise.all(
-    Object.values(mockHistory.callMessages).flat().map(addSyncMsgItem)
+    Object.values(sampleData.callMessages).flat().map(addSyncMsgItem)
   ).then(() => console.log("populated messages"));
 }

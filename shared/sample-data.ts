@@ -857,7 +857,7 @@ const callLogs: Record<string, LogRecord[]> = {
   ],
 };
 
-export const mockHistory = {
+export const sampleData = {
   callLogs,
   callMessages,
   calls,
