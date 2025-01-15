@@ -164,6 +164,9 @@ export class LLMService extends EventEmitter {
       }
     }
 
+    if (botText) this.store.forceSync(botText.id); // update the store message to send it to sync
+    if (botTool) this.store.forceSync(botTool.id); // update the store message to send it to sync
+
     // emits the final text chunk
     if (botText && finish_reason === "stop") {
       this.emit("text-chunk", "", true, botText.content);
@@ -171,6 +174,7 @@ export class LLMService extends EventEmitter {
 
     if (botTool && finish_reason === "tool_calls") {
       if (botTool.type !== "tool") throw `Expected tool`; // type guard
+      this.store.msgMap.set(botTool.id, botTool); // update the store message to send it to sync
 
       const fillerTimer = setTimeout(() => this.sayFiller(botTool), 500); // say filler phrase after 500ms
 
@@ -237,6 +241,7 @@ export class LLMService extends EventEmitter {
 
       result = { status: "success", data };
       this.store.setBotToolResult(tool.id, result);
+      this.store.forceSync(msg.id);
     } catch (error) {
       log.warn(
         "llm.tool",
@@ -246,6 +251,7 @@ export class LLMService extends EventEmitter {
       );
       result = { status: "error", error };
       this.store.setBotToolResult(tool.id, result);
+      this.store.forceSync(msg.id);
       this.emit("tool.error", msg, tool, error);
     }
 

@@ -34,7 +34,7 @@ import log from "../logger";
 const rateLimitConfig = {
   interval: 1000, // 1000 ms == 1 second
   rate: 50, // 30 API calls per interval
-  maxDelay: 3000, // an API call delayed > 2 sec is rejected
+  maxDelay: 10 * 1000, // an API call delayed > 10 sec is rejected
 };
 
 const limit = pRateLimit({ ...rateLimitConfig, concurrency: 50 }); // global limiter applied to everything to ensure concurrency & rates don't exceed Sync limitations
@@ -362,7 +362,7 @@ export async function setSyncMsgItem(msg: StoreMessage) {
   );
 }
 
-async function removeSyncMsgItem(msg: StoreMessage) {
+export async function removeSyncMsgItem(msg: StoreMessage) {
   const uniqueName = msgMapName(msg.callSid);
 
   return limit(() => sync.syncMaps(uniqueName).syncMapItems(msg.id).remove());

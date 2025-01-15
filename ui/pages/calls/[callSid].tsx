@@ -2,7 +2,7 @@ import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
 import { getCallLogs } from "@/state/logs";
 import { getCallMessages } from "@/state/messages";
-import { Paper, Title } from "@mantine/core";
+import { JsonInput, Paper, Title } from "@mantine/core";
 import { useRouter } from "next/router";
 
 export default function LiveCall() {
@@ -45,6 +45,7 @@ function MessagesList() {
       {msgs.map((msg) => (
         <li key={`${msg.id}-938jd`}>
           {msg.role} - {msg.id} - {msg._index}
+          <JsonInput autosize value={JSON.stringify(msg)} />
         </li>
       ))}
     </div>

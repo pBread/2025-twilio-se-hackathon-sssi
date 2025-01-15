@@ -20,6 +20,7 @@ import log from "../logger";
 import { makeId, makeTimestamp } from "../utils/misc";
 import {
   addSyncMsgItem,
+  removeSyncMsgItem,
   setSyncCallItem,
   setSyncMsgItem,
 } from "./sync-service";
@@ -55,10 +56,21 @@ export class ConversationStore {
     };
   };
 
-  private msgMap: StoreMessageMap; // note: msgs are stored in a map. adding a message w/the same id as another will override the previous
+  msgMap: StoreMessageMap; // note: msgs are stored in a map. adding a message w/the same id as another will override the previous
   seq: number = 0; // sequence tracks the order in which messages were added. seq is not guaranteed to be the index of a message, only that it is greater than the last message
 
-  deleteMsg = (id: string) => this.msgMap.delete(id);
+  forceSync = (id: string) => {
+    const msg = this.msgMap.get(id);
+    if (!msg) return;
+    if (msg) setSyncMsgItem(msg);
+  };
+
+  deleteMsg = (id: string) => {
+    const msg = this.msgMap.get(id);
+    if (msg) removeSyncMsgItem(msg);
+
+    this.msgMap.delete(id);
+  };
   getMessage = (id: string) => this.msgMap.get(id);
   getMessages = () =>
     [...this.msgMap.values()].map((msg, _index) => ({ ...msg, _index }));
@@ -136,15 +148,17 @@ export class ConversationStore {
     ) as BotTool | undefined;
 
     if (!toolMsg)
-      log.error(
+      return log.error(
         "store",
         `Unable to set tool result because tool message (${toolId}) not found.`
       );
 
-    const tool = toolMsg?.tool_calls.find((tool) => tool.id === toolId);
+    const tool = toolMsg.tool_calls.find((tool) => tool.id === toolId);
     if (!tool) throw Error(`unreachable error setBotToolResult`);
 
     tool.result = result;
+
+    this.msgMap.set(toolMsg.id, toolMsg);
 
     return toolMsg;
   };
@@ -226,7 +240,6 @@ class StoreMessageMap extends Map<string, StoreMessage> {
 
     if (prev) {
       const changes = diff(prev, msg);
-      log.debug("store", changes, msg);
       if (changes) setSyncMsgItem(msg);
     } else addSyncMsgItem(msg);
 

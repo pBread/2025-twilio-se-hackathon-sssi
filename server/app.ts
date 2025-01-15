@@ -264,6 +264,33 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
       ].join(". ")
     );
   });
+
+  relay.onDTMF((ev) => {
+    log.info(`relay.dtmf`, `dtmf (human): ${ev.digit}`);
+  });
+
+  // relay.onError only emits errors received from the ConversationRelay websocket, not local errors.
+  relay.onError((ev) => {
+    log.error(`relay.error`, `ConversationRelay error: ${ev.description}`);
+  });
+
+  llm.on("text-chunk", (text, last, fullText) => {
+    if (last && fullText) log.info("llm.transcript", `"${fullText}"`);
+    relay.sendTextToken(text, last);
+  });
+
+  llm.on("dtmf", (digits) => {
+    log.info("llm", `dtmf (bot): ${digits}`);
+    relay.sendDTMF(digits);
+  });
+
+  ws.on("close", () => {
+    log.info(
+      "relay",
+      "conversation relay ws closed. final conversation state:\n",
+      JSON.stringify(store.getMessages(), null, 2)
+    );
+  });
 });
 
 /****************************************************
