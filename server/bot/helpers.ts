@@ -40,7 +40,13 @@ export function injectContext(prompt: string, ctx: CallContext) {
   });
 
   // Inject annotations into the prompt
-  _p = _p.replace("{{annotations}}", JSON.stringify(ctx.annotations ?? []));
+  _p = _p.replace(
+    "{{recallSuggestions}}",
+    ctx.recallSuggestions
+      .flatMap((item) => item.suggestions)
+      .map((suggestion, idx) => `(${idx + 1}) ${suggestion}`)
+      .join("\n")
+  );
 
   return _p;
 }

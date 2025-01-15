@@ -69,7 +69,7 @@ app.post("/call-handler", async (req, res) => {
       callingFromPhoneNumber: From,
       waitTime: Math.floor(Math.random() * 15) + 3,
       today: new Date().toLocaleString(),
-      annotations: [],
+      recallSuggestions: [],
     };
 
     const db = await dbPromise;

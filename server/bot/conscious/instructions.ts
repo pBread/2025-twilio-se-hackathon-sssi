@@ -42,7 +42,7 @@ There are multiple LLMs powering the AI voice assistant. You are the conscious L
 ## Notes From Previous Conversations
 There is a subconscious process that is analyzing this conversation against previous conversations. These are important notes from the top 5 most similar conversations. It is CRITICAL that you consider these:
 
-{{annotations}}
+{{recallSuggestions}}
 
 # Procedures
 

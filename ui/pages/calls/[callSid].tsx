@@ -226,7 +226,9 @@ function Subconsciousness() {
 
 function RecallContainer() {
   const router = useRouter();
-  const callSid = router.query.callSid;
+  const callSid = router.query.callSid as string;
+
+  const call = useAppSelector((state) => selectCallById(state, callSid));
 
   const items = [
     {

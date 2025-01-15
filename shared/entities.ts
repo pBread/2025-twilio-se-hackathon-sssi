@@ -17,12 +17,28 @@ export interface CallRecord {
   feedback: Annotation[];
 }
 
+export interface CallContext {
+  today: Date | string; // today's date
+  waitTime?: number;
+
+  callingFromPhoneNumber?: string;
+  user?: UserRecord;
+  recallSuggestions: RecallSuggestion[];
+}
+
+export interface RecallSuggestion {
+  id: string;
+  callSid: string;
+  similarity: number;
+  callSummary: string;
+  suggestions: string[];
+}
+
 export interface Annotation {
   id: string;
   target: [number, number]; // message indexes this annoation is targeting
   comment: string;
   polarity: "bad" | "neutral" | "good";
-  messages?: StoreMessage[];
 }
 
 export interface DemoConfiguration {
@@ -177,18 +193,6 @@ export type AddSystemMessage = Omit<
   SystemMessage,
   "callSid" | "createdAt" | "id" | "seq" | "role" | "type"
 > & { id?: string };
-
-/****************************************************
- Context
-****************************************************/
-export interface CallContext {
-  today: Date | string; // today's date
-  waitTime?: number;
-
-  callingFromPhoneNumber?: string;
-  user?: UserRecord;
-  annotations: Annotation[];
-}
 
 /****************************************************
  Database Entities
