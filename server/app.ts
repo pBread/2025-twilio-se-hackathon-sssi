@@ -71,6 +71,7 @@ app.post("/call-handler", async (req, res) => {
       today: new Date().toLocaleString(),
       similarCalls: [],
       suggestions: [],
+      governance: {},
     };
 
     const db = await dbPromise;
@@ -79,6 +80,13 @@ app.post("/call-handler", async (req, res) => {
     if (demoConfig.isRecordingEnabled) {
       log.info("/call-handler", `fetching segment profile`);
       user = await db.users.getByChannel(From);
+      ctx.governance = {
+        identify_user: {
+          get_identifier: "complete",
+          fetch_profile: "complete",
+          confirm_details: "not-started",
+        },
+      };
     } else
       log.warn(
         `/call-handler`,

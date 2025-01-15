@@ -283,6 +283,21 @@ const calls: CallRecord[] = [
       suggestions: [
         "Avoid having customers repeat themselves by calling your tools to verify information whenever possible",
       ],
+      governance: {
+        modify_order: {
+          identify_user: "missed",
+          get_order: "complete",
+          ask_agent: "in-progress",
+          send_modification_confirmation: "not-started",
+          process_payment: "not-started",
+          issue_refund: "not-started",
+        },
+        provide_order_information: {
+          identify_user: "missed",
+          retrieve_user_orders: "not-started",
+          get_order_details: "not-started",
+        },
+      },
     },
     feedback: [
       {
@@ -566,6 +581,21 @@ const calls: CallRecord[] = [
       suggestions: [
         "Reference the Segment Profile to make recommendations are relevant as possible.",
       ],
+      governance: {
+        modify_order: {
+          identify_user: "missed",
+          get_order: "complete",
+          ask_agent: "in-progress",
+          send_modification_confirmation: "not-started",
+          process_payment: "not-started",
+          issue_refund: "not-started",
+        },
+        provide_order_information: {
+          identify_user: "missed",
+          retrieve_user_orders: "not-started",
+          get_order_details: "not-started",
+        },
+      },
     },
     feedback: [
       {

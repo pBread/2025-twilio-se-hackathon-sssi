@@ -1,5 +1,34 @@
 const procedures = [
   {
+    id: "identify_user",
+    name: "Provide Order Information",
+    description:
+      "Provide the user with information about their current orders.",
+    steps: [
+      {
+        id: "get_identifier",
+        name: "Get Identifier",
+        description:
+          "Gather the user's email or mobile phone to identify who they are.",
+        required: "once",
+      },
+      {
+        id: "fetch_profile",
+        name: "Fetch Profile",
+        description:
+          "Fetch the user's profile with the identifier gathered above.",
+        required: "once",
+        function: "findUser",
+      },
+      {
+        id: "confirm_details",
+        name: "Confirm Details",
+        description: "Verbally confirm the user's identy",
+        required: "once",
+      },
+    ],
+  },
+  {
     id: "provide_order_information",
     name: "Provide Order Information",
     description:
@@ -53,6 +82,15 @@ const procedures = [
         function: "getOrderByConfirmationNumber",
       },
       {
+        id: "ask_agent",
+        name: "Request Agent Approval",
+        description:
+          "For modifications requiring approval, contact a human agent.",
+        required: "conditional",
+        condition: "Modification requires agent approval",
+        function: ["askAgent", "transferToAgent"],
+      },
+      {
         id: "send_modification_confirmation",
         name: "Send Modification Confirmation",
         description:
@@ -76,15 +114,6 @@ const procedures = [
         required: "conditional",
         condition: "Modification results in refund",
         function: "issueRefund",
-      },
-      {
-        id: "ask_agent",
-        name: "Request Agent Approval",
-        description:
-          "For modifications requiring approval, contact a human agent.",
-        required: "conditional",
-        condition: "Modification requires agent approval",
-        function: ["askAgent", "transferToAgent"],
       },
     ],
   },
