@@ -310,8 +310,14 @@ async function destroySyncLogList(callSid: string) {
   return limit(() => sync.syncLists(uniqueName).remove());
 }
 
+async function getSyncList(callSid: string) {
+  const uniqueName = logListName(callSid);
+  return limit(() => sync.syncLists(uniqueName).fetch());
+}
+
 async function addSyncLogItem(log: LogRecord) {
   const uniqueName = logListName(log.callSid);
+
   return limit(() =>
     sync.syncLists(uniqueName).syncListItems.create({ data: log })
   );
@@ -379,20 +385,27 @@ export async function clearSyncData() {
   console.log("clearSyncData");
 
   demoConfig = JSON.parse(JSON.stringify(defaultDemoConfig));
-
+  console.log("resetting demo config");
   await updateDemoConfig(demoConfig);
 
   const calls = await getAllCallItems();
-  await Promise.allSettled(calls.map((call) => destroyCall(call.callSid)));
+  console.log(`destroying ${calls.length} calls`);
+  await Promise.all(calls.map((call) => destroyCall(call.callSid)));
 
   const logLists = await getAllSyncLogLists();
-  await Promise.allSettled(
+  if (logLists.length)
+    console.log(
+      `${logLists.length} log lists were missed. attempting to destroy`
+    );
+  await Promise.all(
     logLists.map((list) => destroySyncLogList(list.uniqueName))
   );
   const msgMaps = await getAllSyncMsgMaps();
-  await Promise.allSettled(
-    msgMaps.map((map) => destroySyncMsgMap(map.uniqueName))
-  );
+  if (msgMaps.length)
+    console.log(
+      `${msgMaps.length} msg maps were missed. attempting to destroy`
+    );
+  await Promise.all(msgMaps.map((map) => destroySyncMsgMap(map.uniqueName)));
 }
 
 export async function populateSampleData() {

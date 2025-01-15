@@ -1,16 +1,11 @@
 import { InitializeDataResult } from "@/pages/api/initialize-data";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import { logListName, msgMapName, SYNC_CALL_MAP_NAME } from "@shared/sync";
 import { DemoConfiguration } from "@shared/entities";
+import { logListName, msgMapName, SYNC_CALL_MAP_NAME } from "@shared/sync";
 import { useEffect } from "react";
 import { type ConnectionState, SyncClient } from "twilio-sync";
-import {
-  addManyCalls,
-  removeOneCall,
-  setOneCall,
-  updateOneCall,
-} from "./calls";
+import { addManyCalls, removeOneCall, setOneCall } from "./calls";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { addOneLog, fetchCallLogs } from "./logs";
 import {
@@ -125,7 +120,7 @@ export function useAddCallListeners(callSid?: string) {
     dispatch(setCallMsgListener({ callSid, status: "new" }));
 
     const listUniqueName = logListName(callSid);
-    syncClient.map(listUniqueName).then((list) => {
+    syncClient.list(listUniqueName).then((list) => {
       list.on("itemAdded", (ev) => {
         dispatch(addOneLog(ev.item.data));
       });
