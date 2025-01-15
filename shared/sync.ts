@@ -1,26 +1,38 @@
 export const SYNC_CALL_MAP_NAME = "calls";
 export const SYNC_CONFIG_NAME = "config";
 
-export function callMapItemName(callSid: string) {
-  return `call-${callSid}`;
+const callSidRe = /CA[a-f0-9]{32}/;
+
+function getSid(str: string) {
+  const match = str.match(callSidRe);
+  if (!match) throw Error(`No Call SID found in ${str}`);
+
+  return match[0];
 }
 
-export function isCallId(it: any) {
-  return /^call-CA[0-9A-Za-z]{32}$/.test(it);
+export function callMapItemName(callSid: string) {
+  const sid = getSid(callSid);
+  return `call-${sid}`;
+}
+
+export function isCallId(id: any) {
+  return /^call-CA[0-9A-Za-z]{32}$/.test(id);
 }
 
 export function logListName(callSid: string) {
-  return `logs-${callSid}`;
+  const sid = getSid(callSid);
+  return `logs-${sid}`;
 }
 
-export function isLogListName(it: any) {
-  return /^logs-CA[0-9A-Za-z]{32}$/.test(it);
+export function isLogListName(id: any) {
+  return /^logs-CA[0-9A-Za-z]{32}$/.test(id);
 }
 
 export function msgMapName(callSid: string) {
-  return `msgs-${callSid}`;
+  const sid = getSid(callSid);
+  return `msgs-${sid}`;
 }
 
-export function isMsgMapName(it: any) {
-  return /^msgs-CA[0-9A-Za-z]{32}$/.test(it);
+export function isMsgMapName(id: any) {
+  return /^msgs-CA[0-9A-Za-z]{32}$/.test(id);
 }

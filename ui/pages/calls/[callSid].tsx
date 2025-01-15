@@ -63,6 +63,8 @@ function DirectivesContainer() {
 
   const call = useAppSelector((state) => selectCallById(state, callSid));
 
+  const logs = useAppSelector((state) => getCallLogs(state, callSid));
+
   const items = [
     {
       source: "recall",
@@ -212,57 +214,6 @@ function BotConfigModal() {
         Bot Configuration
       </Button>
     </>
-  );
-}
-
-function SystemMessages() {
-  const router = useRouter();
-  const callSid = router.query.callSid as string;
-  const msgs = useAppSelector((state) =>
-    getCallMessages(state, callSid)
-  ).filter((msg) => msg.role === "system");
-
-  return (
-    <Table stickyHeader>
-      <Table.Thead>
-        <Table.Tr>
-          <Table.Td>Role</Table.Td>
-          <Table.Td>Content</Table.Td>
-        </Table.Tr>
-      </Table.Thead>
-      <Table.Tbody>
-        {msgs.map((msg) => (
-          <Table.Tr key={`sd2-${msg.id}`}>
-            <Table.Td>system</Table.Td>
-            <Table.Td>{msg.content}</Table.Td>
-          </Table.Tr>
-        ))}
-      </Table.Tbody>
-    </Table>
-  );
-}
-
-function LogsList() {
-  const router = useRouter();
-  const callSid = router.query.callSid as string;
-
-  const call = useAppSelector((state) => selectCallById(state, callSid));
-  const logs = useAppSelector((state) => getCallLogs(state, callSid));
-
-  return (
-    <div style={{ paddingLeft: "5px" }}>
-      Logs
-      {logs
-        .map((item) => ({
-          ...item,
-          createdAt: new Date(item.createdAt).toLocaleString(),
-        }))
-        .map((item) => (
-          <li key={`${item.id}-938jd`}>
-            {item._index} - {item.type} - {item.createdAt}
-          </li>
-        ))}
-    </div>
   );
 }
 

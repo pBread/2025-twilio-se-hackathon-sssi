@@ -34,13 +34,17 @@ import log from "../logger";
 const rateLimitConfig = {
   interval: 1000, // 1000 ms == 1 second
   rate: 100, // 30 API calls per interval
-  maxDelay: 10 * 1000, // an API call delayed > 10 sec is rejected
+  maxDelay: 30 * 1000, // an API call delayed > 10 sec is rejected
 };
 
 const limit = pRateLimit({ ...rateLimitConfig, concurrency: 50 }); // global limiter applied to everything to ensure concurrency & rates don't exceed Sync limitations
 
 function composeDoubleLimiter() {
-  const extraLimiter = pRateLimit({ ...rateLimitConfig, concurrency: 1 });
+  const extraLimiter = pRateLimit({
+    ...rateLimitConfig,
+    concurrency: 1,
+    maxDelay: 5 * 1000,
+  });
   return async function <T>(fn: () => Promise<T>): Promise<T> {
     return limit(() => extraLimiter(fn));
   };
@@ -379,14 +383,16 @@ export async function clearSyncData() {
   await updateDemoConfig(demoConfig);
 
   const calls = await getAllCallItems();
-  await Promise.all(calls.map((call) => destroyCall(call.callSid)));
+  await Promise.allSettled(calls.map((call) => destroyCall(call.callSid)));
 
   const logLists = await getAllSyncLogLists();
-  await Promise.all(
+  await Promise.allSettled(
     logLists.map((list) => destroySyncLogList(list.uniqueName))
   );
   const msgMaps = await getAllSyncMsgMaps();
-  await Promise.all(msgMaps.map((map) => destroySyncMsgMap(map.uniqueName)));
+  await Promise.allSettled(
+    msgMaps.map((map) => destroySyncMsgMap(map.uniqueName))
+  );
 }
 
 export async function populateSampleData() {

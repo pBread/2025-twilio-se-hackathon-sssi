@@ -47,14 +47,21 @@ export interface DemoConfiguration {
 
 export interface LogRecord {
   _index?: number;
+  id: string;
   callSid: string;
   createdAt: string | Date;
-  id: string;
-  data: { body?: string; user?: UserRecord };
-  type: LogTypes;
+  description: string;
+
+  source: LogSources;
+  actions: LogActions[];
 }
 
-type LogTypes = "misc" | "segment-fetched-profile";
+type LogSources = "agent" | "governance" | "recall" | "segment";
+
+type LogActions =
+  | "Added System Message"
+  | "Updated Context"
+  | "Updated Instructions";
 
 /****************************************************
  Conversation State
