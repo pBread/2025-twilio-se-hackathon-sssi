@@ -1,4 +1,5 @@
-import { pRateLimit, Quota, QuotaManager } from "p-ratelimit";
+import diff from "deep-diff";
+import { pRateLimit } from "p-ratelimit";
 import Twilio from "twilio";
 import { SyncClient } from "twilio-sync";
 import type {
@@ -17,6 +18,9 @@ import {
   SYNC_CALL_MAP_NAME,
   SYNC_CONFIG_NAME,
 } from "../../shared/sync";
+import bot from "../bot/conscious";
+import { relayConfig } from "../bot/relay-config";
+import governanceBot from "../bot/subconscious/governance";
 import {
   ENABLE_GOVERNANCE,
   ENABLE_RECALL,
@@ -26,10 +30,6 @@ import {
   TWILIO_SYNC_SVC_SID,
 } from "../env";
 import log from "../logger";
-import diff from "deep-diff";
-import { relayConfig } from "../bot/relay-config";
-import bot from "../bot/conscious";
-import governanceBot from "../bot/subconscious/governance";
 
 const rateLimitConfig = {
   interval: 1000, // 1000 ms == 1 second
