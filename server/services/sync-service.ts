@@ -341,7 +341,7 @@ async function destroySyncMsgMap(callSid: string) {
   return limit(() => sync.syncMaps(uniqueName).remove());
 }
 
-async function addSyncMsgItem(msg: StoreMessage) {
+export async function addSyncMsgItem(msg: StoreMessage) {
   const uniqueName = msgMapName(msg.callSid);
   return limitMsg(() =>
     sync.syncMaps(uniqueName).syncMapItems.create({ key: msg.id, data: msg })
@@ -349,6 +349,13 @@ async function addSyncMsgItem(msg: StoreMessage) {
 }
 
 async function updateSyncMsgItem(msg: StoreMessage) {
+  const uniqueName = msgMapName(msg.callSid);
+  return limitMsg(() =>
+    sync.syncMaps(uniqueName).syncMapItems(msg.id).update({ data: msg })
+  );
+}
+
+export async function setSyncMsgItem(msg: StoreMessage) {
   const uniqueName = msgMapName(msg.callSid);
   return limitMsg(() =>
     sync.syncMaps(uniqueName).syncMapItems(msg.id).update({ data: msg })

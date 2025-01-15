@@ -1,28 +1,30 @@
 import diff from "deep-diff";
-import merge from "deepmerge";
-import { CallContext, CallRecord } from "../../shared/entities";
-import bot from "../bot/conscious";
-import governanceBot from "../bot/subconscious/governance";
-import { setSyncCallItem } from "./sync-service";
+import {
+  AddSystemMessage,
+  CallContext,
+  CallRecord,
+  StoreMessage,
+  SystemMessage,
+} from "../../shared/entities";
 import log from "../logger";
+import { makeId, makeTimestamp } from "../utils/misc";
+import {
+  addSyncMsgItem,
+  setSyncCallItem,
+  setSyncMsgItem,
+} from "./sync-service";
 
 export class ConversationStore {
   constructor(call: CallRecord) {
-    const conscious = { instructions: bot.getInstructions(call.callContext) };
-    const subconscious = {
-      governanceInstructions: governanceBot.getInstructions(call.callContext),
-    };
+    this.msgMap = new StoreMessageMap();
 
-    const _config = merge.all([
-      call,
-      { config: { conscious, subconscious } },
-    ]) as CallRecord;
-
-    this._call = JSON.parse(JSON.stringify(_config)) as CallRecord;
-    setSyncCallItem(this._call);
+    this._call = JSON.parse(JSON.stringify(call)) as CallRecord;
   }
 
-  _call: CallRecord;
+  /****************************************************
+   Call Data Methods
+  ****************************************************/
+  private _call: CallRecord;
   get call() {
     return this._call;
   }
@@ -41,5 +43,53 @@ export class ConversationStore {
       ...this.call,
       callContext: { ...this.call.callContext, ...ctx },
     };
+  };
+
+  private msgMap: StoreMessageMap; // note: msgs are stored in a map. adding a message w/the same id as another will override the previous
+  seq: number = 0; // sequence tracks the order in which messages were added. seq is not guaranteed to be the index of a message, only that it is greater than the last message
+
+  deleteMsg = (id: string) => this.msgMap.delete(id);
+  getMessage = (id: string) => this.msgMap.get(id);
+  getMessages = () =>
+    [...this.msgMap.values()].map((msg, _index) => ({ ...msg, _index }));
+
+  addSystemMessage = (params: AddSystemMessage): SystemMessage => {
+    const seq = this.seq++;
+    const id = params.id ?? makeId("sys", `${seq}`);
+    const msg: SystemMessage = {
+      ...params,
+      callSid: this.call.callSid,
+      createdAt: makeTimestamp(),
+      id,
+      seq,
+      role: "system",
+    };
+    this.msgMap.set(id, msg);
+
+    // log.info(
+    //   "store",
+    //   `added ${msg.role} message to local state, id="${msg.id}"`
+    // );
+
+    return msg;
+  };
+}
+
+class StoreMessageMap extends Map<string, StoreMessage> {
+  constructor() {
+    super();
+  }
+
+  set = (key: string, msg: StoreMessage) => {
+    const prev = this.get(key);
+    super.set(key, msg);
+
+    if (prev) {
+      const changes = diff(prev, msg);
+      log.debug("store", changes, msg);
+      if (changes) setSyncMsgItem(msg);
+    } else addSyncMsgItem(msg);
+
+    return this;
   };
 }

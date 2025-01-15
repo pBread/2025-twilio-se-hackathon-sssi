@@ -2,7 +2,12 @@ import * as env from "./env";
 
 import express from "express";
 import ExpressWs from "express-ws";
-import { CallContext, CallRecord, UserRecord } from "../shared/entities";
+import {
+  CallContext,
+  CallRecord,
+  DemoConfiguration,
+  UserRecord,
+} from "../shared/entities";
 import { getGreeting } from "./bot/greetings";
 import log from "./logger";
 import { CallService } from "./services/call-service";
@@ -17,6 +22,9 @@ import {
   setupSync,
   updateSyncCallItem,
 } from "./services/sync-service";
+import deepmerge from "deepmerge";
+import governanceBot from "./bot/subconscious/governance";
+import bot from "./bot/conscious";
 
 const {
   DEFAULT_FROM_NUMBER,
@@ -74,6 +82,17 @@ app.post("/call-handler", async (req, res) => {
       );
     if (user) ctx.user = user;
 
+    // update demo configuration with the context of this call
+    const config = deepmerge.all([
+      demoConfig,
+      {
+        conscious: { instructions: bot.getInstructions(ctx) },
+        subconscious: {
+          governanceInstructions: governanceBot.getInstructions(ctx),
+        },
+      },
+    ]) as DemoConfiguration;
+
     const callData: CallRecord = {
       id: CallSid,
       callSid: CallSid,
@@ -83,7 +102,7 @@ app.post("/call-handler", async (req, res) => {
       to: To,
 
       callContext: ctx,
-      config: demoConfig,
+      config,
       feedback: [],
     };
 
@@ -166,6 +185,11 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
   relay.onSetup((ev) => {
     store.setCall({ callStatus: "connected" });
     store.setContext({ waitTime: 10 });
+
+    store.addSystemMessage({
+      content: store.call.config.conscious.instructions,
+      id: "instructions",
+    });
   });
 });
 

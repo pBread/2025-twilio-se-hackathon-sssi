@@ -88,7 +88,7 @@ export interface BotDTMF extends StoreRecord {
 
 export type AddBotDTMF = Omit<
   BotDTMF,
-  "createdAt" | "id" | "seq" | "role" | "type"
+  "callSid" | "createdAt" | "id" | "seq" | "role" | "type"
 > & {
   id?: string;
 };
@@ -102,7 +102,7 @@ export interface BotText extends StoreRecord {
 
 export type AddBotText = Omit<
   BotText,
-  "createdAt" | "id" | "seq" | "role" | "type"
+  "callSid" | "createdAt" | "id" | "seq" | "role" | "type"
 > & {
   id?: string;
 };
@@ -124,7 +124,7 @@ export interface ToolCall {
 
 export type AddBotTool = Omit<
   BotTool,
-  "createdAt" | "seq" | "role" | "type"
+  "callSid" | "createdAt" | "seq" | "role" | "type"
 > & {
   id?: string;
 };
@@ -138,7 +138,7 @@ export interface HumanDTMF extends StoreRecord {
 
 export type AddHumanDTMF = Omit<
   HumanDTMF,
-  "createdAt" | "id" | "seq" | "role" | "type"
+  "callSid" | "createdAt" | "id" | "seq" | "role" | "type"
 > & {
   id?: string;
 };
@@ -152,7 +152,7 @@ export interface HumanText extends StoreRecord {
 
 export type AddHumanText = Omit<
   HumanText,
-  "createdAt" | "id" | "seq" | "role" | "type"
+  "callSid" | "createdAt" | "id" | "seq" | "role" | "type"
 > & {
   id?: string;
 };
@@ -164,7 +164,7 @@ export interface SystemMessage extends StoreRecord {
 }
 export type AddSystemMessage = Omit<
   SystemMessage,
-  "createdAt" | "id" | "seq" | "role" | "type"
+  "callSid" | "createdAt" | "id" | "seq" | "role" | "type"
 > & { id?: string };
 
 /****************************************************

@@ -7,3 +7,7 @@ export function makeId(prefix = "", code?: string) {
   if (prefix) return `${prefix}-${_code}`;
   return _code;
 }
+
+export function makeTimestamp() {
+  return new Date().toLocaleString();
+}
