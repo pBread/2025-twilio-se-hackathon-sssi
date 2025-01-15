@@ -23,15 +23,14 @@ export interface CallContext {
 
   callingFromPhoneNumber?: string;
   user?: UserRecord;
-  recallSuggestions: RecallSuggestion[];
+  similarCalls: SimilarCall[];
+  suggestions: string[];
 }
 
-export interface RecallSuggestion {
-  id: string;
+interface SimilarCall {
   callSid: string;
+  id: string;
   similarity: number;
-  callSummary: string;
-  suggestions: string[];
 }
 
 export interface Annotation {

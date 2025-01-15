@@ -269,29 +269,27 @@ const calls: CallRecord[] = [
     createdAt: new Date().toString(),
     callContext: {
       today: new Date().toLocaleString(),
-      recallSuggestions: [
+      similarCalls: [
         {
-          id: "sd82kd01",
+          id: "dsfw252",
           callSid: "CA00000000000000000000000000000002",
-          callSummary:
-            "Customer call in to inquire about the time of an upcoming event",
-          similarity: 0.98,
-          suggestions: [
-            "Avoid having customers repeat themselves by calling your tools to verify information whenever possible",
-          ],
+          similarity: 0.92,
         },
       ],
       waitTime: 6,
       callingFromPhoneNumber: DEVELOPERS_PHONE_NUMBER,
       user: mockDatabase.users[0],
+      suggestions: [
+        "Avoid having customers repeat themselves by calling your tools to verify information whenever possible",
+      ],
     },
     feedback: [
       {
-        id: "asid832s",
+        id: "sd92kd923",
         polarity: "good",
         target: [0, 3],
         comment:
-          "Avoid having customers repeat themselves by calling your tools to verify information whenever possible",
+          "Reference the Segment Profile to make recommendations are relevant as possible.",
       },
     ],
     config: {
@@ -553,10 +551,19 @@ const calls: CallRecord[] = [
     createdAt: new Date().toString(),
     callContext: {
       today: new Date().toLocaleString(),
-      recallSuggestions: [],
+      similarCalls: [
+        {
+          id: "92kd92s",
+          callSid: "CA00000000000000000000000000000001",
+          similarity: 0.89,
+        },
+      ],
       waitTime: 10,
       callingFromPhoneNumber: DEVELOPERS_PHONE_NUMBER,
       user: mockDatabase.users[0],
+      suggestions: [
+        "Reference the Segment Profile to make recommendations are relevant as possible.",
+      ],
     },
     feedback: [
       {
