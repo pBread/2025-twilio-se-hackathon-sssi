@@ -19,8 +19,8 @@ import bot, { type ToolFnName } from "../bot/conscious";
 import { OPENAI_API_KEY } from "../env";
 import log from "../logger";
 import { makeId } from "../utils/misc";
-import { ConversationStore } from "./conversation-store";
-import { DatabaseService } from "./database-service";
+import type { ConversationStore } from "./conversation-store";
+import type { DatabaseService } from "./database-service";
 import type { RelayService } from "./relay-service";
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });

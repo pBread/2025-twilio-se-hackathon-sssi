@@ -1,5 +1,5 @@
 import diff from "deep-diff";
-import {
+import type {
   AddBotDTMF,
   AddBotText,
   AddBotTool,
