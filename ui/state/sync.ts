@@ -113,39 +113,45 @@ export function useAddCallListeners(callSid?: string) {
   const status = useSyncSlice().callMessageListeners[callSid];
   const dispatch = useAppDispatch();
 
+  const syncClient = useSyncClient();
+
   useEffect(() => {
     if (!callSid) return;
     if (connectionState !== "connected") return;
     if (status) return;
+
     dispatch(setCallMsgListener({ callSid, status: "new" }));
 
-    const listUniqueName = logListName(callSid);
-    syncClient.list(listUniqueName).then((list) => {
-      list.on("itemAdded", (ev) => {
-        dispatch(addOneLog(ev.item.data));
-      });
+    Promise.all([
+      async () => {
+        const listUniqueName = logListName(callSid);
+        syncClient.list(listUniqueName).then((list) => {
+          list.on("itemAdded", (ev) => {
+            dispatch(addOneLog(ev.item.data));
+          });
+        });
+      },
+
+      async () => {
+        const mapUniqueName = msgMapName(callSid);
+        syncClient.map(mapUniqueName).then((map) => {
+          map.on("itemAdded", (ev) => {
+            dispatch(addOneMessage(ev.item.data));
+          });
+
+          map.on("itemUpdated", (ev) => {
+            dispatch(setOneMessage(ev.item.data));
+          });
+
+          map.on("itemRemoved", (ev) => {
+            dispatch(removeOneMessage(ev.key));
+          });
+        });
+      },
+    ]).then(() => {
+      dispatch(setCallMsgListener({ callSid, status: "done" }));
     });
-
-    const mapUniqueName = msgMapName(callSid);
-    syncClient
-      .map(mapUniqueName)
-      .then((map) => {
-        map.on("itemAdded", (ev) => {
-          dispatch(addOneMessage(ev.item.data));
-        });
-
-        map.on("itemUpdated", (ev) => {
-          dispatch(setOneMessage(ev.item.data));
-        });
-
-        map.on("itemRemoved", (ev) => {
-          dispatch(removeOneMessage(ev.key));
-        });
-      })
-      .then(() => {
-        dispatch(setCallMsgListener({ callSid, status: "done" }));
-      });
-  }, [callSid, connectionState, status]);
+  }, [callSid, connectionState, syncClient, status]);
 }
 
 export function useAddCallMapListeners() {
