@@ -227,12 +227,12 @@ async function updateDemoConfig(config: DemoConfiguration) {
 ****************************************************/
 async function addSyncCallItem(call: CallRecord) {
   const key = callMapItemName(call.callSid);
-  return limitCall(() =>
+  return limitCall(async () => {
     syncCallMapApi.syncMapItems.create({
       key,
       data: call,
-    })
-  );
+    });
+  });
 }
 
 async function getAllCallItems() {
@@ -343,9 +343,9 @@ async function destroySyncMsgMap(callSid: string) {
 
 export async function addSyncMsgItem(msg: StoreMessage) {
   const uniqueName = msgMapName(msg.callSid);
-  return limitMsg(() =>
-    sync.syncMaps(uniqueName).syncMapItems.create({ key: msg.id, data: msg })
-  );
+  return limitMsg(async () => {
+    sync.syncMaps(uniqueName).syncMapItems.create({ key: msg.id, data: msg });
+  });
 }
 
 async function updateSyncMsgItem(msg: StoreMessage) {
@@ -357,9 +357,9 @@ async function updateSyncMsgItem(msg: StoreMessage) {
 
 export async function setSyncMsgItem(msg: StoreMessage) {
   const uniqueName = msgMapName(msg.callSid);
-  return limitMsg(() =>
-    sync.syncMaps(uniqueName).syncMapItems(msg.id).update({ data: msg })
-  );
+  return limitMsg(async () => {
+    sync.syncMaps(uniqueName).syncMapItems(msg.id).update({ data: msg });
+  });
 }
 
 export async function removeSyncMsgItem(msg: StoreMessage) {
