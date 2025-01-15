@@ -103,18 +103,19 @@ function DirectivesContainer() {
           <Table.Th>Actions</Table.Th>
         </Table.Tr>
       </Table.Thead>
-
-      {items.map((item) => (
-        <Table.Tr key={`sw4-${item.id}`}>
-          <Table.Td>{item.source}</Table.Td>
-          <Table.Td>{item.description}</Table.Td>
-          <Table.Td>
-            {item.actions.sort().map((action) => (
-              <Badge key={`s28-${item.id}-${action}`}>{action} </Badge>
-            ))}
-          </Table.Td>
-        </Table.Tr>
-      ))}
+      <Table.Tbody>
+        {items.map((item) => (
+          <Table.Tr key={`sw4-${item.id}`}>
+            <Table.Td>{item.source}</Table.Td>
+            <Table.Td>{item.description}</Table.Td>
+            <Table.Td>
+              {item.actions.sort().map((action) => (
+                <Badge key={`s28-${item.id}-${action}`}>{action} </Badge>
+              ))}
+            </Table.Td>
+          </Table.Tr>
+        ))}
+      </Table.Tbody>
     </Table>
   );
 }
