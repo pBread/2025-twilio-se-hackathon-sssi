@@ -168,29 +168,19 @@ function GovernanceContainer() {
   const toggle = (value: string) =>
     setClosed((state) => ({ ...state, [value]: !state[value] }));
 
-  const data = useMemo(
-    () =>
-      !call?.callContext?.governance
-        ? []
-        : Object.entries(governance)
-            .sort(([a], [b]) => a.localeCompare(b))
-            .map(([procedureId, steps]) => {
-              const stepEntries = Object.entries(steps);
-
-              const node = {
-                value: procedureId,
-                label: startCase(procedureId),
-                children: stepEntries.map(([step, status]) => ({
-                  value: step,
-                  label: startCase(step),
-                  status,
-                })),
-              };
-
-              return node;
-            }),
-    [call?.callSid]
-  );
+  const data = !call?.callContext?.governance
+    ? []
+    : Object.entries(governance)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([procedureId, steps]) => ({
+          value: procedureId,
+          label: startCase(procedureId),
+          children: steps.map((step) => ({
+            value: step.id,
+            label: startCase(step.id),
+            status: step.status,
+          })),
+        }));
 
   return (
     <div>

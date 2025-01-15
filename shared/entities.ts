@@ -26,10 +26,12 @@ export interface CallContext {
   user?: UserRecord;
   similarCalls: SimilarCall[];
   suggestions: string[];
-  governance: Record<
-    string,
-    Record<string, "not-started" | "in-progress" | "complete" | "missed">
-  >;
+  governance: Record<string, GovernanceStep[]>;
+}
+
+interface GovernanceStep {
+  id: string;
+  status: "not-started" | "in-progress" | "complete" | "missed";
 }
 
 interface SimilarCall {

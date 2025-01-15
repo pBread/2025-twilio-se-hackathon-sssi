@@ -57,19 +57,47 @@ const calls: CallRecord[] = [
         "Avoid having customers repeat themselves by calling your tools to verify information whenever possible",
       ],
       governance: {
-        modify_order: {
-          identify_user: "missed",
-          get_order: "complete",
-          ask_agent: "in-progress",
-          send_modification_confirmation: "not-started",
-          process_payment: "not-started",
-          issue_refund: "not-started",
-        },
-        provide_order_information: {
-          identify_user: "missed",
-          retrieve_user_orders: "not-started",
-          get_order_details: "not-started",
-        },
+        modify_order: [
+          {
+            id: "identify_user",
+            status: "missed",
+          },
+          {
+            id: "get_order",
+            status: "complete",
+          },
+          {
+            id: "ask_agent",
+            status: "in-progress",
+          },
+          {
+            id: "send_modification_confirmation",
+            status: "not-started",
+          },
+          {
+            id: "process_payment",
+            status: "not-started",
+          },
+          {
+            id: "issue_refund",
+            status: "not-started",
+          },
+        ],
+
+        provide_order_information: [
+          {
+            id: "identify_user",
+            status: "missed",
+          },
+          {
+            id: "retrieve_user_orders",
+            status: "not-started",
+          },
+          {
+            id: "get_order_details",
+            status: "not-started",
+          },
+        ],
       },
     },
     feedback: [
@@ -126,19 +154,47 @@ const calls: CallRecord[] = [
         "Reference the Segment Profile to make recommendations are relevant as possible.",
       ],
       governance: {
-        modify_order: {
-          identify_user: "missed",
-          get_order: "complete",
-          ask_agent: "in-progress",
-          send_modification_confirmation: "not-started",
-          process_payment: "not-started",
-          issue_refund: "not-started",
-        },
-        provide_order_information: {
-          identify_user: "missed",
-          retrieve_user_orders: "not-started",
-          get_order_details: "not-started",
-        },
+        modify_order: [
+          {
+            id: "identify_user",
+            status: "missed",
+          },
+          {
+            id: "get_order",
+            status: "complete",
+          },
+          {
+            id: "ask_agent",
+            status: "in-progress",
+          },
+          {
+            id: "send_modification_confirmation",
+            status: "not-started",
+          },
+          {
+            id: "process_payment",
+            status: "not-started",
+          },
+          {
+            id: "issue_refund",
+            status: "not-started",
+          },
+        ],
+
+        provide_order_information: [
+          {
+            id: "identify_user",
+            status: "missed",
+          },
+          {
+            id: "retrieve_user_orders",
+            status: "not-started",
+          },
+          {
+            id: "get_order_details",
+            status: "not-started",
+          },
+        ],
       },
     },
     feedback: [

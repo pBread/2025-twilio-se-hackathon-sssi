@@ -80,19 +80,22 @@ app.post("/call-handler", async (req, res) => {
     if (demoConfig.isRecordingEnabled) {
       log.info("/call-handler", `fetching segment profile`);
       user = await db.users.getByChannel(From);
-      ctx.governance = {
-        identify_user: {
-          get_identifier: "complete",
-          fetch_profile: "complete",
-          confirm_details: "not-started",
-        },
-      };
     } else
       log.warn(
         `/call-handler`,
         "did not fetch segment profile because it is disabled"
       );
-    if (user) ctx.user = user;
+    if (user) {
+      ctx.user = user;
+      // update the call context to include the procedural steps that have been accomplished
+      ctx.governance = {
+        identify_user: [
+          { id: "get_identifer", status: "complete" },
+          { id: "fetch_profile", status: "complete" },
+          { id: "confirm_details", status: "not-started" },
+        ],
+      };
+    }
 
     // update demo configuration with the context of this call
     const config = deepmerge.all([
