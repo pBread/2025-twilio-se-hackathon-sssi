@@ -189,17 +189,20 @@ function GovernanceContainer() {
       {data.map((parent) => (
         <div key={`s82-${parent.value}`}>
           <div
-            style={{ display: "flex", alignItems: "center", gap: "2px" }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "2px",
+              cursor: "pointer",
+            }}
             onClick={() => toggle(parent.value)}
           >
             {closed[parent.value] ? (
-              <IconPlus size={12} onClick={() => toggle(parent.value)} />
+              <IconPlus size={12} />
             ) : (
-              <IconMinus size={12} onClick={() => toggle(parent.value)} />
+              <IconMinus size={12} />
             )}
-            <Text fw="bold" style={{ cursor: "pointer" }}>
-              {parent.label}
-            </Text>
+            <Text fw="bold">{parent.label}</Text>
           </div>
 
           {!closed[parent.value] &&
