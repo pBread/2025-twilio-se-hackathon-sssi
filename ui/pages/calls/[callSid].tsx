@@ -2,9 +2,10 @@ import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
 import { getCallLogs } from "@/state/logs";
 import { getCallMessages, getMessageById } from "@/state/messages";
-import { JsonInput, Paper, Table, Title } from "@mantine/core";
+import { Button, JsonInput, Paper, Table, Title } from "@mantine/core";
 import { BotMessage, HumanMessage } from "@shared/entities";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 export default function LiveCall() {
   return (
@@ -19,16 +20,54 @@ export default function LiveCall() {
   );
 }
 
-function Conscious() {
-  return (
-    <Paper>
-      <Title order={3}>Conscious Bot</Title>
+const paperStyle = { padding: "6px" };
 
-      <Title order={4}>Turns</Title>
-      <TurnsTable />
-      <MessagesList />
-      <LogsList />
-    </Paper>
+function Conscious() {
+  const [showTurns, setShowTurns] = useState(true);
+  const [showSystem, setShowSystem] = useState(true);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+      <Paper
+        style={{
+          ...paperStyle,
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <Title order={3}>Conscious Bot</Title>
+        <div style={{ display: "flex", gap: "10px" }}>
+          <Button
+            color={showTurns ? "cyan" : "gray"}
+            onClick={() => setShowTurns(!showTurns)}
+          >
+            Turns
+          </Button>
+          <Button
+            color={showSystem ? "cyan" : "gray"}
+            onClick={() => setShowSystem(!showSystem)}
+          >
+            System
+          </Button>
+        </div>
+      </Paper>
+      {showTurns && (
+        <Paper style={{ ...paperStyle }}>
+          <Title order={4}>Turns</Title>
+          <div style={{ height: "500px", overflow: "scroll" }}>
+            <TurnsTable />
+          </div>
+        </Paper>
+      )}
+      {showSystem && (
+        <Paper style={{ ...paperStyle }}>
+          <Title order={4}>System Messages</Title>
+          <div style={{ height: "200px", overflow: "scroll" }}>
+            <SystemMessages />
+          </div>
+        </Paper>
+      )}
+    </div>
   );
 }
 
@@ -39,7 +78,7 @@ function TurnsTable() {
   const msgs = useAppSelector((state) => getCallMessages(state, callSid));
 
   return (
-    <Table>
+    <Table stickyHeader>
       <Table.Thead>
         <Table.Tr>
           <Table.Td>Role</Table.Td>
@@ -96,25 +135,30 @@ function HumanRow({ msgId }: { msgId: string }) {
   );
 }
 
-function SystemRow({ msgId }: { msgId: string }) {}
-
-function MessagesList() {
+function SystemMessages() {
   const router = useRouter();
   const callSid = router.query.callSid as string;
-
-  const call = useAppSelector((state) => selectCallById(state, callSid));
-  const msgs = useAppSelector((state) => getCallMessages(state, callSid));
+  const msgs = useAppSelector((state) =>
+    getCallMessages(state, callSid)
+  ).filter((msg) => msg.role === "system");
 
   return (
-    <div style={{ paddingLeft: "5px" }}>
-      Messages
-      {msgs.map((msg) => (
-        <li key={`${msg.id}-938jd`}>
-          {msg.role} - {msg.id} - {msg._index}
-          <JsonInput autosize value={JSON.stringify(msg)} />
-        </li>
-      ))}
-    </div>
+    <Table stickyHeader>
+      <Table.Thead>
+        <Table.Tr>
+          <Table.Td>Role</Table.Td>
+          <Table.Td>Content</Table.Td>
+        </Table.Tr>
+      </Table.Thead>
+      <Table.Tbody>
+        {msgs.map((msg) => (
+          <Table.Tr key={`sd2-${msg.id}`}>
+            <Table.Td>system</Table.Td>
+            <Table.Td>{msg.content}</Table.Td>
+          </Table.Tr>
+        ))}
+      </Table.Tbody>
+    </Table>
   );
 }
 
@@ -144,7 +188,7 @@ function LogsList() {
 
 function Subconsciousness() {
   return (
-    <Paper>
+    <Paper style={paperStyle}>
       <Title order={3}>Subconscious Bot</Title>
     </Paper>
   );
