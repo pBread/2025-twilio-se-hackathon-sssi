@@ -67,7 +67,7 @@ export interface DemoConfiguration {
 }
 
 export interface LogRecord {
-  _index?: number;
+  seq: number; // only gauranteed to be ordered. this is the the array index
   id: string;
   callSid: string;
   createdAt: string | Date;
@@ -76,6 +76,8 @@ export interface LogRecord {
   source: LogSources;
   actions: LogActions[];
 }
+
+export type AddLogRecord = Omit<LogRecord, "seq" | "createdAt" | "id">;
 
 type LogSources = "Agent" | "Governance" | "Recall" | "Segment";
 

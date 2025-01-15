@@ -20,6 +20,7 @@ import { ConversationStore } from "./services/conversation-store";
 import { DatabaseService } from "./services/database-service";
 import { RelayService } from "./services/relay-service";
 import {
+  addSyncLogItem,
   clearSyncData,
   demoConfig,
   initCall,
@@ -125,6 +126,27 @@ app.post("/call-handler", async (req, res) => {
     tempCache.set(CallSid, callData);
 
     await initCall(callData);
+    addSyncLogItem({
+      actions: ["Updated Context"],
+      callSid: CallSid,
+      description:
+        "Fetched the customer's Segment Profile and provided it to the bot.",
+      source: "Segment",
+    });
+
+    addSyncLogItem({
+      actions: ["Updated Context", "Updated Instructions"],
+      callSid: CallSid,
+      description: "Updated the Identify User procedure",
+      source: "Governance",
+    });
+
+    addSyncLogItem({
+      actions: ["Updated Context"],
+      callSid: CallSid,
+      description: "Provided the customer's interaction history to the bot.",
+      source: "Segment",
+    });
 
     const greeting = getGreeting(ctx);
 

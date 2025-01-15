@@ -817,7 +817,7 @@ const callMessages: Record<string, StoreMessage[]> = {
 const callLogs: Record<string, LogRecord[]> = {
   [calls[0].callSid]: [
     {
-      _index: 5,
+      seq: 5,
       callSid: calls[0].callSid,
       createdAt: new Date(),
       source: "Agent",
@@ -826,7 +826,7 @@ const callLogs: Record<string, LogRecord[]> = {
       id: "dj893ks",
     },
     {
-      _index: 4,
+      seq: 4,
       callSid: calls[0].callSid,
       createdAt: new Date(),
       source: "Agent",
@@ -835,7 +835,7 @@ const callLogs: Record<string, LogRecord[]> = {
       id: "dkj29kd93",
     },
     {
-      _index: 3,
+      seq: 3,
       callSid: calls[0].callSid,
       createdAt: new Date(),
       source: "Recall",
@@ -845,7 +845,7 @@ const callLogs: Record<string, LogRecord[]> = {
       id: "s8j289r",
     },
     {
-      _index: 2,
+      seq: 2,
       callSid: calls[0].callSid,
       createdAt: new Date(),
       source: "Governance",
@@ -855,7 +855,7 @@ const callLogs: Record<string, LogRecord[]> = {
       id: "94k992j",
     },
     {
-      _index: 1,
+      seq: 1,
       callSid: calls[0].callSid,
       createdAt: new Date(),
       source: "Segment",
@@ -864,7 +864,7 @@ const callLogs: Record<string, LogRecord[]> = {
       id: "382j88d",
     },
     {
-      _index: 0,
+      seq: 0,
       callSid: calls[0].callSid,
       createdAt: new Date(),
       source: "Segment",

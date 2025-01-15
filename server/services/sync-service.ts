@@ -3,6 +3,7 @@ import { pRateLimit } from "p-ratelimit";
 import Twilio from "twilio";
 import { SyncClient } from "twilio-sync";
 import type {
+  AddLogRecord,
   CallRecord,
   DemoConfiguration,
   LogRecord,
@@ -30,6 +31,7 @@ import {
   TWILIO_SYNC_SVC_SID,
 } from "../env";
 import log from "../logger";
+import { makeId } from "../utils/misc";
 
 const rateLimitConfig = {
   interval: 1000, // 1000 ms == 1 second
@@ -314,12 +316,18 @@ async function getSyncList(callSid: string) {
   return limit(() => sync.syncLists(uniqueName).fetch());
 }
 
-async function addSyncLogItem(log: LogRecord) {
+let logSeg = 0;
+export async function addSyncLogItem(log: AddLogRecord) {
   const uniqueName = logListName(log.callSid);
 
-  return limit(() =>
-    sync.syncLists(uniqueName).syncListItems.create({ data: log })
-  );
+  const data: LogRecord = {
+    id: makeId("log"),
+    createdAt: new Date().toLocaleString(),
+    seq: logSeg++,
+    ...log,
+  };
+
+  return limit(() => sync.syncLists(uniqueName).syncListItems.create({ data }));
 }
 
 /****************************************************
