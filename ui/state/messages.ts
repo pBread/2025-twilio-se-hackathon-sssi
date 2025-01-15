@@ -9,7 +9,7 @@ import type { RootState } from "./store";
 const SLICE_NAME = "messages";
 
 const adapter = createEntityAdapter<StoreMessage>({
-  sortComparer: (a, b) => a._index - b._index,
+  sortComparer: (a, b) => b.seq - a.seq,
 });
 
 interface InitialState {

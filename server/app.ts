@@ -251,17 +251,14 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
     // Step 3: Update the interrupted message to reflect what was actually spoken. Note, sometimes the interruptedClause is very long. The bot may have spoken some or most of it. So, the question is, should the interrupted clause be included or excluded. Here, it is being included but it's a judgement call.
     const curContent = interruptedMsg.content as string;
     const [newContent] = curContent.split(interruptedClause);
-    interruptedMsg.content = ` ${newContent} ${interruptedClause}`.trim();
+    interruptedMsg.content = `${newContent} ${interruptedClause}`.trim();
+
+    store.msgMap.set(interruptedMsg.id, interruptedMsg);
 
     log.info(
       "relay.interrupt",
       `local state updated to reflect interruption: `,
-      [
-        `updated ${interruptedMsg.role} ${interruptedMsg.type} to ${interruptedMsg.content}`,
-        ...deletedMsgs.map(
-          (msg) => `deleted ${msg.role} ${msg.type}, id="${msg.id}"`
-        ),
-      ].join(". ")
+      interruptedMsg.content
     );
   });
 

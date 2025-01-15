@@ -33,7 +33,7 @@ import log from "../logger";
 
 const rateLimitConfig = {
   interval: 1000, // 1000 ms == 1 second
-  rate: 50, // 30 API calls per interval
+  rate: 100, // 30 API calls per interval
   maxDelay: 10 * 1000, // an API call delayed > 10 sec is rejected
 };
 

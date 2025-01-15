@@ -238,10 +238,8 @@ class StoreMessageMap extends Map<string, StoreMessage> {
     const prev = this.get(key);
     super.set(key, msg);
 
-    if (prev) {
-      const changes = diff(prev, msg);
-      if (changes) setSyncMsgItem(msg);
-    } else addSyncMsgItem(msg);
+    if (prev) setSyncMsgItem(msg);
+    else addSyncMsgItem(msg);
 
     return this;
   };
