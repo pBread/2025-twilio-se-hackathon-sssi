@@ -25,6 +25,7 @@ import {
   setupSync,
   updateSyncCallItem,
 } from "./services/sync-service";
+import { LLMService } from "./services/llm-service";
 
 const {
   DEFAULT_FROM_NUMBER,
@@ -169,8 +170,11 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
   tempCache.delete(callSid);
 
   const call = new CallService(callSid);
-  const store = new ConversationStore(callData);
+  const db = await dbPromise;
   const relay = new RelayService(callSid, ws);
+  const store = new ConversationStore(callData);
+
+  const llm = new LLMService(store, relay, db);
 
   if (store.call.config.isRecordingEnabled)
     call
@@ -192,6 +196,15 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
 
     const greeting = ev.customParameters?.greeting;
     if (greeting) store.addBotText({ content: greeting, id: "greeting" });
+  });
+
+  relay.onPrompt((ev) => {
+    if (!ev.last) return; // do nothing on partial speech
+
+    log.info(`relay.prompt`, `"${ev.voicePrompt}"`);
+
+    store.addHumanText({ content: ev.voicePrompt }); // add a record to the local store with the final transcript
+    llm.doCompletion();
   });
 });
 
