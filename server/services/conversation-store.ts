@@ -4,6 +4,7 @@ import { CallContext, CallRecord } from "../../shared/entities";
 import bot from "../bot/conscious";
 import governanceBot from "../bot/subconscious/governance";
 import { setSyncCallItem } from "./sync-service";
+import log from "../logger";
 
 export class ConversationStore {
   constructor(call: CallRecord) {
@@ -31,5 +32,14 @@ export class ConversationStore {
     this._call = call;
   }
 
-  setContext = (ctx: Partial<CallContext>) => {};
+  setCall = (update: Partial<CallRecord>) => {
+    this.call = { ...this.call, ...update };
+  };
+
+  setContext = (ctx: Partial<CallContext>) => {
+    this.call = {
+      ...this.call,
+      callContext: { ...this.call.callContext, ...ctx },
+    };
+  };
 }

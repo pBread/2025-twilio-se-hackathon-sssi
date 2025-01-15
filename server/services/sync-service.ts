@@ -1,4 +1,4 @@
-import { pRateLimit } from "p-ratelimit";
+import { pRateLimit, Quota, QuotaManager } from "p-ratelimit";
 import Twilio from "twilio";
 import { SyncClient } from "twilio-sync";
 import type {
@@ -31,12 +31,25 @@ import { relayConfig } from "../bot/relay-config";
 import bot from "../bot/conscious";
 import governanceBot from "../bot/subconscious/governance";
 
-const limit = pRateLimit({
+const rateLimitConfig = {
   interval: 1000, // 1000 ms == 1 second
-  rate: 30, // 30 API calls per interval
-  concurrency: 10, // no more than 10 running at once
-  maxDelay: 2000, // an API call delayed > 2 sec is rejected
-});
+  rate: 50, // 30 API calls per interval
+  maxDelay: 3000, // an API call delayed > 2 sec is rejected
+};
+
+const limit = pRateLimit({ ...rateLimitConfig, concurrency: 50 }); // global limiter applied to everything to ensure concurrency & rates don't exceed Sync limitations
+
+function composeDoubleLimiter() {
+  const extraLimiter = pRateLimit({ ...rateLimitConfig, concurrency: 1 });
+  return async function <T>(fn: () => Promise<T>): Promise<T> {
+    return limit(() => extraLimiter(fn));
+  };
+}
+
+const limitConfig = composeDoubleLimiter(); // limiter to avoid race conditions for demo config
+const limitCall = composeDoubleLimiter(); // limiter to avoid race conditions for call items
+const limitMsg = composeDoubleLimiter(); // limiter to avoid race conditions for messages
+const limitLog = composeDoubleLimiter(); // limiter to avoid race conditions for logs
 
 const twilio = Twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   accountSid: TWILIO_ACCOUNT_SID,
@@ -206,7 +219,7 @@ async function destroyCall(callSid: string) {
  Demo Configuration
 ****************************************************/
 async function updateDemoConfig(config: DemoConfiguration) {
-  return limit(() => syncDemoConfigApi.update({ data: config }));
+  return limitConfig(() => syncDemoConfigApi.update({ data: config }));
 }
 
 /****************************************************
@@ -214,7 +227,7 @@ async function updateDemoConfig(config: DemoConfiguration) {
 ****************************************************/
 async function addSyncCallItem(call: CallRecord) {
   const key = callMapItemName(call.callSid);
-  return limit(() =>
+  return limitCall(() =>
     syncCallMapApi.syncMapItems.create({
       key,
       data: call,
@@ -247,7 +260,7 @@ export async function updateSyncCallItem(
   const key = callMapItemName(callSid);
   const call = await getCallItem(callSid);
 
-  return limit(() =>
+  return limitCall(() =>
     syncCallMapApi.syncMapItems(key).update({ data: { ...call, ...update } })
   );
 }
@@ -255,7 +268,9 @@ export async function updateSyncCallItem(
 export async function setSyncCallItem(call: CallRecord) {
   const key = callMapItemName(call.callSid);
 
-  return limit(() => syncCallMapApi.syncMapItems(key).update({ data: call }));
+  return limitCall(() =>
+    syncCallMapApi.syncMapItems(key).update({ data: call })
+  );
 }
 
 async function removeSyncCallItem(callSid: string) {
@@ -328,14 +343,14 @@ async function destroySyncMsgMap(callSid: string) {
 
 async function addSyncMsgItem(msg: StoreMessage) {
   const uniqueName = msgMapName(msg.callSid);
-  return limit(() =>
+  return limitMsg(() =>
     sync.syncMaps(uniqueName).syncMapItems.create({ key: msg.id, data: msg })
   );
 }
 
 async function updateSyncMsgItem(msg: StoreMessage) {
   const uniqueName = msgMapName(msg.callSid);
-  return limit(() =>
+  return limitMsg(() =>
     sync.syncMaps(uniqueName).syncMapItems(msg.id).update({ data: msg })
   );
 }

@@ -145,7 +145,6 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
   const { callSid } = req.params;
 
   log.info(`/convo-relay`, `websocket initializing, CallSid ${callSid}`);
-  updateSyncCallItem(callSid, { callStatus: "connected" }).catch(() => {});
 
   const callData = tempCache.get(callSid) as CallRecord;
   tempCache.delete(callSid);
@@ -164,7 +163,10 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
       );
   else log.warn("call", "call is not being recorded");
 
-  relay.onSetup((ev) => {});
+  relay.onSetup((ev) => {
+    store.setCall({ callStatus: "connected" });
+    store.setContext({ waitTime: 10 });
+  });
 });
 
 /****************************************************
