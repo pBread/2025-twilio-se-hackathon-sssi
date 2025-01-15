@@ -1,5 +1,6 @@
 import * as env from "./env";
 
+import deepmerge from "deepmerge";
 import express from "express";
 import ExpressWs from "express-ws";
 import {
@@ -8,7 +9,9 @@ import {
   DemoConfiguration,
   UserRecord,
 } from "../shared/entities";
+import bot from "./bot/conscious";
 import { getGreeting } from "./bot/greetings";
+import governanceBot from "./bot/subconscious/governance";
 import log from "./logger";
 import { CallService } from "./services/call-service";
 import { ConversationStore } from "./services/conversation-store";
@@ -22,9 +25,6 @@ import {
   setupSync,
   updateSyncCallItem,
 } from "./services/sync-service";
-import deepmerge from "deepmerge";
-import governanceBot from "./bot/subconscious/governance";
-import bot from "./bot/conscious";
 
 const {
   DEFAULT_FROM_NUMBER,
