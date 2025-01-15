@@ -2,7 +2,7 @@ import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
 import { getCallLogs } from "@/state/logs";
 import { getCallMessages, getMessageById } from "@/state/messages";
-import { Button, JsonInput, Paper, Table, Title } from "@mantine/core";
+import { Button, Paper, Table, Title } from "@mantine/core";
 import { BotMessage, HumanMessage } from "@shared/entities";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -54,7 +54,7 @@ function Conscious() {
       {showTurns && (
         <Paper style={{ ...paperStyle }}>
           <Title order={4}>Turns</Title>
-          <div style={{ height: "500px", overflow: "scroll" }}>
+          <div style={{ height: "400px", overflow: "scroll" }}>
             <TurnsTable />
           </div>
         </Paper>
@@ -62,7 +62,7 @@ function Conscious() {
       {showSystem && (
         <Paper style={{ ...paperStyle }}>
           <Title order={4}>System Messages</Title>
-          <div style={{ height: "200px", overflow: "scroll" }}>
+          <div style={{ height: "400px", overflow: "scroll" }}>
             <SystemMessages />
           </div>
         </Paper>
