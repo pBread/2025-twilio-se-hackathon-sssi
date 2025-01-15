@@ -8,7 +8,7 @@ import { LogActions } from "@shared/entities";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import startCase from "lodash.startcase";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 export default function LiveCall() {
   return (
