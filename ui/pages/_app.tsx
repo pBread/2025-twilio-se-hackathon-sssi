@@ -3,6 +3,7 @@ import { Helmet } from "@/components/Helmet";
 import { type AppStore, makeStore } from "@/state/store";
 import {
   initSync,
+  useAddCallListeners,
   useAddCallMapListeners,
   useFetchCallData,
 } from "@/state/sync";
@@ -11,10 +12,8 @@ import { isServer } from "@/util/env";
 import { MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import type { AppProps } from "next/app";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Provider } from "react-redux";
-import { useAddCallListeners } from "@/state/sync";
-import { useAppDispatch } from "@/state/hooks";
 
 export default function App(props: AppProps) {
   const storeRef = useRef<AppStore | null>(null);
