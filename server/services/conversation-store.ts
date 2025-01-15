@@ -1,8 +1,18 @@
 import diff from "deep-diff";
 import {
+  AddBotDTMF,
+  AddBotText,
+  AddBotTool,
+  AddHumanDTMF,
+  AddHumanText,
   AddSystemMessage,
+  BotDTMF,
+  BotText,
+  BotTool,
   CallContext,
   CallRecord,
+  HumanDTMF,
+  HumanText,
   StoreMessage,
   SystemMessage,
 } from "../../shared/entities";
@@ -52,6 +62,136 @@ export class ConversationStore {
   getMessage = (id: string) => this.msgMap.get(id);
   getMessages = () =>
     [...this.msgMap.values()].map((msg, _index) => ({ ...msg, _index }));
+
+  addBotDTMF = (params: AddBotDTMF): BotDTMF => {
+    const seq = this.seq++;
+    const id = params.id ?? makeId("bot", `${seq}`);
+    const msg: BotDTMF = {
+      ...params,
+      callSid: this.call.callSid,
+      createdAt: makeTimestamp(),
+      seq,
+      id,
+      role: "bot",
+      type: "dtmf",
+    };
+
+    this.msgMap.set(id, msg);
+
+    // log.info(
+    //   "store",
+    //   `added ${msg.role} ${msg.type} message to local state, id="${msg.id}"`
+    // );
+    return msg;
+  };
+
+  addBotText = (params: AddBotText): BotText => {
+    const seq = this.seq++;
+    const id = params.id ?? makeId("bot", `${seq}`);
+    const msg: BotText = {
+      ...params,
+      callSid: this.call.callSid,
+      createdAt: makeTimestamp(),
+      seq,
+      id,
+      role: "bot",
+      type: "text",
+    };
+
+    this.msgMap.set(id, msg);
+
+    // log.info(
+    //   "store",
+    //   `added ${msg.role} ${msg.type} message to local state, id="${msg.id}"`
+    // );
+
+    return msg;
+  };
+
+  addBotTool = (params: AddBotTool): BotTool => {
+    const msg: BotTool = {
+      seq: this.seq++,
+      ...params,
+      callSid: this.call.callSid,
+      createdAt: makeTimestamp(),
+      role: "bot",
+      type: "tool",
+    };
+
+    this.msgMap.set(msg.id, msg);
+
+    // log.info(
+    //   "store",
+    //   `added ${msg.role} ${msg.type} to local state, id="${msg.id}"`
+    // );
+    return msg;
+  };
+
+  setBotToolResult = (toolId: string, result: object) => {
+    const toolMsg = this.getMessages().find(
+      (msg) =>
+        msg.role === "bot" &&
+        msg.type === "tool" &&
+        msg.tool_calls.some((tool) => tool.id === toolId)
+    ) as BotTool | undefined;
+
+    if (!toolMsg)
+      log.error(
+        "store",
+        `Unable to set tool result because tool message (${toolId}) not found.`
+      );
+
+    const tool = toolMsg?.tool_calls.find((tool) => tool.id === toolId);
+    if (!tool) throw Error(`unreachable error setBotToolResult`);
+
+    tool.result = result;
+
+    return toolMsg;
+  };
+
+  addHumanDTMF = (params: AddHumanDTMF): HumanDTMF => {
+    const seq = this.seq++;
+    const id = params.id ?? makeId("human", `${seq}`);
+    const msg: HumanDTMF = {
+      ...params,
+      callSid: this.call.callSid,
+      createdAt: makeTimestamp(),
+      id,
+      seq,
+      role: "human",
+      type: "dtmf",
+    };
+
+    this.msgMap.set(id, msg);
+
+    // log.info(
+    //   "store",
+    //   `added ${msg.role} ${msg.type} message to local state, id="${msg.id}"`
+    // );
+    return msg;
+  };
+
+  addHumanText = (params: AddHumanText): HumanText => {
+    const seq = this.seq++;
+    const id = params.id ?? makeId("human", `${seq}`);
+    const msg: HumanText = {
+      ...params,
+      callSid: this.call.callSid,
+      createdAt: makeTimestamp(),
+      id,
+      seq,
+      role: "human",
+      type: "text",
+    };
+
+    this.msgMap.set(id, msg);
+
+    // log.info(
+    //   "store",
+    //   `added ${msg.role} ${msg.type} message to local state, id="${msg.id}"`
+    // );
+    return msg;
+  };
 
   addSystemMessage = (params: AddSystemMessage): SystemMessage => {
     const seq = this.seq++;

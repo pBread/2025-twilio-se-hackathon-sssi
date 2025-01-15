@@ -184,12 +184,14 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
 
   relay.onSetup((ev) => {
     store.setCall({ callStatus: "connected" });
-    store.setContext({ waitTime: 10 });
 
     store.addSystemMessage({
       content: store.call.config.conscious.instructions,
       id: "instructions",
     });
+
+    const greeting = ev.customParameters?.greeting;
+    if (greeting) store.addBotText({ content: greeting, id: "greeting" });
   });
 });
 
