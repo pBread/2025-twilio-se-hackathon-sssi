@@ -2,26 +2,13 @@ import { TurnsTable } from "@/components/TurnsTable";
 import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
 import { getCallLogs } from "@/state/logs";
-import {
-  Badge,
-  Button,
-  getTreeExpandedState,
-  Group,
-  Modal,
-  Paper,
-  Table,
-  Text,
-  Title,
-  TreeNodeData,
-  useTree,
-} from "@mantine/core";
+import { Badge, Button, Modal, Paper, Table, Text, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { LogActions } from "@shared/entities";
-import { useRouter } from "next/router";
-import { Tree } from "@mantine/core";
+import { IconMinus, IconPlus } from "@tabler/icons-react";
 import startCase from "lodash.startcase";
-import { IconPlus, IconMinus } from "@tabler/icons-react";
-import { useEffect, useMemo } from "react";
+import { useRouter } from "next/router";
+import { useMemo, useState } from "react";
 
 export default function LiveCall() {
   return (
@@ -177,7 +164,11 @@ function GovernanceContainer() {
 
   const governance = call?.callContext?.governance;
 
-  const data: TreeNodeData[] = useMemo(
+  const [closed, setClosed] = useState({});
+  const toggle = (value: string) =>
+    setClosed((state) => ({ ...state, [value]: !state[value] }));
+
+  const data = useMemo(
     () =>
       !call?.callContext?.governance
         ? []
@@ -186,13 +177,13 @@ function GovernanceContainer() {
             .map(([procedureId, steps]) => {
               const stepEntries = Object.entries(steps);
 
-              const node: TreeNodeData = {
+              const node = {
                 value: procedureId,
                 label: startCase(procedureId),
                 children: stepEntries.map(([step, status]) => ({
                   value: step,
                   label: startCase(step),
-                  nodeProps: { status },
+                  status,
                 })),
               };
 
@@ -201,34 +192,41 @@ function GovernanceContainer() {
     [call?.callSid]
   );
 
-  const tree = useTree();
-
-  useEffect(() => {
-    tree.expandAllNodes();
-  }, [call?.callSid]);
-
   return (
-    <Tree
-      tree={tree}
-      data={data}
-      levelOffset={25}
-      renderNode={({ node, expanded, hasChildren, elementProps }) => (
-        <Group
-          gap={5}
-          className={elementProps.className}
-          style={{ cursor: hasChildren ? "pointer" : "default" }}
-        >
-          {hasChildren &&
-            (expanded ? <IconMinus size={12} /> : <IconPlus size={12} />)}
+    <div>
+      {data.map((parent) => (
+        <div key={`s82-${parent.value}`}>
+          <div
+            style={{ display: "flex", alignItems: "center", gap: "2px" }}
+            onClick={() => toggle(parent.value)}
+          >
+            {closed[parent.value] ? (
+              <IconPlus size={12} onClick={() => toggle(parent.value)} />
+            ) : (
+              <IconMinus size={12} onClick={() => toggle(parent.value)} />
+            )}
+            <Text fw="bold" style={{ cursor: "pointer" }}>
+              {parent.label}
+            </Text>
+          </div>
 
-          {hasChildren ? (
-            <Text fw="bold">{node.label}</Text>
-          ) : (
-            <Text>{node.label}</Text>
-          )}
-        </Group>
-      )}
-    />
+          {!closed[parent.value] &&
+            parent.children.map((child) => (
+              <div
+                key={`849-${parent.value}-${child.value}`}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  paddingLeft: "24px",
+                }}
+              >
+                <Text> {child.label}</Text>
+                <Text> {child.status}</Text>
+              </div>
+            ))}
+        </div>
+      ))}
+    </div>
   );
 }
 
