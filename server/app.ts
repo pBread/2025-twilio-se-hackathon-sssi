@@ -252,6 +252,7 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
     const curContent = interruptedMsg.content as string;
     const [newContent] = curContent.split(interruptedClause);
     interruptedMsg.content = `${newContent} ${interruptedClause}`.trim();
+    interruptedMsg.interrupted = true;
 
     store.msgMap.set(interruptedMsg.id, interruptedMsg);
 

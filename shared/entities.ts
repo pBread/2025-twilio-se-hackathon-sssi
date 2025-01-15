@@ -82,6 +82,7 @@ interface StoreRecord {
 // represents DTMF tones from the bot
 export interface BotDTMF extends StoreRecord {
   content: string;
+  interrupted?: boolean;
   role: "bot";
   type: "dtmf";
 }
@@ -96,6 +97,7 @@ export type AddBotDTMF = Omit<
 // represents a text from LLM that will be spoken
 export interface BotText extends StoreRecord {
   content: string;
+  interrupted?: boolean;
   role: "bot";
   type: "text";
 }

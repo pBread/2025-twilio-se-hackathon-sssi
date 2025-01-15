@@ -2,11 +2,12 @@ import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
 import { getCallLogs } from "@/state/logs";
 import { getCallMessages, getMessageById } from "@/state/messages";
-import { Button, Paper, Table, Text, Title } from "@mantine/core";
+import { Button, Modal, Paper, Table, Title } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { BotMessage, HumanMessage } from "@shared/entities";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { Badge } from "@mantine/core";
 
 export default function LiveCall() {
   return (
@@ -24,9 +25,6 @@ export default function LiveCall() {
 const paperStyle = { padding: "6px" };
 
 function Conscious() {
-  const [showTurns, setShowTurns] = useState(true);
-  const [showSystem, setShowSystem] = useState(true);
-
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       <Paper
@@ -37,38 +35,85 @@ function Conscious() {
         }}
       >
         <Title order={3}>Conscious Bot</Title>
-        <div style={{ display: "flex", gap: "10px" }}>
-          <Button
-            color={showTurns ? "cyan" : "gray"}
-            onClick={() => setShowTurns(!showTurns)}
-          >
-            Turns
-          </Button>
-          <Button
-            color={showSystem ? "cyan" : "gray"}
-            onClick={() => setShowSystem(!showSystem)}
-          >
-            System
-          </Button>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <BotConfigModal />
         </div>
       </Paper>
-      {showTurns && (
-        <Paper style={{ ...paperStyle }}>
-          <Title order={4}>Turns</Title>
-          <div style={{ height: "400px", overflow: "scroll" }}>
-            <TurnsTable />
-          </div>
-        </Paper>
-      )}
-      {showSystem && (
-        <Paper style={{ ...paperStyle }}>
-          <Title order={4}>System Messages</Title>
-          <div style={{ height: "400px", overflow: "scroll" }}>
-            <SystemMessages />
-          </div>
-        </Paper>
-      )}
+
+      <Paper style={{ ...paperStyle }}>
+        <Title order={4}>Turns</Title>
+        <div style={{ height: "400px", overflow: "scroll" }}>
+          <TurnsTable />
+        </div>
+      </Paper>
+
+      <Paper style={{ ...paperStyle }}>
+        <Title order={4}>Calibrations and Directives</Title>
+        <div style={{ height: "400px", overflow: "scroll" }}>
+          <DirectivesContainer />
+        </div>
+      </Paper>
     </div>
+  );
+}
+
+function DirectivesContainer() {
+  const router = useRouter();
+  const callSid = router.query.callSid as string;
+
+  const call = useAppSelector((state) => selectCallById(state, callSid));
+
+  const items = [
+    {
+      source: "recall",
+      description:
+        "Avoid having customers repeat themselves by calling your tools to verify information whenever possible",
+      actions: ["Added System Message", "Updated Instructions"],
+      id: "s8j289r",
+    },
+    {
+      source: "governance",
+      description:
+        "Modify Order Procedure: identify_user, get_order, ask_agent, send_modification_confirmation, process_payment",
+      actions: ["Updated Instructions"],
+      id: "94k992j",
+    },
+    {
+      source: "segment",
+      description: "Fetched the customer's interaction history.",
+      actions: ["Updated Context"],
+      id: "382j88d",
+    },
+    {
+      source: "segment",
+      description: "Fetched the customer's profile",
+      actions: ["Updated Context"],
+      id: "asd2345",
+    },
+  ];
+
+  return (
+    <Table stickyHeader>
+      <Table.Thead>
+        <Table.Tr>
+          <Table.Th>Source</Table.Th>
+          <Table.Th>Description</Table.Th>
+          <Table.Th>Actions</Table.Th>
+        </Table.Tr>
+      </Table.Thead>
+
+      {items.map((item) => (
+        <Table.Tr key={`sw4-${item.id}`}>
+          <Table.Td>{item.source}</Table.Td>
+          <Table.Td>{item.description}</Table.Td>
+          <Table.Td>
+            {item.actions.sort().map((action) => (
+              <Badge key={`s28-${item.id}-${action}`}>{action} </Badge>
+            ))}
+          </Table.Td>
+        </Table.Tr>
+      ))}
+    </Table>
   );
 }
 
@@ -82,9 +127,9 @@ function TurnsTable() {
     <Table stickyHeader>
       <Table.Thead>
         <Table.Tr>
-          <Table.Td>Role</Table.Td>
-          <Table.Td>Type</Table.Td>
-          <Table.Td>Content</Table.Td>
+          <Table.Th>Role</Table.Th>
+          <Table.Th>Type</Table.Th>
+          <Table.Th>Content</Table.Th>
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>
@@ -105,19 +150,28 @@ function BotRow({ msgId }: { msgId: string }) {
   ) as BotMessage;
 
   let content = "";
+  let isInterrupted = false;
 
   if (msg.type === "tool") {
     const tool = msg.tool_calls[0];
     content = `${tool.function.name}(${JSON.stringify(
       tool.function.arguments
     )})`.replaceAll("\\", "");
-  } else content = msg.content;
+  } else {
+    content = msg.content;
+    isInterrupted = !!msg.interrupted;
+  }
 
   return (
     <>
-      <Table.Th> {msg.role}</Table.Th>
-      <Table.Th> {msg.type}</Table.Th>
-      <Table.Th> {content}</Table.Th>
+      <Table.Td>{msg.role}</Table.Td>
+      <Table.Td>{msg.type}</Table.Td>
+      <Table.Td>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <span> {content}</span>
+          <span> {isInterrupted && <span>Interrupted</span>}</span>
+        </div>
+      </Table.Td>
     </>
   );
 }
@@ -129,9 +183,34 @@ function HumanRow({ msgId }: { msgId: string }) {
 
   return (
     <>
-      <Table.Th> {msg.role}</Table.Th>
-      <Table.Th> {msg.type}</Table.Th>
-      <Table.Th> {msg.content}</Table.Th>
+      <Table.Td> {msg.role}</Table.Td>
+      <Table.Td> {msg.type}</Table.Td>
+      <Table.Td> {msg.content}</Table.Td>
+    </>
+  );
+}
+
+function BotConfigModal() {
+  const [opened, { open, close, toggle }] = useDisclosure(false);
+
+  const router = useRouter();
+  const callSid = router.query.callSid as string;
+
+  const call = useAppSelector((state) => selectCallById(state, callSid));
+
+  return (
+    <>
+      <Modal
+        opened={opened}
+        onClose={close}
+        title="Bot Configuration"
+        size="100%"
+      >
+        <div>{call?.config.conscious.instructions}</div>;
+      </Modal>
+      <Button variant="default" onClick={toggle}>
+        Bot Configuration
+      </Button>
     </>
   );
 }
