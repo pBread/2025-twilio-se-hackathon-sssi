@@ -83,7 +83,9 @@ function DirectivesContainer() {
           <Table.Tr key={`sw4-${item.id}`}>
             <Table.Td>{item.source}</Table.Td>
             <Table.Td>{item.description}</Table.Td>
-            <Table.Td>
+            <Table.Td
+              style={{ display: "flex", flexDirection: "column", gap: "2px" }}
+            >
               {[...item.actions]
                 .sort((a, b) => a.localeCompare(b))
                 .map((action) => (
