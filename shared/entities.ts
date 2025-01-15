@@ -56,9 +56,11 @@ export interface LogRecord {
   actions: LogActions[];
 }
 
-type LogSources = "agent" | "governance" | "recall" | "segment";
+type LogSources = "Agent" | "Governance" | "Recall" | "Segment";
 
-type LogActions =
+export type LogActions =
+  | "Approval"
+  | "Rejection"
   | "Added System Message"
   | "Updated Context"
   | "Updated Instructions";

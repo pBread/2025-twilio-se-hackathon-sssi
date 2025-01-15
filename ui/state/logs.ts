@@ -9,7 +9,7 @@ import type { RootState } from "./store";
 const SLICE_NAME = "logs";
 
 const adapter = createEntityAdapter<LogRecord>({
-  sortComparer: (a, b) => a._index - b._index,
+  sortComparer: (a, b) => b._index - a._index,
 });
 
 interface InitialState {

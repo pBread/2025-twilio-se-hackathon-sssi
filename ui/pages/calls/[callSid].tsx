@@ -4,7 +4,7 @@ import { getCallLogs } from "@/state/logs";
 import { getCallMessages, getMessageById } from "@/state/messages";
 import { Button, Modal, Paper, Table, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { BotMessage, HumanMessage } from "@shared/entities";
+import { BotMessage, HumanMessage, LogActions } from "@shared/entities";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Badge } from "@mantine/core";
@@ -65,35 +65,6 @@ function DirectivesContainer() {
 
   const logs = useAppSelector((state) => getCallLogs(state, callSid));
 
-  const items = [
-    {
-      source: "recall",
-      description:
-        "Avoid having customers repeat themselves by calling your tools to verify information whenever possible",
-      actions: ["Added System Message", "Updated Instructions"],
-      id: "s8j289r",
-    },
-    {
-      source: "governance",
-      description:
-        "Modify Order Procedure: identify_user, get_order, ask_agent, send_modification_confirmation, process_payment",
-      actions: ["Updated Instructions"],
-      id: "94k992j",
-    },
-    {
-      source: "segment",
-      description: "Fetched the customer's interaction history.",
-      actions: ["Updated Context"],
-      id: "382j88d",
-    },
-    {
-      source: "segment",
-      description: "Fetched the customer's profile",
-      actions: ["Updated Context"],
-      id: "asd2345",
-    },
-  ];
-
   return (
     <Table stickyHeader>
       <Table.Thead>
@@ -104,20 +75,37 @@ function DirectivesContainer() {
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>
-        {items.map((item) => (
+        {logs.map((item) => (
           <Table.Tr key={`sw4-${item.id}`}>
             <Table.Td>{item.source}</Table.Td>
             <Table.Td>{item.description}</Table.Td>
             <Table.Td>
-              {item.actions.sort().map((action) => (
-                <Badge key={`s28-${item.id}-${action}`}>{action} </Badge>
-              ))}
+              {[...item.actions]
+                .sort((a, b) => a.localeCompare(b))
+                .map((action) => (
+                  <ActionBadge
+                    action={action}
+                    key={`s28-${item.id}-${action}`}
+                  />
+                ))}
             </Table.Td>
           </Table.Tr>
         ))}
       </Table.Tbody>
     </Table>
   );
+}
+
+function ActionBadge({ action }: { action: LogActions }) {
+  let color = ""; // https://mantine.dev/core/badge/
+
+  if (action === "Approval") color = "green";
+  if (action === "Rejection") color = "red";
+  // if (action === "Added System Message") color = "indigo";
+  // if (action === "Updated Context") color = "teal";
+  if (action === "Updated Instructions") color = "gray";
+
+  return <Badge color={color}>{action} </Badge>;
 }
 
 function TurnsTable() {
