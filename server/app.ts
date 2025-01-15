@@ -72,12 +72,13 @@ app.post("/call-handler", async (req, res) => {
       similarCalls: [],
       suggestions: [],
       governance: {},
+      user: undefined,
     };
 
     const db = await dbPromise;
     let user: UserRecord | undefined;
 
-    if (demoConfig.isRecordingEnabled) {
+    if (demoConfig.segment.isFetchProfileEnabled) {
       log.info("/call-handler", `fetching segment profile`);
       user = await db.users.getByChannel(From);
     } else
