@@ -221,6 +221,7 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
   const db = await dbPromise;
   const relay = new RelayService(callSid, ws);
   const store = new ConversationStore(callData);
+  const subconscious = new SubsconsciousService(store);
 
   const llm = new LLMService(store, relay, db);
 
@@ -244,6 +245,9 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
 
     const greeting = ev.customParameters?.greeting;
     if (greeting) store.addBotText({ content: greeting, id: "greeting" });
+
+    if (store.call.config.subconscious.isGovernanceEnabled)
+      subconscious.startGovernance();
   });
 
   relay.onPrompt((ev) => {

@@ -1,5 +1,6 @@
 import { CallContext, StoreMessage } from "../../../shared/entities";
-import { FunctionServices, injectContext } from "../helpers";
+import { LLM_MODEL } from "../../env";
+import { injectContext } from "../helpers";
 import procedures from "../procedures";
 
 const instructions = `\
@@ -54,6 +55,6 @@ function getInstructions(ctx: CallContext, msgs: StoreMessage[]) {
   return prompt;
 }
 
-const governanceBot = { getInstructions };
+const governanceBot = { getInstructions, model: LLM_MODEL };
 
 export default governanceBot;
