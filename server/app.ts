@@ -233,6 +233,7 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
     if (greeting) store.addBotText({ content: greeting, id: "greeting" });
 
     if (store.call.config.isGovernanceEnabled) subconscious.startGovernance();
+    if (store.call.config.isRecallEnabled) subconscious.startRecall();
   });
 
   relay.onPrompt((ev) => {
