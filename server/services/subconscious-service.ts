@@ -119,7 +119,7 @@ export class SubsconsciousService {
 
       actions: ["Updated Context"],
       description: `Added new procedure '${procedureId} to governance tracker'`,
-      source: "Segment",
+      source: "Governance",
     });
 
   updateProcedure = (
@@ -136,7 +136,7 @@ export class SubsconsciousService {
       callSid: this.store.call.callSid,
       actions,
       description: `Updated the '${procedureId}' procedure step '${step}' from '${oldStatus}' to '${newStatus}''`,
-      source: "Segment",
+      source: "Governance",
     });
   };
 }
