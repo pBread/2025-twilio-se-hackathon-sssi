@@ -34,6 +34,11 @@ export class SubsconsciousService {
     };
   }
 
+  stop = async () => {
+    clearInterval(this.governanceTimeout);
+    clearInterval(this.recallTimeout);
+  };
+
   /****************************************************
    Governance
   ****************************************************/
@@ -98,10 +103,6 @@ export class SubsconsciousService {
           change.oldStatus
         );
     }
-  };
-
-  stop = async () => {
-    clearInterval(this.governanceTimeout);
   };
 
   newProcedure = (procedureId: string) => {
@@ -169,16 +170,14 @@ export class SubsconsciousService {
 
     // end of dev purposes
 
-    const call = this.store.call;
-
     const similarCalls = top5Calls.map((call) => ({
       callSid: call.callSid,
-      similarity: (Math.floor(Math.random() * 20) + 0.7) / 100,
+      similarity: Number((Math.random() * (0.95 - 0.6) + 0.6).toFixed(2)), // rand 0.6-0.95
       id: makeId("similar-call"),
     }));
 
     const newMatches = similarCalls.filter((callMatch) =>
-      this.store.call.callContext.similarCalls.every(
+      this.store.call.callContext.similarCalls.some(
         (call) => call.callSid !== callMatch.callSid
       )
     );
@@ -205,6 +204,8 @@ export class SubsconsciousService {
       );
 
     this.store.setContext({ similarCalls });
+
+    log.debug("sub.recall", "newFeedback", callRecs, newFeedback);
 
     newFeedback.forEach((feedback) =>
       this.addRecallAnnotation(feedback.match, feedback.annotation)
