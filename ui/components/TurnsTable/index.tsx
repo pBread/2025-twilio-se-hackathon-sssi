@@ -1,8 +1,8 @@
 import { useAppSelector } from "@/state/hooks";
 import { getCallMessages, getMessageById } from "@/state/messages";
+import { useFetchCallData } from "@/state/sync";
 import { Badge, Table } from "@mantine/core";
 import { BotMessage, HumanMessage } from "@shared/entities";
-import { useFetchCallData } from "@/state/sync";
 
 export function TurnsTable({
   callSid,
@@ -19,8 +19,6 @@ export function TurnsTable({
   const isHighlighted = targetStart !== undefined || targetEnd !== undefined;
 
   const targets = [targetStart ?? 0, targetEnd ?? msgs.length];
-
-  console.log("TurnsTable targets", targets);
 
   return (
     <Table stickyHeader>
