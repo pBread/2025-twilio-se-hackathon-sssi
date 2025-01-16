@@ -68,8 +68,12 @@ function getSlice(state: RootState) {
   return state[SLICE_NAME];
 }
 
-export function useSyncSlice() {
-  return useAppSelector(getSlice);
+export function getConnectionState(state: RootState) {
+  return getSlice(state).connectionState;
+}
+
+function getListenerStatus(state: RootState, callSid: string) {
+  return getSlice(state).callMessageListeners[callSid];
 }
 
 /****************************************************
@@ -90,9 +94,9 @@ export async function initSync(dispatch: AppDispatch) {
  Client
 ****************************************************/
 export function useSyncClient() {
-  const connectionState = useSyncSlice().connectionState;
+  const connectionState = useAppSelector(getConnectionState);
 
-  if (connectionState === "unknown") return;
+  if (connectionState !== "connected") return;
 
   return syncClient as SyncClient;
 }
@@ -109,8 +113,8 @@ export function useFetchCallData(callSid?: string) {
 }
 
 export function useAddCallListeners(callSid?: string) {
-  const connectionState = useSyncSlice().connectionState;
-  const status = useSyncSlice().callMessageListeners[callSid];
+  const connectionState = useAppSelector(getConnectionState);
+  const status = useAppSelector((state) => getListenerStatus(state, callSid));
   const dispatch = useAppDispatch();
 
   const syncClient = useSyncClient();
@@ -119,10 +123,11 @@ export function useAddCallListeners(callSid?: string) {
     if (!callSid) return;
     if (connectionState !== "connected") return;
     if (status) return;
+    if (!syncClient) return;
 
     dispatch(setCallMsgListener({ callSid, status: "new" }));
 
-    async function addSyncListListeners() {
+    const addSyncListListeners = async () => {
       const listUniqueName = logListName(callSid);
 
       const list = await syncClient.list(listUniqueName);
@@ -130,9 +135,9 @@ export function useAddCallListeners(callSid?: string) {
       list.on("itemAdded", (ev) => {
         dispatch(addOneLog(ev.item.data));
       });
-    }
+    };
 
-    async function addSyncMapListeners() {
+    const addSyncMapListeners = async () => {
       const mapUniqueName = msgMapName(callSid);
       const map = await syncClient.map(mapUniqueName);
 
@@ -152,7 +157,7 @@ export function useAddCallListeners(callSid?: string) {
 
         dispatch(removeOneMessage(ev.key));
       });
-    }
+    };
 
     Promise.all([addSyncListListeners(), addSyncMapListeners()]).then(() => {
       dispatch(setCallMsgListener({ callSid, status: "done" }));
@@ -161,7 +166,7 @@ export function useAddCallListeners(callSid?: string) {
 }
 
 export function useAddCallMapListeners() {
-  const connectionState = useSyncSlice().connectionState;
+  const connectionState = useAppSelector(getConnectionState);
   const dispatch = useAppDispatch();
 
   useEffect(() => {

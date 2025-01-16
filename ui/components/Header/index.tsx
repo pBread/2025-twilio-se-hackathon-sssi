@@ -1,13 +1,12 @@
 import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
-import { useSyncSlice } from "@/state/sync";
+import { getConnectionState } from "@/state/sync";
 import { Loader, Paper, Skeleton, Text } from "@mantine/core";
 import Link from "next/link";
 
 export function Header({ callSid }: { callSid?: string }) {
-  const syncSlice = useSyncSlice();
-
-  const isConnected = syncSlice.connectionState === "connected";
+  const connectionState = useAppSelector(getConnectionState);
+  const isConnected = connectionState === "connected";
 
   return (
     <header>
@@ -48,9 +47,9 @@ function CallDetails({ callSid }: { callSid?: string }) {
 }
 
 function Connection() {
-  const syncSlice = useSyncSlice();
+  const connectionState = useAppSelector(getConnectionState);
 
-  if (syncSlice.connectionState === "connected") return;
+  if (connectionState === "connected") return;
 
   return <Loader size="sm" />;
 }
