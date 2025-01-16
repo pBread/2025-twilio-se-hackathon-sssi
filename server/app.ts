@@ -30,6 +30,7 @@ import {
 } from "./services/sync-service";
 import { LLMService } from "./services/llm-service";
 import { SubsconsciousService } from "./services/subconscious-service";
+import { getInstructions } from "./bot/conscious/instructions";
 
 const {
   DEFAULT_FROM_NUMBER,
@@ -239,15 +240,14 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
     store.setCall({ callStatus: "connected" });
 
     store.addSystemMessage({
-      content: store.call.config.conscious.instructions,
+      content: getInstructions(store.call.callContext),
       id: "instructions",
     });
 
     const greeting = ev.customParameters?.greeting;
     if (greeting) store.addBotText({ content: greeting, id: "greeting" });
 
-    if (store.call.config.subconscious.isGovernanceEnabled)
-      subconscious.startGovernance();
+    if (store.call.config.isGovernanceEnabled) subconscious.startGovernance();
   });
 
   relay.onPrompt((ev) => {

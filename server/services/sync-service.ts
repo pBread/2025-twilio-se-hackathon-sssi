@@ -70,18 +70,13 @@ const syncCallMapApi = sync.syncMaps(SYNC_CALL_MAP_NAME);
 const defaultDemoConfig: DemoConfiguration = {
   ...sampleData.config,
   relayConfig,
-  conscious: {
-    instructions: bot.getInstructions(sampleData.calls[0].callContext),
-    model: bot.model,
-  },
-  subconscious: {
-    isGovernanceEnabled: ENABLE_GOVERNANCE,
-    isRecallEnabled: ENABLE_RECALL,
-    governanceInstructions: governanceBot.getInstructions(
-      sampleData.calls[0].callContext,
-      sampleData.callMessages[sampleData.calls[0].callSid]
-    ),
-  },
+  governanceInstructions: governanceBot.getInstructions(
+    sampleData.calls[0].callContext,
+    sampleData.callMessages[sampleData.calls[0].callSid]
+  ),
+
+  consciousInstructions: bot.getInstructions(sampleData.calls[0].callContext),
+  consciousModel: bot.model,
 };
 
 export let demoConfig: DemoConfiguration = JSON.parse(

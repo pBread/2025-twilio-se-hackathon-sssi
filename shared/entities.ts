@@ -12,7 +12,10 @@ export interface CallRecord {
   summary: string;
 
   callContext: CallContext;
-  config: DemoConfiguration;
+  config: Omit<
+    DemoConfiguration,
+    "governanceInstructions" | "consciousInstructions"
+  >;
   feedback: Annotation[];
 }
 
@@ -53,17 +56,12 @@ export interface Annotation {
 
 export interface DemoConfiguration {
   isRecordingEnabled: boolean;
+  consciousInstructions: string;
+  consciousModel: string;
 
-  conscious: {
-    instructions: string;
-    model: string;
-  };
-  subconscious: {
-    isGovernanceEnabled: boolean;
-    governanceInstructions: string;
-
-    isRecallEnabled: boolean;
-  };
+  governanceInstructions: string;
+  isGovernanceEnabled: boolean;
+  isRecallEnabled: boolean;
 
   relayConfig: { sttProvider: string; ttsProvider: string; ttsVoice: string };
 
