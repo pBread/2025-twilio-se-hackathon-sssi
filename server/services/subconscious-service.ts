@@ -66,6 +66,8 @@ export class SubsconsciousService {
       stream: false,
     });
 
+    log.debug("sub.gov", "completion", JSON.stringify(completion, null, 2));
+
     const choice = completion.choices[0];
 
     if (choice.finish_reason === "tool_calls" && choice.message.tool_calls) {

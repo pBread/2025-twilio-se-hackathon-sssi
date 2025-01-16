@@ -1,10 +1,23 @@
 import { CallContext, StoreMessage } from "../../../shared/entities";
 import { LLM_MODEL } from "../../env";
+import log from "../../logger";
 import { injectContext } from "../helpers";
 import procedures from "../procedures";
 
+// ## Identifying Procedures
+// You will be given the previously identified procedures. You must keep all of those procedures but you should also attempt to identify new procedures. It's better to identify too many procedures than to miss a procedure.
+
 const instructions = `\
 Below you will find a list of procedures and a partial conversation between an LLM powered voice bot and a human. Your job is to identify what procedures are relevant to the conversation and what the status of the procedure steps are.
+
+# Guidelines
+## Status Progression
+The status of each protocol steps should only advance. For instance, if a protocol step is "in-progress", your response MUST show that step as either "in-progress", "complete", "unresolved".
+- "not-started" can move to any status
+- "missed" can move to any status, except for "not-started"
+- "in-progress" can move to  "in-progress", "complete" or "unresolved", but not "not-started" or "missed"
+- "complete" cannot change
+- "unresolved" can be updated to either "in-progress" or "complete". Note, this is the only status that can go back to a previous value.
 
 # Response Format
 Format your response as a JSON object formatted to the schema of the Typescript type GovernanceTracker below. You should only include the procedures that are underway or could be relevant. But, you should include every step with that step's status for each procedure you identify.
@@ -21,10 +34,10 @@ interface GovernanceStep {
 
 type GovernanceStepStatus =
   | "not-started"
-  | "in-progress"
-  | "complete"
-  | "missed";
-
+  | "missed" // the bot simply skipped this step
+  | "in-progress" // the bot is currently performing this step
+  | "complete" // the bot successfully completed this step
+  | "unresolved" // the bot attempted, but failed
 
 ## Example Response
 Here is an example of a response...
@@ -39,18 +52,72 @@ Here is an example of a response...
   ],
 }
 
+# Current State
+Here is the current state of the procedures...
+{{governanceState}}
+
 # Procedures
 Here are the procedures for this conversations...
-${JSON.stringify(procedures)}
+{{procedures}}
 
 # Current Conversation
+Here are a few notes on the formatting
+- Result that are undefined are unresolved, i.e. the API request is still open.
+- The result.data property is stringified then truncated to avoid this prompt from being too long.
+
+{{messages}}
 
 `;
 
 function getInstructions(ctx: CallContext, msgs: StoreMessage[]) {
-  let prompt = injectContext(instructions, ctx);
+  let prompt = instructions.replace(
+    "{{governanceState}}",
+    JSON.stringify(ctx.governance)
+  );
+  prompt = prompt.replace("{{procedures}}", JSON.stringify(procedures));
 
-  prompt += JSON.stringify(msgs);
+  const _msgs = msgs
+    .filter((msg) => msg.role !== "system")
+    .map((msg) => {
+      const role = msg.role;
+      const type = msg.type;
+
+      if (role === "human") return { role, content: msg.content };
+
+      if (type === "tool")
+        return msg.tool_calls.map((tool) => {
+          const result = tool.result as {
+            status: "success" | "error";
+            data: object | object[] | string;
+          };
+
+          if (result?.data) {
+            const stringified = JSON.stringify(result.data);
+            // reduce the size of the result
+            const truncated =
+              stringified.length > 100
+                ? stringified.substring(0, 100) + "..."
+                : stringified;
+
+            return {
+              role,
+              type,
+              function: tool.function,
+              result: { ...result, data: truncated },
+            };
+          }
+
+          return { role, type, function: tool.function, result };
+        });
+
+      return { role: msg.role, type: msg.type, content: msg.content };
+    })
+    .flat(Infinity);
+
+  prompt = prompt.replace("{{messages}}", JSON.stringify(_msgs));
+
+  prompt = injectContext(prompt, ctx);
+  log.debug("bot.gov", "governance bot prompt\n", prompt);
 
   return prompt;
 }
