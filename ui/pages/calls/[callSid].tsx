@@ -51,16 +51,16 @@ function Conscious() {
       </Paper>
 
       <Paper style={{ ...paperStyle }}>
-        <Title order={4}>Calibrations and Directives</Title>
+        <Title order={4}>Calibrations</Title>
         <div style={{ height: "400px", overflow: "scroll" }}>
-          <DirectivesContainer />
+          <CalibrationsContainer />
         </div>
       </Paper>
     </div>
   );
 }
 
-function DirectivesContainer() {
+function CalibrationsContainer() {
   const router = useRouter();
   const callSid = router.query.callSid as string;
 
@@ -145,12 +145,12 @@ function Subconsciousness() {
         <Title order={3}>Subconscious Bots</Title>
       </Paper>
       <Paper style={paperStyle}>
-        <Title order={4}>Recall</Title>
+        <Title order={4}>Conversation Recall</Title>
         <Title order={6}>Most Similar Conversations</Title>
         <RecallContainer />
       </Paper>
       <Paper style={paperStyle}>
-        <Title order={4}>Governance</Title>
+        <Title order={4}>Procedure Governance</Title>
         <GovernanceContainer />
       </Paper>
     </div>
