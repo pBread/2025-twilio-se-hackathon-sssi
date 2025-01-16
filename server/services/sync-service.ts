@@ -78,7 +78,8 @@ const defaultDemoConfig: DemoConfiguration = {
     isGovernanceEnabled: ENABLE_GOVERNANCE,
     isRecallEnabled: ENABLE_RECALL,
     governanceInstructions: governanceBot.getInstructions(
-      sampleData.calls[0].callContext
+      sampleData.calls[0].callContext,
+      sampleData.callMessages[sampleData.calls[0].callSid]
     ),
   },
 };

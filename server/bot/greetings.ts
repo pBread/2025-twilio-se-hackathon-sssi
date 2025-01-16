@@ -9,6 +9,6 @@ const greetings = [
 export function getGreeting(ctx: CallContext) {
   return injectContext(
     greetings[Math.floor(Math.random() * greetings.length)],
-    { waitTime: 6, ...ctx }
+    ctx
   );
 }

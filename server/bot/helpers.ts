@@ -3,6 +3,7 @@ import log from "../logger";
 import type { ConversationStore } from "../services/conversation-store";
 import type { DatabaseService } from "../services/database-service";
 import type { RelayService } from "../services/relay-service";
+import type { SubsconsciousService } from "../services/subconscious-service";
 
 export interface FunctionServices {
   ctx: CallContext;

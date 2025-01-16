@@ -113,7 +113,7 @@ app.post("/call-handler", async (req, res) => {
       {
         conscious: { instructions: bot.getInstructions(ctx) },
         subconscious: {
-          governanceInstructions: governanceBot.getInstructions(ctx),
+          governanceInstructions: governanceBot.getInstructions(ctx, []),
         },
       },
     ]) as DemoConfiguration;
