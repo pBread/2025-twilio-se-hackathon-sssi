@@ -318,6 +318,8 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
   });
 
   ws.on("close", () => {
+    subconscious.stop();
+
     log.info(
       "relay",
       "conversation relay ws closed. final conversation state:\n",

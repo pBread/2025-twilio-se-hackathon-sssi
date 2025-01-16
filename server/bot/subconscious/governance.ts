@@ -19,6 +19,11 @@ The status of each protocol steps should only advance. For instance, if a protoc
 ## Events Are Related
 Some of the events are related. Make sure you consider this when analyzing the step progress. For instance, identify_user is referenced in multiple procedures. If identify_user is a procedure and you identify a procedure with a step identify_user, then that step should not be "not-started".
 
+Also, if a step is a related procedure and there are any steps that are not "not-started" or "in-progress" then that step cannot be considered "complete."
+
+## Include Complete State
+Your response should include the complete state. That is, you will be provided with the current tracker. Your response should include every procedure and step that was in the original tracker.
+
 # Response Format
 Format your response as a JSON object formatted to the schema of the Typescript type GovernanceTracker below. You should only include the procedures that are underway or could be relevant. But, you should include every step with that step's status for each procedure you identify.
 
