@@ -227,13 +227,9 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
   relay.onSetup((ev) => {
     store.setCall({ callStatus: "connected" });
 
-    store.addSystemMessage({
-      content: getInstructions(store.call.callContext),
-      id: "instructions",
-    });
+    store.setInstructions(getInstructions(store.call.callContext));
 
     const greeting = ev.customParameters?.greeting;
-
     if (greeting) store.addBotText({ content: greeting, id: "greeting" });
 
     if (store.call.config.isGovernanceEnabled) subconscious.startGovernance();

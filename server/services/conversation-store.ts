@@ -45,6 +45,13 @@ export class ConversationStore {
     this._call = call;
   }
 
+  setInstructions = (instructions: string) => {
+    this.addSystemMessage({
+      content: instructions,
+      id: `instructions-${this.call.callSid}`,
+    });
+  };
+
   setCall = (update: Partial<CallRecord>) => {
     const call = { ...this.call, ...update };
     this.call = call;
