@@ -47,7 +47,6 @@ export class SubsconsciousService {
   ****************************************************/
   governanceTimeout: NodeJS.Timeout | undefined;
   startGovernance = async () => {
-    log.info("llm.sub", "subconscious governance starting");
     this.governanceTimeout = setInterval(
       this.executeGovernance,
       this.opts.governanceFrequency
@@ -79,7 +78,7 @@ export class SubsconsciousService {
 
     if (choice.finish_reason === "stop") {
       const result = safeParse(content) as GovernanceTracker;
-      log.info("sub.gov", "governance bot response: ", result);
+
       if (!result) {
         log.warn(
           "sub.gov",
@@ -113,14 +112,17 @@ export class SubsconsciousService {
     clearInterval(this.governanceTimeout);
   };
 
-  newProcedure = (procedureId: string) =>
+  newProcedure = (procedureId: string) => {
+    const description = `Added new procedure '${procedureId} to governance tracker'`;
+    log.info("sub.gov", description);
+
     addSyncLogItem({
       callSid: this.store.call.callSid,
-
       actions: ["Updated Context"],
-      description: `Added new procedure '${procedureId} to governance tracker'`,
+      description,
       source: "Governance",
     });
+  };
 
   updateProcedure = (
     procedureId: string,
@@ -128,6 +130,9 @@ export class SubsconsciousService {
     newStatus: GovernanceStepStatus,
     oldStatus: GovernanceStepStatus = "not-started"
   ) => {
+    const description = `Updated the '${procedureId}' procedure step '${step}' from '${oldStatus}' to '${newStatus}''`;
+    log.info("sub.gov", description);
+
     let actions: LogActions[] = ["Updated Context"];
 
     if (newStatus === "missed") actions.push("Added System Message");
@@ -135,7 +140,7 @@ export class SubsconsciousService {
     addSyncLogItem({
       callSid: this.store.call.callSid,
       actions,
-      description: `Updated the '${procedureId}' procedure step '${step}' from '${oldStatus}' to '${newStatus}''`,
+      description,
       source: "Governance",
     });
   };
