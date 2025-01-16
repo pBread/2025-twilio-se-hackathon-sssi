@@ -22,3 +22,5 @@
 ### integrate the segment interaction history
 
 - Pull the previous conversations of this user and provide them to the bot.
+
+### Fix the selectors issue by including the fetch state in a reselect selector
