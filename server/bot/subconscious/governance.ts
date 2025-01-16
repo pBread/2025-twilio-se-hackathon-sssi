@@ -4,9 +4,6 @@ import log from "../../logger";
 import { injectContext } from "../helpers";
 import procedures from "../procedures";
 
-// ## Identifying Procedures
-// You will be given the previously identified procedures. You must keep all of those procedures but you should also attempt to identify new procedures. It's better to identify too many procedures than to miss a procedure.
-
 const instructions = `\
 Below you will find a list of procedures and a partial conversation between an LLM powered voice bot and a human. Your job is to identify what procedures are relevant to the conversation and what the status of the procedure steps are.
 
@@ -117,7 +114,6 @@ function getInstructions(ctx: CallContext, msgs: StoreMessage[]) {
   prompt = prompt.replace("{{messages}}", JSON.stringify(_msgs));
 
   prompt = injectContext(prompt, ctx);
-  log.debug("bot.gov", "governance bot prompt\n", prompt);
 
   return prompt;
 }
