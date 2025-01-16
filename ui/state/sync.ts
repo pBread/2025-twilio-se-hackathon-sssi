@@ -122,33 +122,39 @@ export function useAddCallListeners(callSid?: string) {
 
     dispatch(setCallMsgListener({ callSid, status: "new" }));
 
-    Promise.all([
-      async () => {
-        const listUniqueName = logListName(callSid);
-        syncClient.list(listUniqueName).then((list) => {
-          list.on("itemAdded", (ev) => {
-            dispatch(addOneLog(ev.item.data));
-          });
-        });
-      },
+    async function addSyncListListeners() {
+      const listUniqueName = logListName(callSid);
 
-      async () => {
-        const mapUniqueName = msgMapName(callSid);
-        syncClient.map(mapUniqueName).then((map) => {
-          map.on("itemAdded", (ev) => {
-            dispatch(addOneMessage(ev.item.data));
-          });
+      const list = await syncClient.list(listUniqueName);
 
-          map.on("itemUpdated", (ev) => {
-            dispatch(setOneMessage(ev.item.data));
-          });
+      list.on("itemAdded", (ev) => {
+        dispatch(addOneLog(ev.item.data));
+      });
+    }
 
-          map.on("itemRemoved", (ev) => {
-            dispatch(removeOneMessage(ev.key));
-          });
-        });
-      },
-    ]).then(() => {
+    async function addSyncMapListeners() {
+      const mapUniqueName = msgMapName(callSid);
+      const map = await syncClient.map(mapUniqueName);
+
+      map.on("itemAdded", (ev) => {
+        console.log("sync store itemAdded", ev);
+        dispatch(addOneMessage(ev.item.data));
+      });
+
+      map.on("itemUpdated", (ev) => {
+        console.log("sync store itemUpdated", ev);
+
+        dispatch(setOneMessage(ev.item.data));
+      });
+
+      map.on("itemRemoved", (ev) => {
+        console.log("sync store itemRemoved", ev);
+
+        dispatch(removeOneMessage(ev.key));
+      });
+    }
+
+    Promise.all([addSyncListListeners(), addSyncMapListeners()]).then(() => {
       dispatch(setCallMsgListener({ callSid, status: "done" }));
     });
   }, [callSid, connectionState, syncClient, status]);
