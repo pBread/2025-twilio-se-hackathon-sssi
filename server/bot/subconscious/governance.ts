@@ -16,6 +16,9 @@ The status of each protocol steps should only advance. For instance, if a protoc
 - "complete" cannot change
 - "unresolved" can be updated to either "in-progress" or "complete". Note, this is the only status that can go back to a previous value.
 
+## Events Are Related
+Some of the events are related. Make sure you consider this when analyzing the step progress. For instance, identify_user is referenced in multiple procedures. If identify_user is a procedure and you identify a procedure with a step identify_user, then that step should not be "not-started".
+
 # Response Format
 Format your response as a JSON object formatted to the schema of the Typescript type GovernanceTracker below. You should only include the procedures that are underway or could be relevant. But, you should include every step with that step's status for each procedure you identify.
 
