@@ -31,7 +31,7 @@ import {
   TWILIO_SYNC_SVC_SID,
 } from "../env";
 import log from "../logger";
-import { makeId } from "../utils/misc";
+import { getJSONSize, makeId } from "../utils/misc";
 
 const rateLimitConfig = {
   interval: 1000, // 1000 ms == 1 second
@@ -147,7 +147,9 @@ async function initSyncClient() {
         demoConfig = ev.data;
       });
     })
-    .catch();
+    .catch((err) => {
+      log.error("sync", "initSyncClient error subscribing to demo", err);
+    });
 
   syncWsClient?.on("connectionStateChanged", (state) => {
     log.info("sync", `sync websocket client status: ${state}`);
@@ -176,7 +178,6 @@ function createSyncToken(identity: string) {
  Higher Level
 ****************************************************/
 export async function initCall(call: CallRecord) {
-  console.log("init call", call.callSid);
   await createSyncLogList(call.callSid)
     .then(() => console.log("createSyncLogList success"))
     .catch((err) => console.error("createSyncLogList error", err));
@@ -307,14 +308,14 @@ async function getSyncList(callSid: string) {
 }
 
 let logSeg = 0;
-export async function addSyncLogItem(log: AddLogRecord) {
-  const uniqueName = logListName(log.callSid);
+export async function addSyncLogItem(params: AddLogRecord) {
+  const uniqueName = logListName(params.callSid);
 
   const data: LogRecord = {
     id: makeId("log"),
     createdAt: new Date().toLocaleString(),
     seq: logSeg++,
-    ...log,
+    ...params,
   };
 
   return limit(() => sync.syncLists(uniqueName).syncListItems.create({ data }));
@@ -350,6 +351,7 @@ async function destroySyncMsgMap(callSid: string) {
 
 export async function addSyncMsgItem(msg: StoreMessage) {
   const uniqueName = msgMapName(msg.callSid);
+
   return limitMsg(async () => {
     sync.syncMaps(uniqueName).syncMapItems.create({ key: msg.id, data: msg });
   });
@@ -364,6 +366,7 @@ async function updateSyncMsgItem(msg: StoreMessage) {
 
 export async function setSyncMsgItem(msg: StoreMessage) {
   const uniqueName = msgMapName(msg.callSid);
+
   return limitMsg(async () => {
     sync.syncMaps(uniqueName).syncMapItems(msg.id).update({ data: msg });
   });

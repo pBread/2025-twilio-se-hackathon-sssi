@@ -18,9 +18,10 @@ import log from "./logger";
 import { CallService } from "./services/call-service";
 import { ConversationStore } from "./services/conversation-store";
 import { DatabaseService } from "./services/database-service";
+import { LLMService } from "./services/llm-service";
 import { RelayService } from "./services/relay-service";
+import { SubsconsciousService } from "./services/subconscious-service";
 import {
-  addSyncLogItem,
   clearSyncData,
   demoConfig,
   initCall,
@@ -28,8 +29,6 @@ import {
   setupSync,
   updateSyncCallItem,
 } from "./services/sync-service";
-import { LLMService } from "./services/llm-service";
-import { SubsconsciousService } from "./services/subconscious-service";
 import { getInstructions } from "./bot/conscious/instructions";
 
 const {
@@ -108,17 +107,6 @@ app.post("/call-handler", async (req, res) => {
         ],
       };
 
-    // update demo configuration with the context of this call
-    const config = deepmerge.all([
-      demoConfig,
-      {
-        conscious: { instructions: bot.getInstructions(ctx) },
-        subconscious: {
-          governanceInstructions: governanceBot.getInstructions(ctx, []),
-        },
-      },
-    ]) as DemoConfiguration;
-
     const callData: CallRecord = {
       id: CallSid,
       callSid: CallSid,
@@ -128,7 +116,7 @@ app.post("/call-handler", async (req, res) => {
       to: To,
       summary: "Unknown call reason",
       callContext: ctx,
-      config,
+      config: { ...demoConfig },
       feedback: [],
     };
 
@@ -245,6 +233,7 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
     });
 
     const greeting = ev.customParameters?.greeting;
+
     if (greeting) store.addBotText({ content: greeting, id: "greeting" });
 
     if (store.call.config.isGovernanceEnabled) subconscious.startGovernance();

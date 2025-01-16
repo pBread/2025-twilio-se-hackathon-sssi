@@ -17,7 +17,7 @@ import type {
   SystemMessage,
 } from "../../shared/entities";
 import log from "../logger";
-import { makeId, makeTimestamp } from "../utils/misc";
+import { getJSONSize, makeId, makeTimestamp } from "../utils/misc";
 import {
   addSyncMsgItem,
   removeSyncMsgItem,
@@ -46,7 +46,8 @@ export class ConversationStore {
   }
 
   setCall = (update: Partial<CallRecord>) => {
-    this.call = { ...this.call, ...update };
+    const call = { ...this.call, ...update };
+    this.call = call;
   };
 
   setContext = (ctx: Partial<CallContext>) => {
