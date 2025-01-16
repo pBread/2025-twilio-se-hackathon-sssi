@@ -18,3 +18,7 @@
 ### Add Summarization
 
 - Update the call with a period summarization.
+
+### integrate the segment interaction history
+
+- Pull the previous conversations of this user and provide them to the bot.

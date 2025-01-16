@@ -29,6 +29,7 @@ import {
   updateSyncCallItem,
 } from "./services/sync-service";
 import { LLMService } from "./services/llm-service";
+import { SubsconsciousService } from "./services/subconscious-service";
 
 const {
   DEFAULT_FROM_NUMBER,
@@ -97,7 +98,14 @@ app.post("/call-handler", async (req, res) => {
           { id: "confirm_details", status: "not-started" },
         ],
       };
-    }
+    } else
+      ctx.governance = {
+        identify_user: [
+          { id: "get_identifier", status: "not-started" },
+          { id: "fetch_profile", status: "not-started" },
+          { id: "confirm_details", status: "not-started" },
+        ],
+      };
 
     // update demo configuration with the context of this call
     const config = deepmerge.all([
@@ -126,27 +134,30 @@ app.post("/call-handler", async (req, res) => {
     tempCache.set(CallSid, callData);
 
     await initCall(callData);
-    addSyncLogItem({
-      actions: ["Updated Context"],
-      callSid: CallSid,
-      description:
-        "Fetched the customer's Segment Profile and provided it to the bot.",
-      source: "Segment",
-    });
+    const store = new ConversationStore(callData);
+    const subconscious = new SubsconsciousService(store);
 
-    addSyncLogItem({
-      actions: ["Updated Context", "Updated Instructions"],
-      callSid: CallSid,
-      description: "Updated the Identify User procedure",
-      source: "Governance",
-    });
+    subconscious.addSegmentLog(
+      "Fetched the customer's Segment Profile and provided it to the bot."
+    );
 
-    addSyncLogItem({
-      actions: ["Updated Context"],
-      callSid: CallSid,
-      description: "Provided the customer's interaction history to the bot.",
-      source: "Segment",
-    });
+    subconscious.newProcedure("identify_user");
+    if (user) {
+      subconscious.updateProcedure(
+        "identify_user",
+        "get_identifier",
+        "complete"
+      );
+      subconscious.updateProcedure(
+        "identify_user",
+        "fetch_profile",
+        "complete"
+      );
+    }
+
+    subconscious.addSegmentLog(
+      "Provided the customer's interaction history to the bot."
+    );
 
     const greeting = getGreeting(ctx);
 

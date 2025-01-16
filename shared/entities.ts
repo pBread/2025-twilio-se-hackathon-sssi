@@ -31,8 +31,14 @@ export interface CallContext {
 
 interface GovernanceStep {
   id: string;
-  status: "not-started" | "in-progress" | "complete" | "missed";
+  status: GovernanceStepStatus;
 }
+
+export type GovernanceStepStatus =
+  | "not-started"
+  | "in-progress"
+  | "complete"
+  | "missed";
 
 interface SimilarCall {
   callSid: string;
