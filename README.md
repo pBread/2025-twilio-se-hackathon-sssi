@@ -24,3 +24,7 @@
 - Pull the previous conversations of this user and provide them to the bot.
 
 ### Fix the selectors issue by including the fetch state in a reselect selector
+
+### Fix UI SyncClient subscriber issue
+
+- the syncClient becomes undefined when the connection status is not connected. It's probably like "connecting" or something.

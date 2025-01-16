@@ -1,15 +1,19 @@
 import OpenAI from "openai";
 import type {
+  Annotation,
+  CallRecord,
   GovernanceStepStatus,
   GovernanceTracker,
   LogActions,
+  SimilarCall,
 } from "../../shared/entities";
+import { sampleData } from "../../shared/sample-data";
 import governanceBot from "../bot/subconscious/governance";
 import { OPENAI_API_KEY } from "../env";
 import log from "../logger";
-import { safeParse } from "../utils/misc";
+import { makeId, safeParse } from "../utils/misc";
 import type { ConversationStore } from "./conversation-store";
-import { addSyncLogItem } from "./sync-service";
+import { addSyncLogItem, getCallItem } from "./sync-service";
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
@@ -29,18 +33,6 @@ export class SubsconsciousService {
       recallFrequency: opts.recallFrequency ?? 5 * 1000,
     };
   }
-
-  /****************************************************
-   Segment
-  ****************************************************/
-  addSegmentLog = (description: string) =>
-    addSyncLogItem({
-      callSid: this.store.call.callSid,
-
-      actions: ["Updated Context"],
-      description,
-      source: "Segment",
-    });
 
   /****************************************************
    Governance
@@ -144,6 +136,101 @@ export class SubsconsciousService {
       source: "Governance",
     });
   };
+
+  /****************************************************
+   Recall
+  ****************************************************/
+  recallTimeout: NodeJS.Timeout | undefined;
+  startRecall = async () => {
+    this.recallTimeout = setInterval(
+      this.executeRecall,
+      this.opts.recallFrequency
+    );
+  };
+
+  executeRecall = async () => {
+    log.info("sub.recall", "executing recall");
+
+    // just randomly sorting for dev purposes
+    const top5Calls = shuffleArray(
+      sampleData.calls.filter((call) => call.feedback.length).slice(0, 5)
+    );
+
+    function shuffleArray<T>(array: T[]): T[] {
+      const shuffled = [...array];
+
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+
+      return shuffled;
+    }
+
+    // end of dev purposes
+
+    const call = this.store.call;
+
+    const similarCalls = top5Calls.map((call) => ({
+      callSid: call.callSid,
+      similarity: (Math.floor(Math.random() * 20) + 0.7) / 100,
+      id: makeId("similar-call"),
+    }));
+
+    const newMatches = similarCalls.filter((callMatch) =>
+      this.store.call.callContext.similarCalls.every(
+        (call) => call.callSid !== callMatch.callSid
+      )
+    );
+
+    const callRecs = await Promise.all(
+      newMatches
+        .map((call) => call.callSid)
+        .map((callSid) => getCallItem(callSid))
+    );
+
+    const callMap = callRecs.reduce(
+      (acc, cur) => Object.assign(acc, { [cur.callSid]: cur }),
+      {} as { [key: string]: CallRecord }
+    );
+
+    const newFeedback = newMatches
+      .map((match) => ({ call: callMap[match.callSid], match }))
+      .filter((data) => !!data.call)
+      .flatMap((data) =>
+        data.call.feedback.map((annotation) => ({
+          annotation,
+          match: data.match,
+        }))
+      );
+
+    this.store.setContext({ similarCalls });
+
+    newFeedback.forEach((feedback) =>
+      this.addRecallAnnotation(feedback.match, feedback.annotation)
+    );
+  };
+
+  addRecallAnnotation = (match: SimilarCall, annotation: Annotation) => {
+    addSyncLogItem({
+      actions: ["Updated Instructions"],
+      callSid: match.callSid,
+      description: `Recall identified a new relevant conversation and supplied the bot with the annotation: ${annotation.comment}`,
+      source: "Recall",
+    });
+  };
+
+  /****************************************************
+   Segment
+  ****************************************************/
+  addSegmentLog = (description: string) =>
+    addSyncLogItem({
+      callSid: this.store.call.callSid,
+
+      actions: ["Updated Context"],
+      description,
+      source: "Segment",
+    });
 }
 
 /****************************************************

@@ -40,7 +40,7 @@ export type GovernanceStepStatus =
   | "complete"
   | "missed";
 
-interface SimilarCall {
+export interface SimilarCall {
   callSid: string;
   id: string;
   similarity: number;

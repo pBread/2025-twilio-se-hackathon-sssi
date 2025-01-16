@@ -239,7 +239,7 @@ async function getAllCallItems() {
   );
 }
 
-async function getCallItem(callSid: string) {
+export async function getCallItem(callSid: string) {
   const key = callMapItemName(callSid);
   return limit(() =>
     syncCallMapApi
