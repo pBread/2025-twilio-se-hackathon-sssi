@@ -70,12 +70,6 @@ const syncCallMapApi = sync.syncMaps(SYNC_CALL_MAP_NAME);
 const defaultDemoConfig: DemoConfiguration = {
   ...sampleData.config,
   relayConfig,
-  governanceInstructions: governanceBot.getInstructions(
-    sampleData.calls[0].callContext,
-    sampleData.callMessages[sampleData.calls[0].callSid]
-  ),
-
-  consciousInstructions: bot.getInstructions(sampleData.calls[0].callContext),
   consciousModel: bot.model,
 };
 

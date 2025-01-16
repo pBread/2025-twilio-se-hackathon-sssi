@@ -12,10 +12,7 @@ export interface CallRecord {
   summary: string;
 
   callContext: CallContext;
-  config: Omit<
-    DemoConfiguration,
-    "governanceInstructions" | "consciousInstructions"
-  >;
+  config: DemoConfiguration;
   feedback: Annotation[];
 }
 
@@ -56,10 +53,8 @@ export interface Annotation {
 
 export interface DemoConfiguration {
   isRecordingEnabled: boolean;
-  consciousInstructions: string;
   consciousModel: string;
 
-  governanceInstructions: string;
   isGovernanceEnabled: boolean;
   isRecallEnabled: boolean;
 

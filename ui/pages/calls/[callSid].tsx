@@ -134,7 +134,7 @@ function BotConfigModal() {
         title="Bot Configuration"
         size="100%"
       >
-        <div>{call?.config.conscious.instructions}</div>;
+        <div>TBD</div>;
       </Modal>
       <Button variant="default" onClick={toggle}>
         Bot Configuration

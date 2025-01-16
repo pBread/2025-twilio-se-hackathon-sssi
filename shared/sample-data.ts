@@ -83,8 +83,6 @@ const config: DemoConfiguration = {
   segment: { isFetchProfileEnabled: true },
   isRecordingEnabled: false,
   consciousModel: "gpt-4o",
-  consciousInstructions: getInstructions(callContext),
-  governanceInstructions: governanceBot.getInstructions(callContext, []),
   isGovernanceEnabled: true,
   isRecallEnabled: true,
 };
