@@ -1,6 +1,6 @@
 import { useAppSelector } from "@/state/hooks";
 import { getCallMessages, getMessageById } from "@/state/messages";
-import { Table } from "@mantine/core";
+import { Badge, Table } from "@mantine/core";
 import { BotMessage, HumanMessage } from "@shared/entities";
 import { useFetchCallData } from "@/state/sync";
 
@@ -77,7 +77,9 @@ function BotRow({ msgId }: { msgId: string }) {
       <Table.Td>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <span> {content}</span>
-          <span> {isInterrupted && <span>Interrupted</span>}</span>
+          <span>
+            {isInterrupted && <Badge color="yellow">Interrupted</Badge>}
+          </span>
         </div>
       </Table.Td>
     </>
