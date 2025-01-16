@@ -83,7 +83,12 @@ function CalibrationsContainer() {
             <Table.Td>{item.source}</Table.Td>
             <Table.Td>{item.description}</Table.Td>
             <Table.Td
-              style={{ display: "flex", flexDirection: "column", gap: "2px" }}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "2px",
+                width: "max-content",
+              }}
             >
               {[...item.actions]
                 .sort((a, b) => a.localeCompare(b))
