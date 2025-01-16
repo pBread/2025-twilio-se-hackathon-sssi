@@ -205,8 +205,6 @@ export class SubsconsciousService {
 
     this.store.setContext({ similarCalls });
 
-    log.debug("sub.recall", "newFeedback", callRecs, newFeedback);
-
     newFeedback.forEach((feedback) =>
       this.addRecallAnnotation(feedback.match, feedback.annotation)
     );
@@ -215,7 +213,7 @@ export class SubsconsciousService {
   addRecallAnnotation = (match: SimilarCall, annotation: Annotation) => {
     addSyncLogItem({
       actions: ["Updated Instructions"],
-      callSid: match.callSid,
+      callSid: this.store.call.callSid,
       description: `Recall identified a new relevant conversation and supplied the bot with the annotation: ${annotation.comment}`,
       source: "Recall",
     });
