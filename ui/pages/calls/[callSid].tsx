@@ -1,14 +1,13 @@
+import { GovernanceContainer } from "@/components/GovernanceContainer";
+import { RecallContainer } from "@/components/RecallContainer";
 import { TurnsTable } from "@/components/TurnsTable";
 import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
 import { getCallLogs } from "@/state/logs";
-import { Badge, Button, Modal, Paper, Table, Text, Title } from "@mantine/core";
+import { Badge, Button, Modal, Paper, Table, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { LogActions } from "@shared/entities";
-import { IconMinus, IconPlus } from "@tabler/icons-react";
-import startCase from "lodash.startcase";
 import { useRouter } from "next/router";
-import { useState } from "react";
 
 export default function LiveCall() {
   return (
@@ -155,162 +154,5 @@ function Subconsciousness() {
         <GovernanceContainer />
       </Paper>
     </div>
-  );
-}
-
-function GovernanceContainer() {
-  const router = useRouter();
-  const callSid = router.query.callSid as string;
-
-  const call = useAppSelector((state) => selectCallById(state, callSid));
-
-  const governance = call?.callContext?.governance;
-
-  const [closed, setClosed] = useState({});
-  const toggle = (value: string) =>
-    setClosed((state) => ({ ...state, [value]: !state[value] }));
-
-  const data = !call?.callContext?.governance
-    ? []
-    : Object.entries(governance)
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([procedureId, steps]) => ({
-          value: procedureId,
-          label: startCase(procedureId),
-          children: steps.map((step) => ({
-            value: step.id,
-            label: startCase(step.id),
-            status: step.status,
-          })),
-        }));
-
-  return (
-    <div>
-      {data.map((parent) => (
-        <div key={`s82-${parent.value}`}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "2px",
-              cursor: "pointer",
-            }}
-            onClick={() => toggle(parent.value)}
-          >
-            {closed[parent.value] ? (
-              <IconPlus size={12} />
-            ) : (
-              <IconMinus size={12} />
-            )}
-            <Text fw="bold">{parent.label}</Text>
-          </div>
-
-          {!closed[parent.value] &&
-            parent.children.map((child) => (
-              <div
-                key={`849-${parent.value}-${child.value}`}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  paddingLeft: "24px",
-                }}
-              >
-                <Text> {child.label}</Text>
-                <Text> {child.status}</Text>
-              </div>
-            ))}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function RecallContainer() {
-  const router = useRouter();
-  const callSid = router.query.callSid as string;
-
-  const call = useAppSelector((state) => selectCallById(state, callSid));
-
-  return (
-    <Table verticalSpacing={2}>
-      <Table.Thead>
-        <Table.Tr>
-          <Table.Td>Call Summary</Table.Td>
-          <Table.Td>Similarity</Table.Td>
-          <Table.Td>Annotations</Table.Td>
-        </Table.Tr>
-      </Table.Thead>
-      <Table.Tbody>
-        {call?.callContext.similarCalls.map((item) => (
-          <RecallRow
-            key={`rr29-${item.id}-${callSid}`}
-            callSid={item.callSid}
-            similarity={item.similarity}
-          />
-        ))}
-      </Table.Tbody>
-    </Table>
-  );
-}
-
-function RecallRow({
-  callSid,
-  similarity,
-}: {
-  callSid: string;
-  similarity: number;
-}) {
-  const [opened, { open, close, toggle }] = useDisclosure(false);
-
-  const call = useAppSelector((state) => selectCallById(state, callSid));
-
-  return (
-    <Table.Tr>
-      <Table.Td>{call.summary}</Table.Td>
-      <Table.Td>{similarity}</Table.Td>
-      <Table.Td>
-        <Modal opened={opened} onClose={close} title="Recall Summary" size="xl">
-          <div
-            style={{
-              padding: "12px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "10px",
-            }}
-          >
-            <div>
-              <Title order={5}>Call Summary</Title>
-              <Text> {call?.summary}</Text>
-            </div>
-            <div>
-              <Title order={5}>Annotations</Title>
-              <Text>
-                {call?.feedback.map((item) => (
-                  <div key={`d302-${item.id}`}>{item.comment}</div>
-                ))}
-              </Text>
-            </div>
-            <div>
-              <Title order={5}>Turns</Title>
-              <TurnsTable
-                callSid={callSid}
-                targetStart={call.feedback.reduce(
-                  (acc, cur) => Math.min(acc, cur.target[0]),
-                  call?.feedback[0]?.target[0] ?? Infinity
-                )}
-                targetEnd={call.feedback.reduce(
-                  (acc, cur) => Math.max(acc, cur.target[1]),
-                  call?.feedback[1]?.target[1] ?? 0
-                )}
-              />
-            </div>
-          </div>
-        </Modal>
-
-        <a onClick={toggle} style={{ color: "blue", cursor: "pointer" }}>
-          {call.feedback.length}
-        </a>
-      </Table.Td>
-    </Table.Tr>
   );
 }
