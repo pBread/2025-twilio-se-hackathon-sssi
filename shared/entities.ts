@@ -24,8 +24,10 @@ export interface CallContext {
   user?: UserRecord;
   similarCalls: SimilarCall[];
   suggestions: string[];
-  governance: Record<string, GovernanceStep[]>;
+  governance: GovernanceTracker;
 }
+
+export type GovernanceTracker = Record<string, GovernanceStep[]>;
 
 interface GovernanceStep {
   id: string;

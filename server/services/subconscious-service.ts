@@ -1,8 +1,13 @@
 import OpenAI from "openai";
-import type { GovernanceStepStatus, LogActions } from "../../shared/entities";
+import type {
+  GovernanceStepStatus,
+  GovernanceTracker,
+  LogActions,
+} from "../../shared/entities";
 import governanceBot from "../bot/subconscious/governance";
 import { OPENAI_API_KEY } from "../env";
 import log from "../logger";
+import { safeParse } from "../utils/misc";
 import type { ConversationStore } from "./conversation-store";
 import { addSyncLogItem } from "./sync-service";
 
@@ -57,18 +62,13 @@ export class SubsconsciousService {
 
     const completion = await openai.chat.completions.create({
       model: governanceBot.model,
-      messages: [
-        {
-          role: "user",
-          content: instructions,
-        },
-      ],
+      messages: [{ role: "user", content: instructions }],
+      response_format: { type: "json_object" },
       stream: false,
     });
 
-    log.debug("sub.gov", "completion", JSON.stringify(completion, null, 2));
-
     const choice = completion.choices[0];
+    const content = choice.message.content;
 
     if (choice.finish_reason === "tool_calls" && choice.message.tool_calls) {
       const logMsg =
@@ -78,7 +78,34 @@ export class SubsconsciousService {
     }
 
     if (choice.finish_reason === "stop") {
-      log.info("llm.sub", "governance bot response: ", choice.message.content);
+      const result = safeParse(content) as GovernanceTracker;
+      log.info("sub.gov", "governance bot response: ", result);
+      if (!result) {
+        log.warn(
+          "sub.gov",
+          "executeGovernance LLM responded with a non-JSON format",
+          content
+        );
+        return;
+      }
+
+      const prevTracker = this.store.call.callContext.governance;
+
+      const newTracker = updateGovernanceTracker(prevTracker, result);
+      const changes = identifyGovernanceChanges(prevTracker, newTracker);
+
+      this.store.setContext({ governance: newTracker });
+
+      for (const procedureId of changes.newProcedures)
+        this.newProcedure(procedureId);
+
+      for (const change of changes.updatedSteps)
+        this.updateProcedure(
+          change.procedureId,
+          change.stepId,
+          change.newStatus,
+          change.oldStatus
+        );
     }
   };
 
@@ -98,18 +125,121 @@ export class SubsconsciousService {
   updateProcedure = (
     procedureId: string,
     step: string,
-    status: GovernanceStepStatus
+    newStatus: GovernanceStepStatus,
+    oldStatus: GovernanceStepStatus = "not-started"
   ) => {
     let actions: LogActions[] = ["Updated Context"];
 
-    if (status === "missed") actions.push("Added System Message");
+    if (newStatus === "missed") actions.push("Added System Message");
 
     addSyncLogItem({
       callSid: this.store.call.callSid,
-
-      actions: ["Updated Context"],
-      description: `Updated the '${procedureId}' procedure step '${step}' to '${status}''`,
+      actions,
+      description: `Updated the '${procedureId}' procedure step '${step}' from '${oldStatus}' to '${newStatus}''`,
       source: "Segment",
     });
   };
+}
+
+/****************************************************
+ Governance Utilities
+****************************************************/
+function updateGovernanceTracker(
+  existing: GovernanceTracker,
+  update: GovernanceTracker
+): GovernanceTracker {
+  // Create a deep copy of the existing state
+  const result: GovernanceTracker = Object.entries(existing).reduce(
+    (acc, [key, steps]) => {
+      acc[key] = steps.map((step) => ({ ...step }));
+      return acc;
+    },
+    {} as GovernanceTracker
+  );
+
+  // Iterate through each procedure in the update
+  Object.entries(update).forEach(([procedureId, updatedSteps]) => {
+    if (!result[procedureId]) {
+      // If this is a new procedure, add it with a deep copy
+      result[procedureId] = updatedSteps.map((step) => ({ ...step }));
+    } else {
+      // Update existing procedure's steps
+      const existingSteps = result[procedureId];
+
+      // Create a map of existing steps for quick lookup
+      const existingStepsMap = new Map(
+        existingSteps.map((step, index) => [step.id, { step, index }])
+      );
+
+      // Update existing steps while maintaining order
+      updatedSteps.forEach((updatedStep) => {
+        const existing = existingStepsMap.get(updatedStep.id);
+        if (existing) {
+          // Update status of existing step while maintaining its position
+          existingSteps[existing.index] = {
+            ...existing.step,
+            status: updatedStep.status,
+          };
+        } else {
+          // If it's a new step, append it to the end
+          existingSteps.push({ ...updatedStep });
+        }
+      });
+    }
+  });
+
+  return result;
+}
+
+interface GovernanceChanges {
+  newProcedures: string[];
+  updatedSteps: {
+    procedureId: string;
+    stepId: string;
+    oldStatus: GovernanceStepStatus;
+    newStatus: GovernanceStepStatus;
+  }[];
+}
+
+function identifyGovernanceChanges(
+  existing: GovernanceTracker,
+  update: GovernanceTracker
+): GovernanceChanges {
+  const changes: GovernanceChanges = {
+    newProcedures: [],
+    updatedSteps: [],
+  };
+
+  // Identify new procedures
+  Object.keys(update).forEach((procedureId) => {
+    if (!existing[procedureId]) {
+      changes.newProcedures.push(procedureId);
+    }
+  });
+
+  // Identify updated steps in existing procedures
+  Object.entries(update).forEach(([procedureId, updatedSteps]) => {
+    const existingSteps = existing[procedureId];
+    if (!existingSteps) return; // Skip if procedure doesn't exist
+
+    // Create a map of existing steps for quick lookup
+    const existingStepsMap = new Map(
+      existingSteps.map((step) => [step.id, step])
+    );
+
+    // Check each updated step
+    updatedSteps.forEach((updatedStep) => {
+      const existingStep = existingStepsMap.get(updatedStep.id);
+      if (existingStep && existingStep.status !== updatedStep.status) {
+        changes.updatedSteps.push({
+          procedureId,
+          stepId: updatedStep.id,
+          oldStatus: existingStep.status,
+          newStatus: updatedStep.status,
+        });
+      }
+    });
+  });
+
+  return changes;
 }

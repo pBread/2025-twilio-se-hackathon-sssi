@@ -1,9 +1,45 @@
+export function getJSONSize(obj: {}) {
+  function getStringBytes(str: string) {
+    return new TextEncoder().encode(str).length;
+  }
+
+  if (obj === null || obj === undefined) return "4";
+  if (typeof obj !== "object")
+    return getStringBytes(JSON.stringify(obj)).toLocaleString();
+
+  let size = 0;
+  size += 2; // Add 2 bytes for opening and closing braces/brackets
+  const entries = Object.entries(obj); // Get all entries (works for both objects and arrays)
+  size += Math.max(0, entries.length - 1); // Add commas between elements (entries.length - 1 commas)
+
+  // Process each key-value pair
+  for (const [key, value] of entries) {
+    if (!Array.isArray(obj)) {
+      // For objects, add the key size plus the colon and space
+      size += getStringBytes(JSON.stringify(key)) + 2;
+    }
+
+    // Add the value size
+    if (typeof value === "object" && value !== null) {
+      size += parseInt(getJSONSize(value).replace(/,/g, ""), 10);
+    } else {
+      size += getStringBytes(JSON.stringify(value));
+    }
+  }
+
+  return size.toLocaleString();
+}
+
 export function makeId(prefix = "") {
   const CODE_LENGTH = 10;
   const code = randStr(CODE_LENGTH);
 
   if (prefix) return `${prefix}-${code}`;
   return code;
+}
+
+export function makeTimestamp() {
+  return new Date().toLocaleString();
 }
 
 function randStr(length: number) {
@@ -19,45 +55,8 @@ function randStr(length: number) {
   return result;
 }
 
-export function makeTimestamp() {
-  return new Date().toLocaleString();
-}
-
-export function getJSONSize(obj: {}) {
-  function getStringBytes(str: string) {
-    return new TextEncoder().encode(str).length;
-  }
-
-  // Handle null and undefined
-  if (obj === null || obj === undefined) return "4";
-
-  if (typeof obj !== "object") {
-    return getStringBytes(JSON.stringify(obj)).toLocaleString();
-  }
-
-  let size = 0;
-  size += 2; // Add 2 bytes for opening and closing braces/brackets
-
-  const entries = Object.entries(obj); // Get all entries (works for both objects and arrays)
-
-  size += Math.max(0, entries.length - 1); // Add commas between elements (entries.length - 1 commas)
-
-  // Process each key-value pair
-  for (const [key, value] of entries) {
-    if (!Array.isArray(obj)) {
-      // For objects, add the key size plus the colon and space
-      size += getStringBytes(JSON.stringify(key)) + 2;
-    }
-
-    // Add the value size
-    if (typeof value === "object" && value !== null) {
-      // Recursive call for nested objects/arrays
-      // Parse the returned string back to a number, removing any commas first
-      size += parseInt(getJSONSize(value).replace(/,/g, ""), 10);
-    } else {
-      size += getStringBytes(JSON.stringify(value));
-    }
-  }
-
-  return size.toLocaleString();
+export function safeParse(data: any) {
+  try {
+    return JSON.parse(data);
+  } catch (error) {}
 }
