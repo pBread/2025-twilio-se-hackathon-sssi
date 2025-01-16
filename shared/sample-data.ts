@@ -1,11 +1,9 @@
-import { getInstructions } from "../server/bot/conscious/instructions";
-import governanceBot from "../server/bot/subconscious/governance";
 import {
-  DemoConfiguration,
-  StoreMessage,
-  CallRecord,
-  LogRecord,
   CallContext,
+  CallRecord,
+  DemoConfiguration,
+  LogRecord,
+  StoreMessage,
 } from "./entities";
 import { mockDatabase } from "./mock-database";
 
