@@ -181,7 +181,7 @@ function CallSummary() {
     <div>
       <Text fw="bold">{summary?.title}</Text>
       <Text size="xs">
-        {description} {summary?.description.length > 400 && <span>...</span>}
+        {description} {summary?.description?.length > 400 && <span>...</span>}
       </Text>
       {summary?.customerDetails?.length && (
         <ul>
