@@ -30,19 +30,15 @@ import {
   clearAllVectors,
   initVectorDB,
   populateSampleVectorData,
-  removeCallVectorsByCallSid,
 } from "./services/vector-db-service";
 
 const {
-  DEFAULT_FROM_NUMBER,
   ENABLE_GOVERNANCE,
   ENABLE_RECALL,
   HOSTNAME,
   ENABLE_SUMMARIZATION,
   PORT,
   RECORD_CALL,
-  TWILIO_ACCOUNT_SID,
-  TWILIO_AUTH_TOKEN,
   TWILIO_FN_BASE_URL,
 } = env;
 
@@ -223,7 +219,7 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
 
   const llm = new LLMService(store, relay, db);
 
-  if (store.call.config.isRecordingEnabled)
+  if (RECORD_CALL)
     call
       .startRecording()
       .then((res) =>
