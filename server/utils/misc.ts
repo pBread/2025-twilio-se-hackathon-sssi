@@ -30,16 +30,16 @@ export function getJSONSize(obj: {}) {
   return size.toLocaleString();
 }
 
+export function makeTimestamp() {
+  return new Date().toLocaleString();
+}
+
 export function makeId(prefix = "") {
   const CODE_LENGTH = 10;
   const code = randStr(CODE_LENGTH);
 
   if (prefix) return `${prefix}-${code}`;
   return code;
-}
-
-export function makeTimestamp() {
-  return new Date().toLocaleString();
 }
 
 function randStr(length: number) {

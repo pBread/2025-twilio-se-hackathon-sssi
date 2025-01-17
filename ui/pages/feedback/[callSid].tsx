@@ -1,7 +1,8 @@
 import { selectCallById, setOneCall } from "@/state/calls";
 import { useAppDispatch, useAppSelector } from "@/state/hooks";
 import { getCallMessages, getMessageById } from "@/state/messages";
-import { Badge, Checkbox, Paper, Table } from "@mantine/core";
+import { makeId } from "@/util/misc";
+import { Badge, Button, Checkbox, Paper, Table } from "@mantine/core";
 import { BotMessage, HumanMessage, Annotation } from "@shared/entities";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useState } from "react";
@@ -39,8 +40,11 @@ function Feedback({
 
   const call = useAppSelector((state) => selectCallById(state, callSid));
 
+  const createNewFeedback = useCreateFeedback(callSid, setFeedbackId);
+
   return (
     <Paper style={paperStyle}>
+      <Button onClick={createNewFeedback}>Create</Button>
       {call?.feedback.map((item) => (
         <div
           key={`${callSid}-di-${item.id}`}
@@ -51,6 +55,81 @@ function Feedback({
       ))}
     </Paper>
   );
+}
+
+function useCreateFeedback(callSid: string, setFeedbackId: SetFeedbackId) {
+  const dispatch = useAppDispatch();
+  const call = useAppSelector((state) => selectCallById(state, callSid));
+
+  return () => {
+    if (!call) return;
+
+    const feedback: Annotation = {
+      id: makeId(),
+      comment: "",
+      polarity: "neutral",
+      targets: [],
+    };
+
+    dispatch(setOneCall({ ...call, feedback: call.feedback.concat(feedback) }));
+  };
+}
+
+function useSetTargets(callSid: string, feedbackId?: string) {
+  const dispatch = useAppDispatch();
+  const call = useAppSelector((state) => selectCallById(state, callSid));
+  const feedbackItem = call?.feedback.find((item) => item.id === feedbackId);
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
+    null
+  );
+
+  return (index: number, isShift: boolean) => {
+    if (!call) return;
+    if (!feedbackItem) {
+      return console.warn(
+        "attempted to set targets but no annotation selected"
+      );
+    }
+
+    const map = new Map<string, Annotation>();
+    for (const item of call.feedback) map.set(item.id, item);
+
+    const currentTargets = new Set(feedbackItem.targets);
+
+    if (isShift && lastSelectedIndex !== null) {
+      // Handle range selection
+      const start = Math.min(lastSelectedIndex, index);
+      const end = Math.max(lastSelectedIndex, index);
+
+      // If the last clicked item is selected, we're adding to the selection
+      const isAdding = currentTargets.has(lastSelectedIndex);
+
+      // Update all items in range
+      for (let i = start; i <= end; i++) {
+        if (isAdding) currentTargets.add(i);
+        else currentTargets.delete(i);
+      }
+    } else {
+      // Handle single selection toggle
+      if (currentTargets.has(index)) currentTargets.delete(index);
+      else currentTargets.add(index);
+
+      setLastSelectedIndex(index);
+    }
+
+    // Update the feedback item with new targets
+    const updatedFeedback = {
+      ...feedbackItem,
+      targets: Array.from(currentTargets).sort((a: number, b: number) => a - b),
+    };
+
+    // Update the map and recreate the feedback array
+    map.set(feedbackId!, updatedFeedback);
+    const newFeedback = Array.from(map.values());
+
+    // Dispatch the update
+    dispatch(setOneCall({ ...call, feedback: newFeedback }));
+  };
 }
 
 function TurnTable({ feedbackId }: { feedbackId: string }) {
@@ -150,61 +229,4 @@ function HumanRow({ msgId }: { msgId: string }) {
       <Table.Td> {msg.content}</Table.Td>
     </>
   );
-}
-
-function useSetTargets(callSid: string, feedbackId?: string) {
-  const dispatch = useAppDispatch();
-  const call = useAppSelector((state) => selectCallById(state, callSid));
-  const feedbackItem = call?.feedback.find((item) => item.id === feedbackId);
-  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
-    null
-  );
-
-  return (index: number, isShift: boolean) => {
-    if (!call) return;
-    if (!feedbackItem) {
-      return console.warn(
-        "attempted to set targets but no annotation selected"
-      );
-    }
-
-    const map = new Map<string, Annotation>();
-    for (const item of call.feedback) map.set(item.id, item);
-
-    const currentTargets = new Set(feedbackItem.targets);
-
-    if (isShift && lastSelectedIndex !== null) {
-      // Handle range selection
-      const start = Math.min(lastSelectedIndex, index);
-      const end = Math.max(lastSelectedIndex, index);
-
-      // If the last clicked item is selected, we're adding to the selection
-      const isAdding = currentTargets.has(lastSelectedIndex);
-
-      // Update all items in range
-      for (let i = start; i <= end; i++) {
-        if (isAdding) currentTargets.add(i);
-        else currentTargets.delete(i);
-      }
-    } else {
-      // Handle single selection toggle
-      if (currentTargets.has(index)) currentTargets.delete(index);
-      else currentTargets.add(index);
-
-      setLastSelectedIndex(index);
-    }
-
-    // Update the feedback item with new targets
-    const updatedFeedback = {
-      ...feedbackItem,
-      targets: Array.from(currentTargets).sort((a: number, b: number) => a - b),
-    };
-
-    // Update the map and recreate the feedback array
-    map.set(feedbackId!, updatedFeedback);
-    const newFeedback = Array.from(map.values());
-
-    // Dispatch the update
-    dispatch(setOneCall({ ...call, feedback: newFeedback }));
-  };
 }
