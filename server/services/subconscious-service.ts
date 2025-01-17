@@ -115,7 +115,7 @@ export class SubsconsciousService {
 
     addSyncLogItem({
       callSid: this.store.call.callSid,
-      actions: ["Updated Context"],
+      actions: ["Updated Context", "Updated Instructions"],
       description,
       source: "Governance",
     });
@@ -132,7 +132,8 @@ export class SubsconsciousService {
 
     let actions: LogActions[] = ["Updated Context"];
 
-    if (newStatus === "missed") actions.push("Added System Message");
+    if (newStatus === "missed" || newStatus === "unresolved")
+      actions.push("Added System Message");
 
     addSyncLogItem({
       callSid: this.store.call.callSid,

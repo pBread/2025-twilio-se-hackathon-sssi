@@ -42,9 +42,10 @@ interface GovernanceStep {
 
 export type GovernanceStepStatus =
   | "not-started"
-  | "in-progress"
-  | "complete"
-  | "missed";
+  | "missed" // the bot simply skipped this step
+  | "in-progress" // the bot is currently performing this step
+  | "complete" // the bot successfully completed this step
+  | "unresolved"; // the bot attempted, but failed
 
 export interface SimilarCall {
   callSid: string;
