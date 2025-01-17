@@ -1,19 +1,18 @@
 import OpenAI from "openai";
 import type {
   Annotation,
-  CallRecord,
   GovernanceStepStatus,
   GovernanceTracker,
   LogActions,
   SimilarCall,
 } from "../../shared/entities";
-import { sampleData } from "../../shared/sample-data";
 import governanceBot from "../bot/subconscious/governance";
 import { OPENAI_API_KEY } from "../env";
 import log from "../logger";
-import { makeId, safeParse } from "../utils/misc";
+import { safeParse } from "../utils/misc";
 import type { ConversationStore } from "./conversation-store";
 import { addSyncLogItem, getCallItem } from "./sync-service";
+import { vectorQuery } from "./vector-db-service";
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
@@ -152,54 +151,34 @@ export class SubsconsciousService {
   executeRecall = async () => {
     log.info("sub.recall", "executing recall");
 
-    // just randomly sorting for dev purposes
-    const top5Calls = shuffleArray(
-      sampleData.calls.filter((call) => call.feedback.length).slice(0, 5)
-    );
+    const matches = await vectorQuery(this.store.getMessages());
 
-    function shuffleArray<T>(array: T[]): T[] {
-      const shuffled = [...array];
-
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-
-      return shuffled;
-    }
-
-    // end of dev purposes
-
-    const similarCalls = top5Calls.map((call) => ({
-      callSid: call.callSid,
-      similarity: Number((Math.random() * (0.95 - 0.6) + 0.6).toFixed(2)), // rand 0.6-0.95
-      id: makeId("similar-call"),
+    const similarCalls: SimilarCall[] = matches.map((match) => ({
+      id: match.id,
+      callSid: match.metadata?.callSid as string,
+      similarity: match.score as number,
     }));
 
-    const newMatches = similarCalls.filter((callMatch) =>
-      this.store.call.callContext.similarCalls.some(
-        (call) => call.callSid !== callMatch.callSid
-      )
-    );
-
-    const callRecs = await Promise.all(
-      newMatches
-        .map((call) => call.callSid)
-        .map((callSid) => getCallItem(callSid))
-    );
-
-    const callMap = callRecs.reduce(
-      (acc, cur) => Object.assign(acc, { [cur.callSid]: cur }),
-      {} as { [key: string]: CallRecord }
+    const newMatches = await Promise.all(
+      similarCalls
+        .filter(
+          (match) =>
+            !this.store.call.callContext.similarCalls.some(
+              (call) => call.callSid === match.callSid
+            )
+        )
+        .map(async (match) => ({
+          call: await getCallItem(match.callSid),
+          match,
+        }))
     );
 
     const newFeedback = newMatches
-      .map((match) => ({ call: callMap[match.callSid], match }))
-      .filter((data) => !!data.call)
-      .flatMap((data) =>
-        data.call.feedback.map((annotation) => ({
+      .filter((match) => match.call)
+      .flatMap((item) =>
+        item.call.feedback.map((annotation) => ({
           annotation,
-          match: data.match,
+          match: item.match,
         }))
       );
 

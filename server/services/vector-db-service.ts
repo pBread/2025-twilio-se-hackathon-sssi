@@ -118,7 +118,11 @@ export async function vectorQuery(msgs: StoreMessage[]) {
   const vector = result.data[0].embedding;
 
   return limit(() =>
-    pc.index(PINECONE_INDEX_NAME).namespace(NS).query({ topK: 10, vector })
+    pc
+      .index(PINECONE_INDEX_NAME)
+      .namespace(NS)
+      .query({ topK: 10, vector, includeMetadata: true })
+      .then((res) => res.matches)
   );
 }
 
