@@ -15,8 +15,15 @@ export default class RetailPlugin extends FlexPlugin {
    * @param flex { typeof import('@twilio/flex-ui') }
    */
   async init(flex, manager) {
-    flex.setProviders({
-      PasteThemeProvider: CustomizationProvider,
-    });
+    flex.setProviders({ PasteThemeProvider: CustomizationProvider });
+
+    flex.AgentDesktopView.defaultProps.splitterOptions = {
+      initialFirstPanelSize: "500px",
+      minimumSecondPanelSize: "1200px",
+    };
+
+    flex.CRMContainer.Content.replace(
+      <Container key={`${PLUGIN_NAME}-${Container}`} />
+    );
   }
 }
