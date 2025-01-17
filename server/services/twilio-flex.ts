@@ -1,32 +1,14 @@
 import { Twilio, twiml as TwiML } from "twilio";
-import type { RecordingListInstanceCreateOptions } from "twilio/lib/rest/api/v2010/account/call/recording";
-import * as env from "../env";
-import { safeParse } from "../utils/misc";
+import {
+  FLEX_WORKFLOW_SID,
+  TWILIO_ACCOUNT_SID,
+  TWILIO_AUTH_TOKEN,
+} from "../env";
 import log from "../logger";
+import { safeParse } from "../utils/misc";
 
-const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } = env;
 const client = new Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 const VoiceResponse = TwiML.VoiceResponse;
-
-export class CallService {
-  constructor(public callSid: string) {}
-
-  /**
-   * Starts recording the call.
-   * @param {RecordingListInstanceCreateOptions} [options] - Options for recording creation.
-   * @see https://www.twilio.com/docs/voice/api/recording#create-a-recording-resource
-   */
-  startRecording = async (options: RecordingListInstanceCreateOptions = {}) => {
-    const call = await client
-      .calls(this.callSid)
-      .recordings.create({ recordingChannels: "dual", ...options });
-
-    if (call.errorCode) return { status: "error", call };
-
-    const mediaUrl = `https://api.twilio.com${call.uri.replace(".json", "")}`;
-    return { status: "success", call, mediaUrl };
-  };
-}
 
 interface CreateLiveAgentHandoffTwiML {
   AccountSid: string;
@@ -52,8 +34,6 @@ export async function createLiveAgentHandoffTwiML(
   if (!data)
     throw Error(`createLiveAgentHandoffTwiML could not parse handoffData`);
 
-  const twiml = new VoiceResponse();
-
   const taskAttributes = {
     accountSid: params.AccountSid,
     callSid: params.CallSid,
@@ -66,5 +46,16 @@ export async function createLiveAgentHandoffTwiML(
     escalation_type: data.conversationSummary ?? "No escalation type",
   };
 
-  log.info("");
+  log.info(
+    "flex",
+    "Enqueing call with the following attributes: ",
+    taskAttributes
+  );
+
+  const twiml = new VoiceResponse();
+  twiml
+    .enqueue({ workflowSid: FLEX_WORKFLOW_SID })
+    .task({ priority: 1000 }, JSON.stringify(taskAttributes));
+
+  return twiml;
 }

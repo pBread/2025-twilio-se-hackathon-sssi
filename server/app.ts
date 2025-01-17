@@ -31,6 +31,7 @@ import {
   initVectorDB,
   populateSampleVectorData,
 } from "./services/vector-db-service";
+import { createLiveAgentHandoffTwiML } from "./services/twilio-flex";
 
 const {
   ENABLE_GOVERNANCE,
@@ -336,7 +337,23 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
 });
 
 /****************************************************
- Misc API
+ Twilio Flex
+****************************************************/
+app.post("/live-agent-handoff", async (req, res) => {
+  log.info(
+    "/live-agent-handoff",
+    `call transfer webhook for call ${req.body.CallSid}`
+  );
+
+  const twiml = createLiveAgentHandoffTwiML(req.body);
+
+  log.debug("/live-agent-handoff\n", "body\n", req.body, "twiml\n", twiml);
+
+  res.contentType("application/xml").send(twiml);
+});
+
+/****************************************************
+ Demo Managment
 ****************************************************/
 app.get("/api/reset", async (req, res) => {
   await vectorDbBlocker;

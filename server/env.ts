@@ -15,6 +15,7 @@ export const TTS_PROVIDER = process.env.TTS_PROVIDER;
 export const TTS_VOICE = process.env.TTS_VOICE;
 
 // Required environment variables must be explicitly defined in `.env` files or the runtime environment
+export const FLEX_WORKFLOW_SID = process.env.FLEX_WORKFLOW_SID as string;
 export const HOSTNAME = process.env.HOSTNAME as string;
 export const OPENAI_API_KEY = process.env.OPENAI_API_KEY as string;
 export const PINCONE_API_KEY = process.env.PINCONE_API_KEY as string;
@@ -27,6 +28,7 @@ export const TWILIO_FN_BASE_URL = process.env.TWILIO_FN_BASE_URL as string;
 export const TWILIO_SYNC_SVC_SID = process.env.TWILIO_SYNC_SVC_SID as string;
 
 // Check for missing required environment variables and log errors to aid debugging
+if (!FLEX_WORKFLOW_SID) console.error(`Missing env var FLEX_WORKFLOW_SID`);
 if (!HOSTNAME) console.error(`Missing env var HOSTNAME`);
 if (!OPENAI_API_KEY) console.error(`Missing env var OPENAI_API_KEY`);
 if (!PINCONE_API_KEY) console.error(`Missing env var PINCONE_API_KEY`);
