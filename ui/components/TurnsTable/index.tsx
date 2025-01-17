@@ -2,7 +2,7 @@ import { useAppSelector } from "@/state/hooks";
 import { getCallMessages, getMessageById } from "@/state/messages";
 import { useFetchCallData } from "@/state/sync";
 import { Badge, Table } from "@mantine/core";
-import { BotMessage, HumanMessage } from "@shared/entities";
+import type { BotMessage, HumanMessage } from "@shared/entities";
 
 export function TurnsTable({
   callSid,
