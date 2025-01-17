@@ -7,12 +7,13 @@ import {
   Button,
   Checkbox,
   Group,
+  Loader,
   Paper,
   Radio,
   Table,
   Textarea,
 } from "@mantine/core";
-import { BotMessage, HumanMessage, Annotation } from "@shared/entities";
+import { Annotation, BotMessage, HumanMessage } from "@shared/entities";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useState } from "react";
 
@@ -58,14 +59,17 @@ function Feedback({
 
   const createNewFeedback = useCreateFeedback(callSid, setFeedbackId);
 
+  const { saveCall, status } = useSaveCall(callSid);
+
   return (
     <>
       <div style={{ display: "flex", width: "100%", gap: "10px" }}>
         <Button onClick={createNewFeedback} style={{ flex: 1 }}>
           New Annotation
         </Button>
-        <Button onClick={() => alert("not implemented")} style={{ flex: 1 }}>
+        <Button onClick={saveCall} style={{ flex: 1 }}>
           Save
+          {status === "in-progress" && <Loader />}
         </Button>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -91,6 +95,35 @@ function Feedback({
       </div>
     </>
   );
+}
+
+function useSaveCall(callSid: string) {
+  const dispatch = useAppDispatch();
+  const call = useAppSelector((state) => selectCallById(state, callSid));
+
+  const [status, setStatus] = useState<"in-progress" | "complete" | "error">(
+    null
+  );
+
+  const saveCall = async () => {
+    if (!call)
+      return console.error(
+        `Attempted to save call ${callSid} but no call found in store`
+      );
+
+    setStatus("in-progress");
+    const res = await fetch(`/api/calls/${callSid}`, {
+      method: "POST",
+      body: JSON.stringify(call),
+    });
+
+    if (res.ok) setStatus("complete");
+    else setStatus("error");
+
+    setTimeout(() => setStatus(null), 500);
+  };
+
+  return { saveCall, status };
 }
 
 function FeedbackCard({
