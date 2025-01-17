@@ -8,6 +8,7 @@ import { Badge, Button, Modal, Paper, Table, Text, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { LogActions } from "@shared/entities";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 export default function LiveCall() {
   return (
@@ -171,17 +172,21 @@ function CallSummary() {
   const router = useRouter();
   const callSid = router.query.callSid as string;
   const summary = useAppSelector(
-    (state) => selectCallById(state, callSid).summary
+    (state) => selectCallById(state, callSid)?.summary
   );
-  console.debug("call CallSummary router", router);
+
+  let description = summary?.description?.substring(0, 400);
+
   return (
     <div>
-      <Text fw="bold">{summary.title}</Text>
-      <Text>{summary.description}</Text>
+      <Text fw="bold">{summary?.title}</Text>
+      <Text size="xs">
+        {description} {summary?.description.length > 400 && <span>...</span>}
+      </Text>
       {summary?.customerDetails?.length && (
         <ul>
-          {summary?.customerDetails.map((detail) => (
-            <li key={`492m-${callSid}-${detail}-${router.asPath}`}>{detail}</li>
+          {summary?.customerDetails?.map((detail) => (
+            <li key={`${router.asPath}-${detail}-492m`}>{detail}</li>
           ))}
         </ul>
       )}
