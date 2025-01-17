@@ -41,7 +41,7 @@ function RecallRow({ callSid, score }: { callSid: string; score: number }) {
   return (
     <Table.Tr>
       <Table.Td>{call.summary}</Table.Td>
-      <Table.Td>{`${(score * 100).toFixed(1)}%`}</Table.Td>
+      <Table.Td>{`${Math.round(score * 100)}%`}</Table.Td>
       <Table.Td>
         <Modal opened={opened} onClose={close} title="Recall Summary" size="xl">
           <div
