@@ -4,7 +4,7 @@ import { TurnsTable } from "@/components/TurnsTable";
 import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
 import { getCallLogs } from "@/state/logs";
-import { Badge, Button, Modal, Paper, Table, Title } from "@mantine/core";
+import { Badge, Button, Modal, Paper, Table, Text, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { LogActions } from "@shared/entities";
 import { useRouter } from "next/router";
@@ -158,6 +158,21 @@ function Subconsciousness() {
         <Title order={4}>Procedure Governance</Title>
         <GovernanceContainer />
       </Paper>
+
+      <Paper style={paperStyle}>
+        <Title order={4}>Call Summary</Title>
+        <CallSummary />
+      </Paper>
     </div>
   );
+}
+
+function CallSummary() {
+  const router = useRouter();
+  const callSid = router.query.callSid as string;
+  const summary = useAppSelector(
+    (state) => selectCallById(state, callSid).summary
+  );
+
+  return <Text>{summary}</Text>;
 }

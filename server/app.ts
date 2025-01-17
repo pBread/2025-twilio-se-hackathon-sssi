@@ -112,6 +112,10 @@ app.post("/call-handler", async (req, res) => {
         ],
       };
 
+    const summary = user
+      ? `A call from ${user.firstName} ${user.lastName}`
+      : `A call from ${From}`;
+
     const callData: CallRecord = {
       id: CallSid,
       callSid: CallSid,
@@ -119,7 +123,7 @@ app.post("/call-handler", async (req, res) => {
       createdAt: new Date().toLocaleString(),
       from: From,
       to: To,
-      summary: "Unknown call reason",
+      summary,
       callContext: ctx,
       config: { ...demoConfig },
       feedback: [],

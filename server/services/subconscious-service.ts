@@ -39,6 +39,7 @@ export class SubsconsciousService {
   stop = async () => {
     clearInterval(this.governanceTimeout);
     clearInterval(this.recallTimeout);
+    clearInterval(this.summarizationTimeout);
   };
 
   /****************************************************
@@ -46,6 +47,7 @@ export class SubsconsciousService {
   ****************************************************/
   governanceTimeout: NodeJS.Timeout | undefined;
   startGovernance = async () => {
+    log.info("sub.gov", "starting subconscious governance");
     this.governanceTimeout = setInterval(
       this.executeGovernance,
       this.opts.governanceFrequency
@@ -145,6 +147,8 @@ export class SubsconsciousService {
   ****************************************************/
   recallTimeout: NodeJS.Timeout | undefined;
   startRecall = async () => {
+    log.info("sub.gov", "starting subconscious recall");
+
     this.recallTimeout = setInterval(
       this.executeRecall,
       this.opts.recallFrequency
@@ -152,8 +156,6 @@ export class SubsconsciousService {
   };
 
   executeRecall = async () => {
-    log.info("sub.recall", "executing recall");
-
     const matches = await vectorQuery(this.store.getMessages());
 
     const similarCalls: SimilarCall[] = matches.map((match) => ({
@@ -218,14 +220,16 @@ export class SubsconsciousService {
   ****************************************************/
   summarizationTimeout: NodeJS.Timeout | undefined;
   startSummarization = async () => {
-    this.recallTimeout = setInterval(
-      this.executeRecall,
+    log.info("sub.sum", "starting subconscious summarization");
+
+    this.summarizationTimeout = setInterval(
+      this.executeSummarization,
       this.opts.summarizationFrequency
     );
   };
 
   executeSummarization = async () => {
-    let instructions = governanceBot.getInstructions(
+    let instructions = summarizationBot.getInstructions(
       this.store.call.callContext,
       this.store.getMessages()
     );
