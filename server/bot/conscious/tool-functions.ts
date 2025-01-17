@@ -1,4 +1,4 @@
-import { OrderRecord } from "../../../shared/entities";
+import { HandoffData, OrderRecord } from "../../../shared/entities";
 import { getMonthName } from "../../utils/dictionary-dates";
 import { getStateName } from "../../utils/dictionary-regions";
 import { parseE164 } from "../../utils/e164";
@@ -531,33 +531,16 @@ interface TransferToAgent {
   reason: string;
 }
 
-interface HandoffData {
-  conversationSummary: string;
-  customerData: Partial<{
-    name: string;
-    firstName: string;
-    lastName: string;
-    initials: string;
-
-    loyaltyTier: string;
-    memberType: string;
-
-    email: string;
-
-    phoneNumber: string;
-    phone: string;
-
-    orders: OrderRecord[];
-  }>;
-  reason: string;
-  reasonCode: "live-agent-handoff";
-}
-
 export async function transferToAgent(
   args: TransferToAgent,
   svcs: FunctionServices
 ) {
-  const user = svcs.ctx.user;
+  let user = svcs.ctx.user;
+  if (!user)
+    user = await svcs.db.users.getByChannel(
+      svcs.ctx.callingFromPhoneNumber as string
+    );
+
   const firstName = user?.firstName ?? "";
   const lastName = user?.lastName ?? "";
 
@@ -570,6 +553,7 @@ export async function transferToAgent(
 
   await sleep(4000);
   const handoffData: HandoffData = {
+    ...args,
     customerData: {
       name: firstName + lastName,
       firstName,
@@ -581,17 +565,18 @@ export async function transferToAgent(
       phoneNumber: user?.mobilePhone,
       phone: user?.mobilePhone,
 
-      loyaltyTier: user?.membership ?? "loyalyTier placeholder",
-      memberType: user?.membership ?? "memberType placeholder",
+      loyaltyTier: user?.membership ?? "NA",
+      memberType: user?.membership ?? "NA",
       orders,
     },
     conversationSummary:
       svcs.store.call.summary.description ?? "Call summary placeholder",
     reasonCode: "live-agent-handoff",
-    ...args,
   };
 
-  log.info("bot.fns", `transferring to agent`, handoffData);
+  log.info("bot.fns", `transferring to agent`);
+
+  log.debug("bot.fns", `handoffData: `, JSON.stringify(handoffData));
 
   svcs.relay.end(handoffData);
 

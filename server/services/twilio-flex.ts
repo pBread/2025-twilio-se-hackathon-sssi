@@ -6,6 +6,7 @@ import {
 } from "../env";
 import log from "../logger";
 import { safeParse } from "../utils/misc";
+import { HandoffData } from "../../shared/entities";
 
 const client = new Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 const VoiceResponse = TwiML.VoiceResponse;
@@ -20,13 +21,7 @@ interface CreateLiveAgentHandoffTwiML {
   HandoffData: string; // json string
 }
 
-interface HandoffData {
-  reason: string;
-  reasonCode: number;
-  conversationSummary: string;
-}
-
-export function createLiveAgentHandoffTwiML(
+export async function createLiveAgentHandoffTwiML(
   params: CreateLiveAgentHandoffTwiML
 ) {
   const data = safeParse(params.HandoffData) as HandoffData;
@@ -35,6 +30,7 @@ export function createLiveAgentHandoffTwiML(
     throw Error(`createLiveAgentHandoffTwiML could not parse handoffData`);
 
   const taskAttributes = {
+    ...data,
     accountSid: params.AccountSid,
     callSid: params.CallSid,
     from: params.From,

@@ -32,8 +32,7 @@ export interface CallSummary {
 export interface CallContext {
   today: Date | string; // today's date
   waitTime?: number;
-
-  callingFromPhoneNumber?: string;
+  callingFromPhoneNumber: string;
   user?: UserRecord;
   similarCalls: SimilarCall[];
   suggestions: string[];
@@ -93,6 +92,31 @@ export type LogActions =
   | "Added System Message"
   | "Updated Context"
   | "Updated Instructions";
+
+/****************************************************
+ Flex
+****************************************************/
+export interface HandoffData {
+  conversationSummary: string;
+  customerData: Partial<{
+    name: string;
+    firstName: string;
+    lastName: string;
+    initials: string;
+
+    loyaltyTier: string;
+    memberType: string;
+
+    email: string;
+
+    phoneNumber: string;
+    phone: string;
+
+    orders: OrderRecord[];
+  }>;
+  reason: string;
+  reasonCode: "live-agent-handoff";
+}
 
 /****************************************************
  Conversation State

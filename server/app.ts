@@ -32,6 +32,7 @@ import {
   populateSampleVectorData,
 } from "./services/vector-db-service";
 import { createLiveAgentHandoffTwiML } from "./services/twilio-flex";
+import { transferToAgent } from "./bot/conscious/tool-functions";
 
 const {
   ENABLE_GOVERNANCE,
@@ -231,6 +232,12 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
   else log.warn("call", "call is not being recorded");
 
   relay.onSetup((ev) => {
+    log.debug("onSetup", "TRANSFERRING TO AGENT");
+    transferToAgent(
+      { reason: "tranferred" },
+      { ctx: store.call.callContext, store, db, relay }
+    );
+
     store.setCall({ callStatus: "connected" });
 
     store.setInstructions(getInstructions(store.call.callContext));
@@ -345,10 +352,11 @@ app.post("/live-agent-handoff", async (req, res) => {
     `call transfer webhook for call ${req.body.CallSid}`
   );
 
-  const twiml = createLiveAgentHandoffTwiML(req.body);
+  const twiml = await createLiveAgentHandoffTwiML(req.body);
 
-  log.debug("/live-agent-handoff\n", "body\n", req.body, "twiml\n", twiml);
+  log.debug("/live-agent-handoff\n", "body\n", req.body);
   res.type("xml");
+  // res.setHeader("Content-Type", "application/xml");
   res.send(await twiml.toString());
 });
 
