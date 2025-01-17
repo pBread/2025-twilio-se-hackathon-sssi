@@ -156,7 +156,9 @@ function Subconsciousness() {
       </Paper>
       <Paper style={paperStyle}>
         <Title order={4}>Procedure Governance</Title>
-        <GovernanceContainer />
+        <div style={{ height: "300px", overflow: "scroll" }}>
+          <GovernanceContainer />
+        </div>
       </Paper>
 
       <Paper style={paperStyle}>
@@ -182,7 +184,7 @@ function CallSummary() {
       <Text size="xs">
         {description} {summary?.description?.length > 400 && <span>...</span>}
       </Text>
-      {summary?.customerDetails?.length && (
+      {!!summary?.customerDetails?.length && (
         <ul>
           {summary?.customerDetails?.map((detail) => (
             <li key={`${router.asPath}-${detail}-492m`}>{detail}</li>
