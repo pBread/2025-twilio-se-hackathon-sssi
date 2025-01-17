@@ -3,6 +3,7 @@ import { useAppSelector } from "@/state/hooks";
 import { getConnectionState } from "@/state/sync";
 import { Loader, Paper, Skeleton, Text } from "@mantine/core";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 export function Header({ callSid }: { callSid?: string }) {
   const connectionState = useAppSelector(getConnectionState);
@@ -24,6 +25,8 @@ export function Header({ callSid }: { callSid?: string }) {
 }
 
 function CallDetails({ callSid }: { callSid?: string }) {
+  const router = useRouter();
+  const isLive = router?.route?.startsWith("/calls");
   const call = useAppSelector((state) => selectCallById(state, callSid));
 
   return (
@@ -37,7 +40,8 @@ function CallDetails({ callSid }: { callSid?: string }) {
         </div>
         <div style={{ display: "flex", gap: "4px", flexDirection: "column" }}>
           <Text size="sm">
-            <Link href={`/calls/${callSid}`}>Call Sid</Link>
+            {isLive && <Link href={`/feedback/${callSid}`}>Add Feedback</Link>}
+            {!isLive && <Link href={`/calls/${callSid}`}>Go to Live View</Link>}
           </Text>
           <Text size="sm">Status: {call?.callStatus}</Text>
         </div>
