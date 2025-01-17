@@ -147,32 +147,45 @@ function FeedbackCard({
     <Paper
       style={{
         ...paperStyle,
+        flex: "auto",
         display: "flex",
         flexDirection: "column",
         gap: "6px",
-        flex: "auto",
-        boxShadow: "var(--mantine-shadow-xs)",
 
+        boxShadow: "var(--mantine-shadow-xs)",
         border: isSelected
           ? "1px solid var(--mantine-primary-color-1)"
           : "1px solid transparent",
       }}
     >
       <Textarea
-        label="Feedback"
         description="This feedback will be provided voice bots who are having similar conversations"
+        label="Feedback"
+        onChange={(ev) => setFeedback("comment", ev.target.value)}
         placeholder="..."
         value={comment}
-        onChange={(ev) => setFeedback("comment", ev.target.value)}
       />
       <Group>
-        <Radio checked={polarity === "bad"} label="Bad" value="bad" />
+        <Radio
+          checked={polarity === "bad"}
+          color="red"
+          label="Bad"
+          onChange={() => setFeedback("polarity", "bad")}
+          value="bad"
+        />
         <Radio
           checked={polarity === "neutral"}
           label="Neutral"
+          onChange={() => setFeedback("polarity", "neutral")}
           value="neutral"
         />
-        <Radio checked={polarity === "good"} label="Good" value="good" />
+        <Radio
+          checked={polarity === "good"}
+          color="green"
+          label="Good"
+          onChange={() => setFeedback("polarity", "good")}
+          value="good"
+        />
       </Group>
     </Paper>
   );
