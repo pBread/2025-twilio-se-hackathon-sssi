@@ -149,7 +149,6 @@ async function removeVector(vectorId: string) {
 
 export async function removeCallVectorsByCallSid(callSid: string) {
   const result = await getVectorsByCallSid(callSid);
-  log.debug("vector-db", "removeCallVector", result);
 }
 
 /****************************************************
