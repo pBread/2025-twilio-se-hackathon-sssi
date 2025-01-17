@@ -8,7 +8,6 @@ import { Badge, Button, Modal, Paper, Table, Text, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { LogActions } from "@shared/entities";
 import { useRouter } from "next/router";
-import { useState } from "react";
 
 export default function LiveCall() {
   return (

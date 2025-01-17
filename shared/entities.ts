@@ -55,7 +55,7 @@ export interface SimilarCall {
 
 export interface Annotation {
   id: string;
-  target: [number, number]; // message indexes this annoation is targeting
+  targets: number[]; // message indexes this annoation is targeting
   comment: string;
   polarity: "bad" | "neutral" | "good";
 }

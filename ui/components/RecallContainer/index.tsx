@@ -68,14 +68,7 @@ function RecallRow({ callSid, score }: { callSid: string; score: number }) {
               <Title order={5}>Turns</Title>
               <TurnsTable
                 callSid={callSid}
-                targetStart={call.feedback.reduce(
-                  (acc, cur) => Math.min(acc, cur.target[0]),
-                  call?.feedback[0]?.target[0] ?? Infinity
-                )}
-                targetEnd={call.feedback.reduce(
-                  (acc, cur) => Math.max(acc, cur.target[1]),
-                  call?.feedback[1]?.target[1] ?? 0
-                )}
+                targets={call.feedback.flatMap((feedback) => feedback.targets)}
               />
             </div>
           </div>

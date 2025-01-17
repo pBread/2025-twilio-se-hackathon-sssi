@@ -99,7 +99,7 @@ const calls: CallRecord[] = [
       {
         id: "sd92kd923",
         polarity: "good",
-        target: [0, 3],
+        targets: [0, 1, 2, 3],
         comment:
           "Reference the Segment Profile to make recommendations are relevant as possible.",
       },
@@ -189,7 +189,7 @@ const calls: CallRecord[] = [
       {
         id: "asid832s",
         polarity: "good",
-        target: [0, 3],
+        targets: [0, 1, 2, 3],
         comment:
           "Avoid having customers repeat themselves by calling your tools to verify information whenever possible",
       },

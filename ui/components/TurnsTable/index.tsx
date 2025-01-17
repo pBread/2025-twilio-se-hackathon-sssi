@@ -6,19 +6,15 @@ import type { BotMessage, HumanMessage } from "@shared/entities";
 
 export function TurnsTable({
   callSid,
-  targetStart,
-  targetEnd,
+  targets,
 }: {
   callSid: string;
-  targetStart?: number;
-  targetEnd?: number;
+  targets?: number[];
 }) {
   const msgs = useAppSelector((state) => getCallMessages(state, callSid));
   useFetchCallData(callSid);
 
-  const isHighlighted = targetStart !== undefined || targetEnd !== undefined;
-
-  const targets = [targetStart ?? 0, targetEnd ?? msgs.length];
+  const isHighlighted = !!targets?.length;
 
   return (
     <Table stickyHeader>
@@ -34,9 +30,7 @@ export function TurnsTable({
           <Table.Tr
             key={`di8-${msg.id}`}
             bg={
-              isHighlighted &&
-              msg._index + 1 >= targets[0] &&
-              msg._index - 1 <= targets[1]
+              targets?.includes(msg._index)
                 ? "var(--mantine-color-blue-light)"
                 : ""
             }
