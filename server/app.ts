@@ -112,7 +112,7 @@ app.post("/call-handler", async (req, res) => {
         ],
       };
 
-    const summary = user
+    const title = user
       ? `A call from ${user.firstName} ${user.lastName}`
       : `A call from ${From}`;
 
@@ -123,7 +123,7 @@ app.post("/call-handler", async (req, res) => {
       createdAt: new Date().toLocaleString(),
       from: From,
       to: To,
-      summary,
+      summary: { title },
       callContext: ctx,
       config: { ...demoConfig },
       feedback: [],
@@ -343,6 +343,7 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
  Misc API
 ****************************************************/
 app.get("/api/reset", async (req, res) => {
+  await vectorDbBlocker;
   await setupSync();
   await clearSyncData();
   if (ENABLE_RECALL) await clearAllVectors();
@@ -354,6 +355,7 @@ app.get("/api/reset", async (req, res) => {
 });
 
 app.get("/api/clear", async (req, res) => {
+  await vectorDbBlocker;
   await setupSync();
   await clearSyncData();
   if (ENABLE_RECALL) await clearAllVectors();
@@ -362,18 +364,12 @@ app.get("/api/clear", async (req, res) => {
 });
 
 app.get("/api/populate", async (req, res) => {
+  await vectorDbBlocker;
   await setupSync();
   await populateSampleSyncData();
 
   if (ENABLE_RECALL) await clearAllVectors();
   if (ENABLE_RECALL) await populateSampleVectorData();
-
-  res.send("complete");
-});
-
-app.get("/debug", async (req, res) => {
-  await vectorDbBlocker;
-  await populateSampleVectorData();
 
   res.send("complete");
 });

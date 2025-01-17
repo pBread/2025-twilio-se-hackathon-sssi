@@ -9,11 +9,17 @@ export interface CallRecord {
   createdAt: string; // datetime
   from: string;
   to: string;
-  summary: string;
+  summary: CallSummary;
 
   callContext: CallContext;
   config: DemoConfiguration;
   feedback: Annotation[];
+}
+
+export interface CallSummary {
+  title: string; // 1 sentence description
+  description?: string; // 1 paragraph description
+  customerDetails?: string[]; // any information the customer divulges about themself
 }
 
 export interface CallContext {

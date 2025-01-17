@@ -238,10 +238,11 @@ export class SubsconsciousService {
       model: summarizationBot.model,
       messages: [{ role: "user", content: instructions }],
       stream: false,
+      response_format: { type: "json_object" },
     });
 
     const choice = completion.choices[0];
-    const summary = choice.message.content;
+    const content = choice.message.content;
 
     if (choice.finish_reason === "tool_calls" && choice.message.tool_calls) {
       const logMsg =
@@ -251,10 +252,17 @@ export class SubsconsciousService {
     }
 
     if (choice.finish_reason === "stop") {
+      const summary = safeParse(content);
+
       if (summary) {
         this.store.setCall({ summary });
         this.store.call.callContext;
-      } else log.warn("sub.sum", "summarization LLM returned a null response");
+      } else
+        log.warn(
+          "sub.sum",
+          "summarization LLM return invalid format. content",
+          content
+        );
     }
   };
 }

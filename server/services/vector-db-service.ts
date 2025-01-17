@@ -101,7 +101,7 @@ async function insertCallVector(call: CallRecord, msgs: StoreMessage[]) {
           values: embedding,
           metadata: {
             callSid: call.callSid,
-            summary: call.summary,
+            title: call.summary.title,
             feedback: call.feedback.map((item) => item.comment),
           },
         },

@@ -6,10 +6,26 @@ import procedures from "../procedures";
 const instructions = `\
 You will find the transcript of an ongoing conversation between a voice bot and a human customer. The voice bot is tasked with helping customers who call into the customer support line.
 
-Generate a one paragraph summary of the conversation. Be sure to include the customer's intent and note anything interesting about the call.
+You are to summarize the conversation.
+
+# Response Guidelines
+
+Your response should be formatted as a JSON object and follow this Typescript schema.
+
+interface SummarySchema {
+  title: string; // 1 sentence description
+  description: string; // 1 paragraph description
+  customerDetails: string[]; // any information the customer divulges about themself
+}
+
+The title should be at most one sentence.
+
+The description should be one paragraph long. Be sure to include the customer's intent and note anything interesting about the call.
+
+Customer details are any pieces of information that the customer divulges about themselves, such as preferences or any personal detail.
 
 # Conversation
-Here are a few notes on the formatting
+Here are a few notes on the transcript formatting:
 - Result that are undefined are unresolved, i.e. the API request is still open.
 - The result.data property is stringified then truncated to avoid this prompt from being too long.
 

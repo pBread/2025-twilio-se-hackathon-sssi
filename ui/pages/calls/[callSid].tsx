@@ -173,6 +173,18 @@ function CallSummary() {
   const summary = useAppSelector(
     (state) => selectCallById(state, callSid).summary
   );
-
-  return <Text>{summary}</Text>;
+  console.debug("call CallSummary router", router);
+  return (
+    <div>
+      <Text fw="bold">{summary.title}</Text>
+      <Text>{summary.description}</Text>
+      {summary?.customerDetails?.length && (
+        <ul>
+          {summary?.customerDetails.map((detail) => (
+            <li key={`492m-${callSid}-${detail}-${router.asPath}`}>{detail}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
