@@ -1,12 +1,18 @@
 import { selectCallById, selectCallIds } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
-import { CopyButton, HoverCard, Table, Text } from "@mantine/core";
+import {
+  CopyButton,
+  HoverCard,
+  Paper,
+  Table,
+  Text,
+  Title,
+} from "@mantine/core";
 import Link from "next/link";
 
 export default function Home() {
   return (
     <div>
-      Home
       <div>
         <CallTable />
       </div>
@@ -18,23 +24,26 @@ function CallTable() {
   const callIds = useAppSelector(selectCallIds);
 
   return (
-    <Table>
-      <Table.Thead>
-        <Table.Tr>
-          <Table.Th>Title</Table.Th>
-          <Table.Th>CallSid</Table.Th>
-          <Table.Th>Phones</Table.Th>
-          <Table.Th>Status</Table.Th>
-          <Table.Th>Created At</Table.Th>
-          <Table.Th>Feedback</Table.Th>
-        </Table.Tr>
-      </Table.Thead>
-      <Table.Tbody>
-        {callIds.map((callSid) => (
-          <CallRow callSid={callSid} key={`${callSid}-92sj`} />
-        ))}
-      </Table.Tbody>
-    </Table>
+    <Paper style={{ padding: "6px" }}>
+      <Title order={3}>Calls</Title>
+      <Table>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Title</Table.Th>
+            <Table.Th>CallSid</Table.Th>
+            <Table.Th>Phones</Table.Th>
+            <Table.Th>Status</Table.Th>
+            <Table.Th>Created At</Table.Th>
+            <Table.Th>Feedback</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {callIds.map((callSid) => (
+            <CallRow callSid={callSid} key={`${callSid}-92sj`} />
+          ))}
+        </Table.Tbody>
+      </Table>
+    </Paper>
   );
 }
 
@@ -58,7 +67,9 @@ function CallRow({ callSid }: { callSid: string }) {
                 </Text>
               </HoverCard.Target>
               <HoverCard.Dropdown>
-                <Text size="sm">{copied ? "Copied" : "Copy"}</Text>
+                <Text size="sm" onClick={copy} style={{ cursor: "pointer" }}>
+                  {copied ? "Copied" : "Copy"}
+                </Text>
               </HoverCard.Dropdown>
             </HoverCard>
           )}
