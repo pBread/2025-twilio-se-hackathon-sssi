@@ -58,15 +58,15 @@ function CallRow({ callSid }: { callSid: string }) {
       <Table.Td>
         <CopyButton value={callSid}>
           {({ copied, copy }) => (
-            <HoverCard>
+            <HoverCard position="left">
               <HoverCard.Target>
                 <Text style={{ cursor: "pointer" }} onClick={copy}>
-                  {call.callSid.substring(0, 20)}...
+                  {call.callSid.substring(0, 15)}...
                 </Text>
               </HoverCard.Target>
               <HoverCard.Dropdown>
                 <Text size="sm" onClick={copy} style={{ cursor: "pointer" }}>
-                  {copied ? "Copied" : "Copy"}
+                  {copied ? "Copied" : "Copy Call Sid"}
                 </Text>
               </HoverCard.Dropdown>
             </HoverCard>
@@ -114,6 +114,14 @@ function CallRow({ callSid }: { callSid: string }) {
             <Text>{call.feedback.length}</Text>
           </Link>
         )}
+      </Table.Td>
+      <Table.Td>
+        <Text>
+          <Link href={`/live/${callSid}`}>Live View</Link>
+        </Text>
+      </Table.Td>
+      <Table.Td>
+        <Link href={`/feedback/${callSid}`}>Add Feedback</Link>
       </Table.Td>
     </Table.Tr>
   );
