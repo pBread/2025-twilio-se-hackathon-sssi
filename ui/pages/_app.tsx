@@ -8,6 +8,7 @@ import {
   useFetchCallData,
 } from "@/state/sync";
 import "@/styles/globals.css";
+import { theme } from "@/styles/theme";
 import { isServer } from "@/util/env";
 import { MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
@@ -25,7 +26,7 @@ export default function App(props: AppProps) {
   return (
     <>
       <Helmet />
-      <MantineProvider>
+      <MantineProvider theme={theme}>
         <Provider store={storeRef.current}>
           <Main {...props} />
         </Provider>
