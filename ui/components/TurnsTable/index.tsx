@@ -73,8 +73,14 @@ function BotRow({ msgId }: { msgId: string }) {
       <Table.Td>{msg.role}</Table.Td>
       <Table.Td>{msg.type}</Table.Td>
       <Table.Td>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <span> {content}</span>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            gap: "2px",
+          }}
+        >
+          <span style={{ flex: 1 }}> {content}</span>
           <span>
             {isInterrupted && <Badge color="yellow">Interrupted</Badge>}
           </span>
