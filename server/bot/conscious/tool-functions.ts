@@ -585,7 +585,8 @@ export async function transferToAgent(
       memberType: user?.membership ?? "memberType placeholder",
       orders,
     },
-    conversationSummary: "This is a placeholder for conversationSummary",
+    conversationSummary:
+      svcs.store.call.summary.description ?? "Call summary placeholder",
     reasonCode: "live-agent-handoff",
     ...args,
   };
