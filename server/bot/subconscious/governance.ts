@@ -21,8 +21,10 @@ Some of the events are related. Make sure you consider this when analyzing the s
 
 Also, if a step is a related procedure and there are any steps that are not "not-started" or "in-progress" then that step cannot be considered "complete."
 
+
+
 # Response Format
-Format your response as a JSON object formatted to the schema of the Typescript type GovernanceTracker below. You should only include the procedures that are underway or could be relevant. But, you should include every step with that step's status for each procedure you identify.
+Format your response as a JSON object formatted to the schema of the Typescript type GovernanceTracker below. You should only include the procedures that are underway or could be relevant. At most, you should include two procedures in your response.
 
 type GovernanceTracker = Record<ProcedureId, GovernanceStep[]>
 
