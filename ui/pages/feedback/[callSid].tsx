@@ -152,14 +152,17 @@ function useCreateFeedback(callSid: string, setFeedbackId: SetFeedbackId) {
   return () => {
     if (!call) return;
 
+    const id = makeId();
+
     const feedback: Annotation = {
-      id: makeId(),
+      id,
       comment: "",
       polarity: "neutral",
       targets: [],
     };
 
     dispatch(setOneCall({ ...call, feedback: call.feedback.concat(feedback) }));
+    setFeedbackId(id);
   };
 }
 
