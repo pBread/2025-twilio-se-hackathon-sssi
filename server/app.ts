@@ -158,7 +158,7 @@ app.post("/call-handler", async (req, res) => {
 
     const twiml = `\
 <Response>
-    <Connect action="${TWILIO_FN_BASE_URL}/live-agent-handoff">
+    <Connect action="https://${HOSTNAME}/live-agent-handoff">
         <ConversationRelay url="wss://${HOSTNAME}/convo-relay/${CallSid}" 
           ttsProvider="${demoConfig.relayConfig.ttsProvider}" 
           voice="${demoConfig.relayConfig.ttsVoice}"
@@ -348,8 +348,8 @@ app.post("/live-agent-handoff", async (req, res) => {
   const twiml = createLiveAgentHandoffTwiML(req.body);
 
   log.debug("/live-agent-handoff\n", "body\n", req.body, "twiml\n", twiml);
-
-  res.contentType("application/xml").send(twiml);
+  res.type("xml");
+  res.send(await twiml.toString());
 });
 
 /****************************************************

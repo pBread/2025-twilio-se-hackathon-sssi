@@ -26,7 +26,7 @@ interface HandoffData {
   conversationSummary: string;
 }
 
-export async function createLiveAgentHandoffTwiML(
+export function createLiveAgentHandoffTwiML(
   params: CreateLiveAgentHandoffTwiML
 ) {
   const data = safeParse(params.HandoffData) as HandoffData;
