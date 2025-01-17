@@ -22,7 +22,7 @@ export default function NoActiveTask(props) {
                 <IFrame
                   onError={() => setIframeError(true)}
                   onLoad={() => setIframeError(false)}
-                  src="http://localhost:3001/"
+                  src={src}
                   style={{ border: "none" }}
                 />
               )}

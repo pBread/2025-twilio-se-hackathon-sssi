@@ -30,6 +30,7 @@
     "./**/*.test.ts",
     "./**/*.test.tsx",
     "./**/__mocks__/*.ts",
-    "./**/__mocks__/*.tsx"
+    "./**/__mocks__/*.tsx",
+    "node_modules"
   ]
 }
