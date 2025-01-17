@@ -13,9 +13,7 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div>
-      <div>
-        <CallTable />
-      </div>
+      <CallTable />
     </div>
   );
 }
