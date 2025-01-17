@@ -38,6 +38,7 @@ const {
   ENABLE_GOVERNANCE,
   ENABLE_RECALL,
   HOSTNAME,
+  ENABLE_SUMMARIZATION,
   PORT,
   RECORD_CALL,
   TWILIO_ACCOUNT_SID,
@@ -236,8 +237,9 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
     const greeting = ev.customParameters?.greeting;
     if (greeting) store.addBotText({ content: greeting, id: "greeting" });
 
-    if (store.call.config.isGovernanceEnabled) subconscious.startGovernance();
-    if (store.call.config.isRecallEnabled) subconscious.startRecall();
+    if (ENABLE_GOVERNANCE) subconscious.startGovernance();
+    if (ENABLE_RECALL) subconscious.startRecall();
+    if (ENABLE_SUMMARIZATION) subconscious.startSummarization();
   });
 
   relay.onPrompt((ev) => {

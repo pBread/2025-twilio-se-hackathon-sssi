@@ -7,6 +7,7 @@ import type {
   SimilarCall,
 } from "../../shared/entities";
 import governanceBot from "../bot/subconscious/governance";
+import summarizationBot from "../bot/subconscious/summary";
 import { OPENAI_API_KEY } from "../env";
 import log from "../logger";
 import { safeParse } from "../utils/misc";
@@ -19,6 +20,7 @@ const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 interface SubconsciousOptions {
   governanceFrequency: number; // in milliseconds, how often the governance process should be executed
   recallFrequency: number; // in milliseconds, how often the recall process should be executed
+  summarizationFrequency: number; // in milliseconds, how often the summarization process should be executed
 }
 
 export class SubsconsciousService {
@@ -30,6 +32,7 @@ export class SubsconsciousService {
     this.opts = {
       governanceFrequency: opts.governanceFrequency ?? 10 * 1000,
       recallFrequency: opts.recallFrequency ?? 5 * 1000,
+      summarizationFrequency: opts.summarizationFrequency ?? 5 * 1000,
     };
   }
 
@@ -209,6 +212,47 @@ export class SubsconsciousService {
       description,
       source: "Segment",
     });
+
+  /****************************************************
+   Summarization
+  ****************************************************/
+  summarizationTimeout: NodeJS.Timeout | undefined;
+  startSummarization = async () => {
+    this.recallTimeout = setInterval(
+      this.executeRecall,
+      this.opts.summarizationFrequency
+    );
+  };
+
+  executeSummarization = async () => {
+    let instructions = governanceBot.getInstructions(
+      this.store.call.callContext,
+      this.store.getMessages()
+    );
+
+    const completion = await openai.chat.completions.create({
+      model: summarizationBot.model,
+      messages: [{ role: "user", content: instructions }],
+      stream: false,
+    });
+
+    const choice = completion.choices[0];
+    const summary = choice.message.content;
+
+    if (choice.finish_reason === "tool_calls" && choice.message.tool_calls) {
+      const logMsg =
+        "Subconscious Summarization has no tools but LLM is attempting to execute fns";
+      log.error(logMsg);
+      throw Error(logMsg);
+    }
+
+    if (choice.finish_reason === "stop") {
+      if (summary) {
+        this.store.setCall({ summary });
+        this.store.call.callContext;
+      } else log.warn("sub.sum", "summarization LLM returned a null response");
+    }
+  };
 }
 
 /****************************************************

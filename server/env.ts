@@ -6,6 +6,7 @@ export const DEFAULT_FROM_NUMBER = process.env.DEFAULT_FROM_NUMBER;
 export const DEVELOPERS_PHONE_NUMBER = process.env.DEVELOPERS_PHONE_NUMBER;
 export const ENABLE_GOVERNANCE = bool(process.env.ENABLE_GOVERNANCE);
 export const ENABLE_RECALL = bool(process.env.ENABLE_RECALL);
+export const ENABLE_SUMMARIZATION = bool(process.env.ENABLE_SUMMARIZATION);
 export const LLM_MODEL = process.env.LLM_MODEL as string;
 export const PORT = process.env.PORT ?? "3001";
 export const RECORD_CALL = bool(process.env.RECORD_CALL);
