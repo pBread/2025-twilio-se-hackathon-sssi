@@ -2,7 +2,16 @@ import { selectCallById, setOneCall } from "@/state/calls";
 import { useAppDispatch, useAppSelector } from "@/state/hooks";
 import { getCallMessages, getMessageById } from "@/state/messages";
 import { makeId } from "@/util/misc";
-import { Badge, Button, Checkbox, Paper, Table } from "@mantine/core";
+import {
+  Badge,
+  Button,
+  Checkbox,
+  Group,
+  Paper,
+  Radio,
+  Table,
+  Textarea,
+} from "@mantine/core";
 import { BotMessage, HumanMessage, Annotation } from "@shared/entities";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useState } from "react";
@@ -21,9 +30,16 @@ export default function CallReview() {
           <TurnTable feedbackId={feedbackId} />
         </Paper>
       </div>
-      <Paper style={paperStyle}>
+      <div
+        style={{
+          display: "flex",
+          flex: 1,
+          flexDirection: "column",
+          gap: "6px",
+        }}
+      >
         <Feedback feedbackId={feedbackId} setFeedbackId={setFeedbackId} />
-      </Paper>
+      </div>
     </div>
   );
 }
@@ -43,16 +59,83 @@ function Feedback({
   const createNewFeedback = useCreateFeedback(callSid, setFeedbackId);
 
   return (
-    <Paper style={paperStyle}>
-      <Button onClick={createNewFeedback}>Create</Button>
-      {call?.feedback.map((item) => (
-        <div
-          key={`${callSid}-di-${item.id}`}
-          onClick={() => setFeedbackId(feedbackId === item.id ? null : item.id)}
-        >
-          {item.id}
-        </div>
-      ))}
+    <>
+      <div style={{ display: "flex", width: "100%", gap: "10px" }}>
+        <Button onClick={createNewFeedback} style={{ flex: 1 }}>
+          New Annotation
+        </Button>
+        <Button onClick={() => alert("not implemented")} style={{ flex: 1 }}>
+          Save
+        </Button>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        {call?.feedback.map((item) => (
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <Checkbox
+              checked={feedbackId === item.id}
+              onClick={() =>
+                setFeedbackId(feedbackId === item.id ? null : item.id)
+              }
+            />
+            <FeedbackCard
+              key={`${callSid}-di-${item.id}`}
+              callSid={callSid}
+              comment={item.comment}
+              feedbackId={item.id}
+              isSelected={feedbackId === item.id}
+              polarity={item.polarity}
+              setFeedbackId={setFeedbackId}
+            />
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
+function FeedbackCard({
+  callSid,
+  comment,
+  feedbackId,
+  isSelected,
+  polarity,
+  setFeedbackId,
+}: {
+  callSid: string;
+  comment: string;
+  feedbackId: string;
+  isSelected: boolean;
+  polarity: "bad" | "neutral" | "good";
+  setFeedbackId: SetFeedbackId;
+}) {
+  const setFeedback = useSetFeedback(callSid, feedbackId);
+
+  return (
+    <Paper
+      style={{
+        ...paperStyle,
+        display: "flex",
+        flexDirection: "column",
+        gap: "6px",
+        flex: "auto",
+      }}
+    >
+      <Textarea
+        label="Feedback"
+        description="This feedback will be provided voice bots who are having similar conversations"
+        placeholder="..."
+        value={comment}
+        onChange={(ev) => setFeedback("comment", ev.target.value)}
+      />
+      <Group>
+        <Radio checked={polarity === "bad"} label="Bad" value="bad" />
+        <Radio
+          checked={polarity === "neutral"}
+          label="Neutral"
+          value="neutral"
+        />
+        <Radio checked={polarity === "good"} label="Good" value="good" />
+      </Group>
     </Paper>
   );
 }
@@ -72,6 +155,47 @@ function useCreateFeedback(callSid: string, setFeedbackId: SetFeedbackId) {
     };
 
     dispatch(setOneCall({ ...call, feedback: call.feedback.concat(feedback) }));
+  };
+}
+
+function useSetFeedback(callSid: string, feedbackId?: string) {
+  const dispatch = useAppDispatch();
+  const call = useAppSelector((state) => selectCallById(state, callSid));
+
+  return <K extends keyof Annotation>(property: K, value: Annotation[K]) => {
+    if (!feedbackId) {
+      return console.warn(
+        "attempted to update feedback but no annotation selected"
+      );
+    }
+
+    const map = new Map<string, Annotation>();
+    for (const item of call.feedback) map.set(item.id, item);
+
+    const feedbackItem = map.get(feedbackId);
+    if (!feedbackItem) {
+      return console.warn(
+        "attempted to update feedback but annotation not found"
+      );
+    }
+
+    // Update the specific property
+    const updatedFeedback = {
+      ...feedbackItem,
+      [property]: value,
+    };
+
+    // Update the map and recreate the feedback array
+    map.set(feedbackId, updatedFeedback);
+    const newFeedback = Array.from(map.values());
+
+    // Dispatch the update
+    dispatch(
+      setOneCall({
+        ...call,
+        feedback: newFeedback,
+      })
+    );
   };
 }
 
