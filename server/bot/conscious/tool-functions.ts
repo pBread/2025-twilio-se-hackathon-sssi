@@ -546,11 +546,6 @@ export async function transferToAgent(
 
   let orders: OrderRecord[] = [];
 
-  if (user) {
-    const allOrders = await svcs.db.orders.list();
-    orders = allOrders.filter((order) => order.userId === user?.id);
-  }
-
   await sleep(4000);
   const handoffData: HandoffData = {
     ...args,
@@ -570,7 +565,9 @@ export async function transferToAgent(
       orders,
     },
     conversationSummary:
-      svcs.store.call.summary.description ?? "Call summary placeholder",
+      svcs.store.call.summary.description ??
+      svcs.store.call.summary.title ??
+      "Call summary placeholder",
     reasonCode: "live-agent-handoff",
   };
 

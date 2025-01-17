@@ -31,9 +31,11 @@ export async function createLiveAgentHandoffTwiML(
 
   const taskAttributes = {
     ...data,
+    customerData: data.customerData,
     accountSid: params.AccountSid,
     callSid: params.CallSid,
     from: params.From,
+    to: params.To,
     sessionId: params.SessionId,
     sessionDuration: params.SessionDuration,
     reasonCode: data.reasonCode ?? "No reason code",
