@@ -22,11 +22,14 @@ import {
   clearSyncData,
   demoConfig,
   initCall,
-  populateSampleData,
+  populateSampleSyncData,
   setupSync,
   updateSyncCallItem,
 } from "./services/sync-service";
-import { initVectorDB } from "./services/vector-db-service";
+import {
+  initVectorDB,
+  populateSampleVectorData,
+} from "./services/vector-db-service";
 
 const {
   DEFAULT_FROM_NUMBER,
@@ -334,7 +337,8 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
 app.get("/api/reset", async (req, res) => {
   await setupSync();
   await clearSyncData();
-  await populateSampleData();
+  await populateSampleSyncData();
+  await populateSampleVectorData();
 
   res.send("complete");
 });
@@ -348,7 +352,15 @@ app.get("/api/clear", async (req, res) => {
 
 app.get("/api/populate", async (req, res) => {
   await setupSync();
-  await populateSampleData();
+  await populateSampleSyncData();
+  await populateSampleVectorData();
+
+  res.send("complete");
+});
+
+app.get("/debug", async (req, res) => {
+  await vectorDbBlocker;
+  await populateSampleVectorData();
 
   res.send("complete");
 });

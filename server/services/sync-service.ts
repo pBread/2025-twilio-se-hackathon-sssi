@@ -408,7 +408,7 @@ export async function clearSyncData() {
   await Promise.all(msgMaps.map((map) => destroySyncMsgMap(map.uniqueName)));
 }
 
-export async function populateSampleData() {
+export async function populateSampleSyncData() {
   console.log("populateSampleData");
 
   await updateDemoConfig(demoConfig);
