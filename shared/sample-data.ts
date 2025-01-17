@@ -18,7 +18,7 @@ const callContext: CallContext = {
     {
       id: "dsfw252",
       callSid: "CA00000000000000000000000000000002",
-      similarity: 0.92,
+      score: 0.92,
     },
   ],
   waitTime: 6,
@@ -132,7 +132,7 @@ const calls: CallRecord[] = [
         {
           id: "92kd92s",
           callSid: "CA00000000000000000000000000000001",
-          similarity: 0.89,
+          score: 0.89,
         },
       ],
       waitTime: 10,

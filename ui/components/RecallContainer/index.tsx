@@ -16,7 +16,7 @@ export function RecallContainer() {
       <Table.Thead>
         <Table.Tr>
           <Table.Td>Call Summary</Table.Td>
-          <Table.Td>Similarity</Table.Td>
+          <Table.Td>Score</Table.Td>
           <Table.Td>Annotations</Table.Td>
         </Table.Tr>
       </Table.Thead>
@@ -25,7 +25,7 @@ export function RecallContainer() {
           <RecallRow
             key={`rr29-${item.id}-${callSid}`}
             callSid={item.callSid}
-            similarity={item.similarity}
+            score={item.score}
           />
         ))}
       </Table.Tbody>
@@ -33,13 +33,7 @@ export function RecallContainer() {
   );
 }
 
-function RecallRow({
-  callSid,
-  similarity,
-}: {
-  callSid: string;
-  similarity: number;
-}) {
+function RecallRow({ callSid, score }: { callSid: string; score: number }) {
   const [opened, { open, close, toggle }] = useDisclosure(false);
 
   const call = useAppSelector((state) => selectCallById(state, callSid));
@@ -47,7 +41,7 @@ function RecallRow({
   return (
     <Table.Tr>
       <Table.Td>{call.summary}</Table.Td>
-      <Table.Td>{similarity}</Table.Td>
+      <Table.Td>{`${(score * 100).toFixed(1)}%`}</Table.Td>
       <Table.Td>
         <Modal opened={opened} onClose={close} title="Recall Summary" size="xl">
           <div

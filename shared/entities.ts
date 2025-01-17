@@ -43,7 +43,7 @@ export type GovernanceStepStatus =
 export interface SimilarCall {
   callSid: string;
   id: string;
-  similarity: number;
+  score: number;
 }
 
 export interface Annotation {

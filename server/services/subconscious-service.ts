@@ -156,7 +156,7 @@ export class SubsconsciousService {
     const similarCalls: SimilarCall[] = matches.map((match) => ({
       id: match.id,
       callSid: match.metadata?.callSid as string,
-      similarity: match.score as number,
+      score: match.score as number,
     }));
 
     const newMatches = await Promise.all(
