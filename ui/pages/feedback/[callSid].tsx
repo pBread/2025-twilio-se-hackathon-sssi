@@ -1,43 +1,73 @@
-import { useAppSelector } from "@/state/hooks";
+import { selectCallById, setOneCall } from "@/state/calls";
+import { useAppDispatch, useAppSelector } from "@/state/hooks";
 import { getCallMessages, getMessageById } from "@/state/messages";
 import { Badge, Checkbox, Paper, Table } from "@mantine/core";
-import { BotMessage, HumanMessage } from "@shared/entities";
+import { BotMessage, HumanMessage, Annotation } from "@shared/entities";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useState } from "react";
 
 const paperStyle = { padding: "6px" };
 
-type Targets = [number, number] | null;
-type SetTargets = Dispatch<SetStateAction<Targets>>;
+type SetFeedbackId = Dispatch<SetStateAction<string>>;
 
 export default function CallReview() {
-  const [targets, setTargets] = useState<Targets>(null);
+  const [feedbackId, setFeedbackId] = useState<string>(null);
 
   return (
     <div style={{ display: "flex", gap: "8px" }}>
       <div style={{ flex: 2 }}>
         <Paper style={paperStyle}>
-          <TurnTable targets={targets} setTargets={setTargets} />
+          <TurnTable feedbackId={feedbackId} />
         </Paper>
       </div>
-      <div style={{ flex: 1 }}></div>
+      <Paper style={paperStyle}>
+        <Feedback feedbackId={feedbackId} setFeedbackId={setFeedbackId} />
+      </Paper>
     </div>
   );
 }
 
-function TurnTable({
-  setTargets,
-  targets,
+function Feedback({
+  feedbackId,
+  setFeedbackId,
 }: {
-  setTargets: SetTargets;
-  targets: [number, number];
+  feedbackId: string;
+  setFeedbackId: SetFeedbackId;
 }) {
   const router = useRouter();
   const callSid = router.query.callSid as string;
 
+  const call = useAppSelector((state) => selectCallById(state, callSid));
+
+  return (
+    <Paper style={paperStyle}>
+      {call?.feedback.map((item) => (
+        <div
+          key={`${callSid}-di-${item.id}`}
+          onClick={() => setFeedbackId(feedbackId === item.id ? null : item.id)}
+        >
+          {item.id}
+        </div>
+      ))}
+    </Paper>
+  );
+}
+
+function TurnTable({ feedbackId }: { feedbackId: string }) {
+  const router = useRouter();
+  const callSid = router.query.callSid as string;
+
+  const feedback = useAppSelector((state) => {
+    const call = selectCallById(state, callSid);
+
+    return call?.feedback?.find((item) => item.id === feedbackId);
+  });
+
   const msgs = useAppSelector((state) =>
     getCallMessages(state, callSid).filter((msg) => msg.role !== "system")
   );
+
+  const setTargets = useSetTargets(callSid, feedbackId);
 
   return (
     <Table stickyHeader>
@@ -50,13 +80,13 @@ function TurnTable({
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>
-        {msgs.map((msg) => (
+        {msgs?.map((msg) => (
           <Table.Tr key={`di8-${msg.id}`} bg="">
             <Table.Td>
               <Checkbox
-                onClick={(ev) => {
-                  console.debug("feedback checkbox", ev);
-                }}
+                checked={!!feedback && feedback.targets.includes(msg._index)}
+                onClick={(ev) => setTargets(msg._index, ev.shiftKey)}
+                onChange={() => {}}
               />
             </Table.Td>
             {msg.role === "bot" && <BotRow msgId={msg.id} />}
@@ -120,4 +150,61 @@ function HumanRow({ msgId }: { msgId: string }) {
       <Table.Td> {msg.content}</Table.Td>
     </>
   );
+}
+
+function useSetTargets(callSid: string, feedbackId?: string) {
+  const dispatch = useAppDispatch();
+  const call = useAppSelector((state) => selectCallById(state, callSid));
+  const feedbackItem = call?.feedback.find((item) => item.id === feedbackId);
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
+    null
+  );
+
+  return (index: number, isShift: boolean) => {
+    if (!call) return;
+    if (!feedbackItem) {
+      return console.warn(
+        "attempted to set targets but no annotation selected"
+      );
+    }
+
+    const map = new Map<string, Annotation>();
+    for (const item of call.feedback) map.set(item.id, item);
+
+    const currentTargets = new Set(feedbackItem.targets);
+
+    if (isShift && lastSelectedIndex !== null) {
+      // Handle range selection
+      const start = Math.min(lastSelectedIndex, index);
+      const end = Math.max(lastSelectedIndex, index);
+
+      // If the last clicked item is selected, we're adding to the selection
+      const isAdding = currentTargets.has(lastSelectedIndex);
+
+      // Update all items in range
+      for (let i = start; i <= end; i++) {
+        if (isAdding) currentTargets.add(i);
+        else currentTargets.delete(i);
+      }
+    } else {
+      // Handle single selection toggle
+      if (currentTargets.has(index)) currentTargets.delete(index);
+      else currentTargets.add(index);
+
+      setLastSelectedIndex(index);
+    }
+
+    // Update the feedback item with new targets
+    const updatedFeedback = {
+      ...feedbackItem,
+      targets: Array.from(currentTargets).sort((a: number, b: number) => a - b),
+    };
+
+    // Update the map and recreate the feedback array
+    map.set(feedbackId!, updatedFeedback);
+    const newFeedback = Array.from(map.values());
+
+    // Dispatch the update
+    dispatch(setOneCall({ ...call, feedback: newFeedback }));
+  };
 }

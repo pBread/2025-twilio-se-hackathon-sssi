@@ -16,6 +16,13 @@ export interface CallRecord {
   feedback: Annotation[];
 }
 
+export interface Annotation {
+  id: string;
+  targets: number[]; // message indexes this annoation is targeting
+  comment: string;
+  polarity: "bad" | "neutral" | "good";
+}
+
 export interface CallSummary {
   title: string; // 1 sentence description
   description?: string; // 1 paragraph description
@@ -51,13 +58,6 @@ export interface SimilarCall {
   callSid: string;
   id: string;
   score: number;
-}
-
-export interface Annotation {
-  id: string;
-  targets: number[]; // message indexes this annoation is targeting
-  comment: string;
-  polarity: "bad" | "neutral" | "good";
 }
 
 export interface DemoConfiguration {
