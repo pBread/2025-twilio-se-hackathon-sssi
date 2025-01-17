@@ -1,5 +1,6 @@
 import { CustomizationProvider } from "@twilio-paste/core/customization";
 import { FlexPlugin } from "@twilio/flex-plugin";
+import RetailWrapper from "./components/RetailWrapper";
 
 const PLUGIN_NAME = "Hackathon2025Plugin";
 
@@ -23,7 +24,7 @@ export default class RetailPlugin extends FlexPlugin {
     };
 
     flex.CRMContainer.Content.replace(
-      <Container key={`${PLUGIN_NAME}-${Container}`} />
+      <RetailWrapper key={`${PLUGIN_NAME}-wrapper}`} />
     );
   }
 }
