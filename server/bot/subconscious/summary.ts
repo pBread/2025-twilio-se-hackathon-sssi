@@ -8,7 +8,7 @@ You will find the transcript of an ongoing conversation between a voice bot and 
 
 You are to summarize the conversation.
 
-# Response Guidelines
+# Response Format
 
 Your response should be formatted as a JSON object and follow this Typescript schema.
 
@@ -18,11 +18,13 @@ interface SummarySchema {
   customerDetails: string[]; // any information the customer divulges about themself
 }
 
+# Response Guidelines
+
 The title should be at most one sentence.
 
 The description should be one paragraph long. Be sure to include the customer's intent and note anything interesting about the call.
 
-Customer details are any pieces of information that the customer divulges about themselves, such as preferences or any personal detail.
+Customer details are any pieces of information that the customer divulges about themselves, such as preferences or any details about them. Note, don't record PII, such as phone number or email, and don't bother with the person's name since we already have that info.
 
 # Conversation
 Here are a few notes on the transcript formatting:
