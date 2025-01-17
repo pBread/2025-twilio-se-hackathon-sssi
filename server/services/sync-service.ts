@@ -21,17 +21,14 @@ import {
 } from "../../shared/sync";
 import bot from "../bot/conscious";
 import { relayConfig } from "../bot/relay-config";
-import governanceBot from "../bot/subconscious/governance";
 import {
-  ENABLE_GOVERNANCE,
-  ENABLE_RECALL,
   TWILIO_ACCOUNT_SID,
   TWILIO_API_KEY,
   TWILIO_API_SECRET,
   TWILIO_SYNC_SVC_SID,
 } from "../env";
 import log from "../logger";
-import { getJSONSize, makeId } from "../utils/misc";
+import { makeId } from "../utils/misc";
 
 const rateLimitConfig = {
   interval: 1000, // 1000 ms == 1 second

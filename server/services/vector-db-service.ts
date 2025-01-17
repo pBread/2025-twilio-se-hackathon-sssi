@@ -1,16 +1,24 @@
-import { IndexModel, Pinecone } from "@pinecone-database/pinecone";
+import { Pinecone } from "@pinecone-database/pinecone";
 import OpenAI from "openai";
-import log from "../logger";
-import { OPENAI_API_KEY, PINCONE_API_KEY, PINECONE_INDEX_NAME } from "../env";
 import { CallRecord, StoreMessage } from "../../shared/entities";
-import { makeId } from "../utils/misc";
 import { sampleData } from "../../shared/sample-data";
+import { OPENAI_API_KEY, PINCONE_API_KEY, PINECONE_INDEX_NAME } from "../env";
+import log from "../logger";
+import { makeId } from "../utils/misc";
+import { pRateLimit } from "p-ratelimit";
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 const EMBEDDING_MODEL = "text-embedding-3-large";
 const NS = "conversations";
 
 const pc = new Pinecone({ apiKey: PINCONE_API_KEY });
+
+const limit = pRateLimit({
+  interval: 1000, // 1000 ms == 1 second
+  rate: 100, // 100 API calls per interval
+  maxDelay: 30 * 1000, // an API call delayed > 30 sec is rejected
+  concurrency: 50,
+});
 
 /****************************************************
  Ensure Pincecone Index is created
@@ -65,17 +73,6 @@ export async function initVectorDB(attempt = 0) {
   return initVectorDB(++attempt);
 }
 
-export async function populateSampleVectorData() {
-  console.log("sample data insert starting");
-  await Promise.all(
-    sampleData.calls.map((call) =>
-      insertCall(call, sampleData.callMessages[call.callSid])
-    )
-  );
-
-  console.log("sample data insert complete");
-}
-
 function translateMsgsToParam(msgs: StoreMessage[]) {
   return msgs
     .filter((msg) => msg.role !== "system")
@@ -87,25 +84,93 @@ function translateMsgsToParam(msgs: StoreMessage[]) {
     .join("\n");
 }
 
-async function insertCall(call: CallRecord, msgs: StoreMessage[]) {
+async function insertCallVector(call: CallRecord, msgs: StoreMessage[]) {
   const input = translateMsgsToParam(msgs);
 
   const res = await openai.embeddings.create({ input, model: EMBEDDING_MODEL });
   const embedding = res.data[0].embedding;
   if (!embedding) throw Error(`Unable to create embedding`);
 
-  await pc
+  return limit(() =>
+    pc
+      .index(PINECONE_INDEX_NAME)
+      .namespace(NS)
+      .upsert([
+        {
+          id: makeId(call.callSid),
+          values: embedding,
+          metadata: {
+            callSid: call.callSid,
+            summary: call.summary,
+            feedback: call.feedback.map((item) => item.comment),
+          },
+        },
+      ])
+  );
+}
+
+export async function vectorQuery(msgs: StoreMessage[]) {
+  const input = translateMsgsToParam(msgs);
+  const result = await limit(() =>
+    openai.embeddings.create({ model: EMBEDDING_MODEL, input })
+  );
+
+  const vector = result.data[0].embedding;
+
+  return limit(() =>
+    pc.index(PINECONE_INDEX_NAME).namespace(NS).query({ topK: 10, vector })
+  );
+}
+
+async function getVectorsByCallSid(callSid: string) {
+  const vector = await limit(() =>
+    openai.embeddings
+      .create({ input: "hello world", model: EMBEDDING_MODEL })
+      .then((result) => result.data[0].embedding)
+  );
+
+  return limit(() =>
+    pc
+      .index(PINECONE_INDEX_NAME)
+      .namespace(NS)
+      .query({ topK: 10, filter: { callSid }, vector })
+  );
+}
+
+async function removeVector(vectorId: string) {
+  return limit(() =>
+    pc.index(PINECONE_INDEX_NAME).namespace(NS).deleteOne(vectorId)
+  );
+}
+
+export async function removeCallVectorsByCallSid(callSid: string) {
+  const result = await getVectorsByCallSid(callSid);
+  log.debug("vector-db", "removeCallVector", result);
+}
+
+/****************************************************
+ Data Management
+****************************************************/
+export async function populateSampleVectorData() {
+  console.log("sample data insert starting");
+  await Promise.all(
+    sampleData.calls.map((call) =>
+      insertCallVector(call, sampleData.callMessages[call.callSid])
+    )
+  );
+
+  console.log("sample data insert complete");
+}
+
+export async function clearAllVectors() {
+  const result = await pc
     .index(PINECONE_INDEX_NAME)
     .namespace(NS)
-    .upsert([
-      {
-        id: makeId(call.callSid),
-        values: embedding,
-        metadata: {
-          callSid: call.callSid,
-          summary: call.summary,
-          feedback: call.feedback.map((item) => item.comment),
-        },
-      },
-    ]);
+    .listPaginated({ limit: 100 });
+
+  if (!result.vectors) return;
+
+  await Promise.all(
+    result.vectors.map((vector) => removeVector(vector.id as string))
+  );
 }

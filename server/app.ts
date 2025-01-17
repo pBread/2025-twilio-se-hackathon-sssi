@@ -27,8 +27,10 @@ import {
   updateSyncCallItem,
 } from "./services/sync-service";
 import {
+  clearAllVectors,
   initVectorDB,
   populateSampleVectorData,
+  removeCallVectorsByCallSid,
 } from "./services/vector-db-service";
 
 const {
@@ -337,8 +339,10 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
 app.get("/api/reset", async (req, res) => {
   await setupSync();
   await clearSyncData();
+  if (ENABLE_RECALL) await clearAllVectors();
+
   await populateSampleSyncData();
-  await populateSampleVectorData();
+  if (ENABLE_RECALL) await populateSampleVectorData();
 
   res.send("complete");
 });
@@ -346,6 +350,7 @@ app.get("/api/reset", async (req, res) => {
 app.get("/api/clear", async (req, res) => {
   await setupSync();
   await clearSyncData();
+  if (ENABLE_RECALL) await clearAllVectors();
 
   res.send("complete");
 });
@@ -353,7 +358,9 @@ app.get("/api/clear", async (req, res) => {
 app.get("/api/populate", async (req, res) => {
   await setupSync();
   await populateSampleSyncData();
-  await populateSampleVectorData();
+
+  if (ENABLE_RECALL) await clearAllVectors();
+  if (ENABLE_RECALL) await populateSampleVectorData();
 
   res.send("complete");
 });
