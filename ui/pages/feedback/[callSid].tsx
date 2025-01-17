@@ -80,6 +80,7 @@ function Feedback({
               onClick={() =>
                 setFeedbackId(feedbackId === item.id ? null : item.id)
               }
+              onChange={() => {}}
             />
             <FeedbackCard
               key={`${callSid}-di-${item.id}`}
@@ -98,7 +99,6 @@ function Feedback({
 }
 
 function useSaveCall(callSid: string) {
-  const dispatch = useAppDispatch();
   const call = useAppSelector((state) => selectCallById(state, callSid));
 
   const [status, setStatus] = useState<"in-progress" | "complete" | "error">(
