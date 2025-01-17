@@ -118,6 +118,11 @@ function FeedbackCard({
         flexDirection: "column",
         gap: "6px",
         flex: "auto",
+        boxShadow: "var(--mantine-shadow-xs)",
+
+        border: isSelected
+          ? "1px solid var(--mantine-primary-color-1)"
+          : "1px solid transparent",
       }}
     >
       <Textarea
