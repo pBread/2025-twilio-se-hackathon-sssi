@@ -28,3 +28,7 @@
 ### Fix UI SyncClient subscriber issue
 
 - the syncClient becomes undefined when the connection status is not connected. It's probably like "connecting" or something.
+
+### Update dummy data dates
+
+- add a make date function to ensure the database is constantly up to date
