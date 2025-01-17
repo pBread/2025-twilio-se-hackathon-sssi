@@ -51,7 +51,7 @@ function CallRow({ callSid }: { callSid: string }) {
   return (
     <Table.Tr>
       <Table.Td>
-        <Link href={`/calls/${callSid}`}>
+        <Link href={`/live/${callSid}`}>
           <Text>{call.summary.title}</Text>
         </Link>
       </Table.Td>

@@ -26,7 +26,7 @@ export function Header({ callSid }: { callSid?: string }) {
 
 function CallDetails({ callSid }: { callSid?: string }) {
   const router = useRouter();
-  const isLive = router?.route?.startsWith("/calls");
+  const isLive = router?.route?.startsWith("/live");
   const call = useAppSelector((state) => selectCallById(state, callSid));
 
   return (
@@ -41,7 +41,7 @@ function CallDetails({ callSid }: { callSid?: string }) {
         <div style={{ display: "flex", gap: "4px", flexDirection: "column" }}>
           <Text size="sm">
             {isLive && <Link href={`/feedback/${callSid}`}>Add Feedback</Link>}
-            {!isLive && <Link href={`/calls/${callSid}`}>Go to Live View</Link>}
+            {!isLive && <Link href={`/live/${callSid}`}>Go to Live View</Link>}
           </Text>
           <Text size="sm">Status: {call?.callStatus}</Text>
         </div>
