@@ -596,6 +596,8 @@ export async function transferToAgent(
   const handoffData: HandoffData = {
     ...args,
     customerData: {
+      userId: user?.id,
+
       name: firstName + lastName,
       firstName,
       lastName,

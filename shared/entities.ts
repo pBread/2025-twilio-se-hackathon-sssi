@@ -113,6 +113,8 @@ export interface HandoffData {
     phoneNumber: string;
     phone: string;
 
+    userId?: string;
+
     orders: OrderRecord[];
   }>;
   reason: string;
