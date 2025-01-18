@@ -98,6 +98,7 @@ export type LogActions =
 ****************************************************/
 export interface HandoffData {
   conversationSummary: string;
+  name?: string;
   customerData: Partial<{
     name: string;
     firstName: string;
