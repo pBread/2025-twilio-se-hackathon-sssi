@@ -2,14 +2,15 @@ import type { CallContext } from "../../shared/entities";
 import log from "../logger";
 import type { ConversationStore } from "../services/conversation-store";
 import type { DatabaseService } from "../services/database-service";
+import type { LLMService } from "../services/llm-service";
 import type { RelayService } from "../services/relay-service";
-import type { SubsconsciousService } from "../services/subconscious-service";
 
 export interface FunctionServices {
   ctx: CallContext;
   db: DatabaseService;
   relay: RelayService;
   store: ConversationStore;
+  llm: LLMService;
 }
 
 export function injectContext(prompt: string, ctx: CallContext) {

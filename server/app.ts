@@ -234,7 +234,7 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
     log.debug("onSetup", "ASKING AGENT");
     askAgent(
       { question: "what's with all the rain? am I right?" },
-      { ctx: store.call.callContext, store, db, relay }
+      { ctx: store.call.callContext, db, llm, relay, store }
     );
 
     store.setCall({ callStatus: "connected" });
