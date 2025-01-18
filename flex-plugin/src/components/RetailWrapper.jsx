@@ -4,7 +4,7 @@ import RetailView from "./RetailView.jsx";
 
 const RetailWrapper = (props) => (
   <div style={{ margin: 20, width: "75%" }}>
-    {props.task ? <RetailView {...props} /> : <NoActiveTask />}
+    {props.task ? <RetailView /> : <NoActiveTask />}
   </div>
 );
 
