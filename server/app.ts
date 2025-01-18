@@ -231,12 +231,6 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
   else log.warn("call", "call is not being recorded");
 
   relay.onSetup((ev) => {
-    log.debug("onSetup", "ASKING AGENT");
-    askAgent(
-      { question: "what's with all the rain? am I right?" },
-      { ctx: store.call.callContext, db, llm, relay, store }
-    );
-
     store.setCall({ callStatus: "connected" });
 
     store.setInstructions(getInstructions(store.call.callContext));

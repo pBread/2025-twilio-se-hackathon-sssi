@@ -201,10 +201,22 @@ const tools: ChatCompletionTool[] = [
     type: "function",
     function: {
       name: "askAgent",
-      description: "Ask a human agent a question.",
+      description:
+        "This tool will submit a question to a human agent. Certain procedures require that you obtain permission from a human, for example. This is an asynchronous process. You question is submitted and the human will respond at their earliest convenience. After asking a question, you should try to helping the customer with other requests while you wait.",
       parameters: {
         type: "object",
-        properties: {},
+        required: ["question", "explanation"],
+        properties: {
+          question: {
+            type: "string",
+            description: "The question you are asking a response to.",
+          },
+          explanation: {
+            type: "string",
+            description:
+              "Provide a detailed explanation of why you are asking the question and useful background information about the request.",
+          },
+        },
       },
     },
   },

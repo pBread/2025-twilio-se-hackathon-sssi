@@ -43,6 +43,15 @@ const procedures = [
         function: "findUser",
       },
       {
+        id: "ask_agent",
+        name: "Ask Agent",
+        description:
+          "Ask an agent if it's ok to provide the customer with their order information.",
+        required: "always",
+        function: "askAgent",
+      },
+
+      {
         id: "retrieve_user_orders",
         name: "Retrieve User Orders",
         description:
