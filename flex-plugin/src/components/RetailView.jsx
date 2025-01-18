@@ -42,9 +42,8 @@ function RetailView(props) {
           <TabPanel>
             <Grid gutter="space30">
               <Column span={6}>
-                <ContactCard />{" "}
+                <ContactCard />
               </Column>
-
               <Column span={6}>
                 <div style={styles.convSummary}>
                   <ConversationSummary />
