@@ -595,9 +595,6 @@ export async function transferToAgent(
   await sleep(4000);
   const handoffData: HandoffData = {
     ...args,
-
-    ...(firstName || lastName ? { name: `${firstName} ${lastName}` } : {}),
-
     customerData: {
       name: firstName + lastName,
       firstName,
