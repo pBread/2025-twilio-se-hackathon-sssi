@@ -152,6 +152,13 @@ async function initSyncClient() {
       log.error("sync", "initSyncClient error subscribing to demo", err);
     });
 
+  await syncWsClient.map(SYNC_Q_MAP_NAME).then((map) => {
+    map.on("itemUpdated", (ev) => {
+      const question = ev.item.data as AIQuestion;
+      log.info("sync", `ai question answered: ${question.answer}`);
+    });
+  });
+
   syncWsClient?.on("connectionStateChanged", (state) => {
     log.info("sync", `sync websocket client status: ${state}`);
   });
@@ -387,14 +394,13 @@ export async function removeSyncMsgItem(msg: StoreMessage) {
 /****************************************************
  Questions
 ****************************************************/
-export async function addSyncQuestion(ask: AIQuestion) {
-  return limit(() =>
-    syncQuestionMapApi.syncMapItems.create({ key: ask.id, data: ask })
-  );
+export async function addSyncQuestion(data: AIQuestion) {
+  const key = data.id;
+  return limit(() => syncQuestionMapApi.syncMapItems.create({ key, data }));
 }
 
-async function removeSyncQuestion(askId: string) {
-  return limit(() => syncQuestionMapApi.syncMapItems(askId).remove());
+async function removeSyncQuestion(questionId: string) {
+  return limit(() => syncQuestionMapApi.syncMapItems(questionId).remove());
 }
 
 async function getAllQuestions() {
@@ -409,6 +415,18 @@ async function getCallQuestions(callSid: string) {
   const questions = await getAllQuestions();
 
   return questions.filter((question) => question.callSid === callSid);
+}
+
+export async function addSyncQuestionListener(
+  questionId: string,
+  handler: (question: AIQuestion) => void
+) {
+  syncWsClient?.map(SYNC_Q_MAP_NAME).then((map) =>
+    map.on("itemUpdated", (ev) => {
+      const question = ev.item.data as AIQuestion;
+      if (question.id === questionId) handler(question);
+    })
+  );
 }
 
 /****************************************************

@@ -6,7 +6,10 @@ import {
   TWILIO_API_SECRET,
 } from "../../env";
 import log from "../../logger";
-import { addSyncQuestion } from "../../services/sync-service";
+import {
+  addSyncQuestion,
+  addSyncQuestionListener,
+} from "../../services/sync-service";
 import { getMonthName } from "../../utils/dictionary-dates";
 import { getStateName } from "../../utils/dictionary-regions";
 import { parseE164 } from "../../utils/e164";
@@ -538,6 +541,10 @@ export async function askAgent(args: AskAgent, svcs: FunctionServices) {
   };
 
   await addSyncQuestion(question);
+
+  addSyncQuestionListener(question.id, (update) => {
+    log.debug("fns", "askAgent addSyncQuestionListener", update);
+  });
 
   return "agent-notified";
 }

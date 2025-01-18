@@ -32,7 +32,7 @@ import {
   populateSampleVectorData,
 } from "./services/vector-db-service";
 import { createLiveAgentHandoffTwiML } from "./services/twilio-flex";
-import { transferToAgent } from "./bot/conscious/tool-functions";
+import { askAgent, transferToAgent } from "./bot/conscious/tool-functions";
 
 const {
   ENABLE_GOVERNANCE,
@@ -41,7 +41,6 @@ const {
   ENABLE_SUMMARIZATION,
   PORT,
   RECORD_CALL,
-  TWILIO_FN_BASE_URL,
 } = env;
 
 const { app } = ExpressWs(express());
@@ -232,9 +231,9 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
   else log.warn("call", "call is not being recorded");
 
   relay.onSetup((ev) => {
-    log.debug("onSetup", "TRANSFERRING TO AGENT");
-    transferToAgent(
-      { reason: "tranferred" },
+    log.debug("onSetup", "ASKING AGENT");
+    askAgent(
+      { question: "what's with all the rain? am I right?" },
       { ctx: store.call.callContext, store, db, relay }
     );
 
