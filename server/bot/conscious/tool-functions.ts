@@ -1,9 +1,21 @@
-import { HandoffData, OrderRecord } from "../../../shared/entities";
+import { Twilio } from "twilio";
+import { AIQuestion, HandoffData, OrderRecord } from "../../../shared/entities";
+import {
+  TWILIO_ACCOUNT_SID,
+  TWILIO_API_KEY,
+  TWILIO_API_SECRET,
+  TWILIO_SYNC_SVC_SID,
+} from "../../env";
+import log from "../../logger";
 import { getMonthName } from "../../utils/dictionary-dates";
 import { getStateName } from "../../utils/dictionary-regions";
 import { parseE164 } from "../../utils/e164";
-import log from "../../logger";
+import { makeId } from "../../utils/misc";
 import { type FunctionServices } from "../helpers";
+
+const twilio = new Twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
+  accountSid: TWILIO_ACCOUNT_SID,
+});
 
 /****************************************************
  Find Events
@@ -515,7 +527,17 @@ interface AskAgent {
 
 export async function askAgent(args: AskAgent, svcs: FunctionServices) {
   // Placeholder for ask agent implementation
-  log.info("bot.fn", "askAgent placeholder called");
+  log.info("bot.fn", "bot is asking an agent");
+  const sync = twilio.sync.v1.services(TWILIO_SYNC_SVC_SID);
+
+  const question: AIQuestion = {
+    answer: "",
+    callSid: svcs.store.call.callSid,
+    id: makeId("ai-question"),
+    question: args.question,
+    status: "new",
+  };
+
   return "agent-notified";
 }
 

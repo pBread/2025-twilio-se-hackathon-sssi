@@ -1,5 +1,6 @@
 export const SYNC_CALL_MAP_NAME = "calls";
 export const SYNC_CONFIG_NAME = "config";
+export const SYNC_Q_MAP_NAME = "ai_requests";
 
 const callSidRe = /CA[a-f0-9]{32}/;
 

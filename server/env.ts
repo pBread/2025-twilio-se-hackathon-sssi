@@ -24,7 +24,6 @@ export const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID as string;
 export const TWILIO_API_KEY = process.env.TWILIO_API_KEY as string;
 export const TWILIO_API_SECRET = process.env.TWILIO_API_SECRET as string;
 export const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN as string;
-export const TWILIO_FN_BASE_URL = process.env.TWILIO_FN_BASE_URL as string;
 export const TWILIO_SYNC_SVC_SID = process.env.TWILIO_SYNC_SVC_SID as string;
 
 // Check for missing required environment variables and log errors to aid debugging
@@ -37,7 +36,6 @@ if (!TWILIO_ACCOUNT_SID) console.error(`Missing env var TWILIO_ACCOUNT_SID`);
 if (!TWILIO_API_KEY) console.error(`Missing env var TWILIO_API_KEY`);
 if (!TWILIO_API_SECRET) console.error(`Missing env var TWILIO_API_SECRET`);
 if (!TWILIO_AUTH_TOKEN) console.error(`Missing env var TWILIO_AUTH_TOKEN`);
-if (!TWILIO_FN_BASE_URL) console.error(`Missing env var TWILIO_FN_BASE_URL`);
 if (!TWILIO_SYNC_SVC_SID) console.error(`Missing env var TWILIO_SYNC_SVC_SID`);
 
 // Delete sensitive credentials from process.env after they've been securely accessed. This minimizes the risk of exposure to untrusted libraries or parts of the application that might inadvertently access them. For example, this reduces the likelihood of sensitive data leaks via third-party npm packages or debugging tools.

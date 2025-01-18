@@ -379,6 +379,7 @@ export interface AgentAssistRequest {
 
 export interface AIQuestion {
   id: string;
+  callSid: string;
   question: string;
   answer: string;
   status: "new" | "accepted" | "answered"; // new = initial; accepted = once agent accepts task; answered = agent answered question

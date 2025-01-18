@@ -4,6 +4,7 @@ import Twilio from "twilio";
 import { SyncClient } from "twilio-sync";
 import type {
   AddLogRecord,
+  AIQuestion,
   CallRecord,
   DemoConfiguration,
   LogRecord,
@@ -18,6 +19,7 @@ import {
   msgMapName,
   SYNC_CALL_MAP_NAME,
   SYNC_CONFIG_NAME,
+  SYNC_Q_MAP_NAME,
 } from "../../shared/sync";
 import bot from "../bot/conscious";
 import { relayConfig } from "../bot/relay-config";
@@ -52,7 +54,6 @@ function composeDoubleLimiter() {
 const limitConfig = composeDoubleLimiter(); // limiter to avoid race conditions for demo config
 const limitCall = composeDoubleLimiter(); // limiter to avoid race conditions for call items
 const limitMsg = composeDoubleLimiter(); // limiter to avoid race conditions for messages
-const limitLog = composeDoubleLimiter(); // limiter to avoid race conditions for logs
 
 const twilio = Twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   accountSid: TWILIO_ACCOUNT_SID,
@@ -61,8 +62,9 @@ const twilio = Twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
 let syncWsClient: SyncClient | undefined;
 
 const sync = twilio.sync.v1.services(TWILIO_SYNC_SVC_SID);
-const syncDemoConfigApi = sync.documents(SYNC_CONFIG_NAME);
 const syncCallMapApi = sync.syncMaps(SYNC_CALL_MAP_NAME);
+const syncDemoConfigApi = sync.documents(SYNC_CONFIG_NAME);
+const syncQuestionMapApi = sync.syncMaps(SYNC_Q_MAP_NAME);
 
 const defaultDemoConfig: DemoConfiguration = {
   ...sampleData.config,
@@ -82,10 +84,7 @@ export async function setupSync() {
 
   try {
     await limit(() =>
-      sync.documents.create({
-        uniqueName: SYNC_CONFIG_NAME,
-        data: demoConfig,
-      })
+      sync.documents.create({ uniqueName: SYNC_CONFIG_NAME, data: demoConfig })
     );
 
     console.log("created sync document for demo config");
@@ -94,6 +93,11 @@ export async function setupSync() {
   try {
     await limit(() => sync.syncMaps.create({ uniqueName: SYNC_CALL_MAP_NAME }));
     console.log("created sync map to store call details");
+  } catch (error) {}
+
+  try {
+    await limit(() => sync.syncMaps.create({ uniqueName: SYNC_Q_MAP_NAME }));
+    console.log("created sync map to ai questions");
   } catch (error) {}
 
   try {
@@ -199,6 +203,11 @@ async function destroyCall(callSid: string) {
     destroySyncMsgMap(callSid)
       .then(() => console.log(`destroySyncMsgMap success ${callSid}`))
       .catch((err) => console.error("destroySyncMsgMap error", err))
+  );
+
+  const questions = await getCallQuestions(callSid);
+  await Promise.all(
+    questions.map((question) => removeSyncQuestion(question.id))
   );
 
   await limit(() =>
@@ -376,6 +385,33 @@ export async function removeSyncMsgItem(msg: StoreMessage) {
 }
 
 /****************************************************
+ Questions
+****************************************************/
+export async function addSyncQuestion(ask: AIQuestion) {
+  return limit(() =>
+    syncQuestionMapApi.syncMapItems.create({ key: ask.id, data: ask })
+  );
+}
+
+async function removeSyncQuestion(askId: string) {
+  return limit(() => syncQuestionMapApi.syncMapItems(askId).remove());
+}
+
+async function getAllQuestions() {
+  return limit(() =>
+    syncQuestionMapApi.syncMapItems
+      .list()
+      .then((res) => res.map((item) => item.data as AIQuestion))
+  );
+}
+
+async function getCallQuestions(callSid: string) {
+  const questions = await getAllQuestions();
+
+  return questions.filter((question) => question.callSid === callSid);
+}
+
+/****************************************************
  Demo Data Management
 ****************************************************/
 export async function clearSyncData() {
@@ -403,6 +439,15 @@ export async function clearSyncData() {
       `${msgMaps.length} msg maps were missed. attempting to destroy`
     );
   await Promise.all(msgMaps.map((map) => destroySyncMsgMap(map.uniqueName)));
+
+  const questions = await getAllQuestions();
+  if (questions.length)
+    console.log(
+      `${questions.length} questions were missed. attempting to destroy.`
+    );
+  await Promise.all(
+    questions.map((question) => removeSyncQuestion(question.id))
+  );
 }
 
 export async function populateSampleSyncData() {
