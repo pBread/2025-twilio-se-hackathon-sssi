@@ -187,15 +187,15 @@ export function useAddCallMapListeners() {
 
     syncClient.map(SYNC_CALL_MAP_NAME).then((map) => {
       map.on("itemAdded", (ev) => {
-        dispatch(setOneQuestion(ev.item.data));
+        dispatch(setOneCall(ev.item.data));
       });
 
       map.on("itemUpdated", (ev) => {
-        dispatch(setOneQuestion(ev.item.data));
+        dispatch(setOneCall(ev.item.data));
       });
 
       map.on("itemRemoved", (ev) => {
-        dispatch(removeOneQuestion(ev.key));
+        dispatch(removeOneCall(ev.key));
       });
     });
   }, [connectionState]);
@@ -212,15 +212,15 @@ export function useAddQuestionMapListeners() {
 
     syncClient.map(SYNC_Q_MAP_NAME).then((map) => {
       map.on("itemAdded", (ev) => {
-        dispatch(setOneCall(ev.item.data));
+        dispatch(setOneQuestion(ev.item.data));
       });
 
       map.on("itemUpdated", (ev) => {
-        dispatch(setOneCall(ev.item.data));
+        dispatch(setOneQuestion(ev.item.data));
       });
 
       map.on("itemRemoved", (ev) => {
-        dispatch(removeOneCall(ev.key));
+        dispatch(setOneQuestion(ev.key));
       });
     });
   }, [connectionState]);
