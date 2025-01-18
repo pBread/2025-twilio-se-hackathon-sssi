@@ -619,8 +619,6 @@ export async function transferToAgent(
 
   log.info("bot.fns", `transferring to agent`);
 
-  log.debug("bot.fns", `handoffData: `, JSON.stringify(handoffData));
-
   svcs.relay.end(handoffData);
 
   return "call-transferred";

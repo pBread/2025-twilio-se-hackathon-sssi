@@ -54,7 +54,6 @@ function IFrame({ onError, onLoad, src }) {
           iframeRef.current.contentWindow.document;
         onLoad();
       } catch (e) {
-        console.debug("IFrame error", e);
         onError();
       }
     };
