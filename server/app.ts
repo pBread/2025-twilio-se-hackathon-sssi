@@ -349,9 +349,8 @@ app.post("/live-agent-handoff", async (req, res) => {
 
     const twiml = await createLiveAgentHandoffTwiML(req.body);
 
-    log.debug("/live-agent-handoff\n", "body\n", req.body);
     res.type("xml");
-    // res.setHeader("Content-Type", "application/xml");
+
     res.send(await twiml.toString());
   } else res.send("done");
 });
