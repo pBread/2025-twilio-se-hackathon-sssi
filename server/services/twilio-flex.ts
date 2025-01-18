@@ -44,11 +44,7 @@ export async function createLiveAgentHandoffTwiML(
     escalation_type: data.conversationSummary ?? "No escalation type",
   };
 
-  log.info(
-    "flex",
-    "Enqueing call with the following attributes: ",
-    taskAttributes
-  );
+  log.info("flex", `Enqueing call ${params.CallSid}`);
 
   const twiml = new VoiceResponse();
   twiml
