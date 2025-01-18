@@ -195,7 +195,7 @@ export function useAddCallMapListeners() {
       });
 
       map.on("itemRemoved", (ev) => {
-        dispatch(removeOneCall(ev.key));
+        dispatch(removeOneCall(ev.previousItemData.callSid));
       });
     });
   }, [connectionState]);
@@ -220,7 +220,7 @@ export function useAddQuestionMapListeners() {
       });
 
       map.on("itemRemoved", (ev) => {
-        dispatch(setOneQuestion(ev.key));
+        dispatch(removeOneQuestion(ev.previousItemData.id));
       });
     });
   }, [connectionState]);

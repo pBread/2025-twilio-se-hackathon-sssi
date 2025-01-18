@@ -5,10 +5,18 @@ import type { RootState } from "./store";
 const SLICE_NAME = "questions";
 
 const adapter = createEntityAdapter<AIQuestion>({
-  sortComparer: (a, b) =>
-    new Date(b.createdAt)
-      .toISOString()
-      .localeCompare(new Date(a.createdAt).toISOString()),
+  sortComparer: (a, b) => {
+    let aa: string;
+    let bb: string;
+
+    try {
+      aa = new Date(a?.createdAt)?.toISOString();
+      bb = new Date(b?.createdAt)?.toISOString();
+      return bb.localeCompare(aa);
+    } catch (error) {
+      return 0;
+    }
+  },
 });
 
 export const questionsSlice = createSlice({
