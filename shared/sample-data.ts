@@ -1,4 +1,5 @@
 import {
+  AIQuestion,
   CallContext,
   CallRecord,
   DemoConfiguration,
@@ -878,9 +879,36 @@ const callLogs: Record<string, LogRecord[]> = {
   ],
 };
 
+const questions: AIQuestion[] = [
+  {
+    callSid: calls[0].callSid,
+    id: "aiq-283749",
+    answer: "",
+    createdAt: new Date().toLocaleString(),
+    explanation:
+      "Jerry purchased courtside tickets for a customer meeting but he mixed up the dates and purchased the wrong ones. He's going to purchase additional tickets but he needs to cancel them first.",
+    question: "Can Jerry cancel his current tickets?",
+    recommendation:
+      "We should allow Jerry to cancel his tickets because he's a VIP customer",
+    status: "new",
+  },
+  {
+    callSid: calls[1].callSid,
+    id: "aiq-254883",
+    answer: "",
+    createdAt: new Date().toLocaleString(),
+    explanation: "Jerry wants to modify his order but it's very expensive.",
+    question: "Can Jerry modify his order?",
+    recommendation:
+      "We should allow Jerry to cancel his tickets because he's a VIP customer",
+    status: "new",
+  },
+];
+
 export const sampleData = {
   callLogs,
   callMessages,
   calls,
   config,
+  questions,
 };

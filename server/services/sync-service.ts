@@ -579,17 +579,17 @@ export async function clearSyncData() {
     questions.map((question) => removeSyncQuestion(question.id))
   );
 
-  console.log("resetting events");
+  console.log("clearing events");
   const events = await eventApi.list();
   console.log(`deleting ${events.length} old event records`);
   await Promise.all(events.map((item) => eventApi.remove(item.id)));
 
-  console.log("resetting orders");
+  console.log("clearing orders");
   const orders = await orderApi.list();
   console.log(`deleting ${orders.length} old event records`);
   await Promise.all(orders.map((item) => orderApi.remove(item.id)));
 
-  console.log("resetting users");
+  console.log("clearing users");
   const users = await userApi.list();
   console.log(`deleting ${users.length} old event records`);
   await Promise.all(users.map((item) => userApi.remove(item.id)));
@@ -609,6 +609,9 @@ export async function populateSampleSyncData() {
   await Promise.all(
     Object.values(sampleData.callMessages).flat().map(addSyncMsgItem)
   ).then(() => console.log("populated messages"));
+  await Promise.all(
+    Object.values(sampleData.questions).map(addSyncQuestion)
+  ).then(() => console.log("populated questions"));
 
   console.log(`loading ${mockDatabase.orders.length} new event records`);
   await Promise.all(
@@ -619,7 +622,7 @@ export async function populateSampleSyncData() {
     )
   );
 
-  console.log(`loading ${mockDatabase.orders.length} new oder records`);
+  console.log(`loading ${mockDatabase.orders.length} new order records`);
   await Promise.all(
     mockDatabase.orders.map((item) =>
       orderApi
@@ -628,7 +631,7 @@ export async function populateSampleSyncData() {
     )
   );
 
-  console.log(`loading ${mockDatabase.users.length} new event records`);
+  console.log(`loading ${mockDatabase.users.length} new user records`);
   await Promise.all(
     mockDatabase.users.map((item) =>
       userApi
