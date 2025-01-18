@@ -1,5 +1,7 @@
 # Twilio SE Hackathon 2025
 
+# Getting Started
+
 ## To Do
 
 ### Build Script

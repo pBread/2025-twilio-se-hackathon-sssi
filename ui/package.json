@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "cross-env PORT=3002 next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -29,6 +29,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/redux-logger": "^3.0.13",
+    "cross-env": "^7.0.3",
     "typescript": "^5"
   }
 }
