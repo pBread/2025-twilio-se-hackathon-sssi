@@ -16,7 +16,6 @@ import { Stack } from "@twilio-paste/stack";
 import { Text } from "@twilio-paste/text";
 import { Tooltip } from "@twilio-paste/tooltip";
 import { withTaskContext } from "@twilio/flex-ui";
-import ConversationSummary from "./ConversationSummary";
 
 function ContactCard(props) {
   if (!props) return <div>Loading</div>;

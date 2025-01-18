@@ -27,7 +27,7 @@ const styles = {
 };
 
 function RetailView(props) {
-  const orders = props?.customerData?.orders ?? [];
+  const [orders, setOrders] = useState([]);
 
   return (
     <div style={styles.adjust}>
