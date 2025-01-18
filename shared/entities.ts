@@ -369,22 +369,13 @@ type EventTags =
 /****************************************************
  Human in Loop Schemas
 ****************************************************/
-export interface AgentAssistRequest {
-  id: string; // ar-123456
-  callSid: string;
-
-  order: OrderRecord;
-  user: UserRecord;
-  event: EventRecord;
-  conversationSummary: string;
-
-  questions: AIQuestion[];
-}
-
 export interface AIQuestion {
+  createdAt: string;
   id: string;
   callSid: string;
   question: string;
+  explanation: string;
+  recommendation?: string;
   answer: string;
   status: "new" | "accepted" | "answered"; // new = initial; accepted = once agent accepts task; answered = agent answered question
 }

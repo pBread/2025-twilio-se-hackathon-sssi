@@ -2,10 +2,20 @@ import { InitializeDataResult } from "@/pages/api/initialize-data";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { DemoConfiguration } from "@shared/entities";
-import { logListName, msgMapName, SYNC_CALL_MAP_NAME } from "@shared/sync";
+import {
+  logListName,
+  msgMapName,
+  SYNC_CALL_MAP_NAME,
+  SYNC_Q_MAP_NAME,
+} from "@shared/sync";
 import { useEffect } from "react";
 import { type ConnectionState, SyncClient } from "twilio-sync";
 import { addManyCalls, removeOneCall, setOneCall } from "./calls";
+import {
+  addManyQuestions,
+  removeOneQuestion,
+  setOneQuestion,
+} from "./questions";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { addOneLog, fetchCallLogs } from "./logs";
 import {
@@ -87,6 +97,7 @@ export async function initSync(dispatch: AppDispatch) {
   )) as InitializeDataResult;
 
   dispatch(addManyCalls(result.calls));
+  dispatch(addManyQuestions(result.questions));
   dispatch(setDemoConfig(result.config));
 }
 
@@ -169,10 +180,37 @@ export function useAddCallMapListeners() {
   const connectionState = useAppSelector(getConnectionState);
   const dispatch = useAppDispatch();
 
+  const syncClient = useSyncClient();
+
   useEffect(() => {
     if (connectionState !== "connected") return;
 
     syncClient.map(SYNC_CALL_MAP_NAME).then((map) => {
+      map.on("itemAdded", (ev) => {
+        dispatch(setOneQuestion(ev.item.data));
+      });
+
+      map.on("itemUpdated", (ev) => {
+        dispatch(setOneQuestion(ev.item.data));
+      });
+
+      map.on("itemRemoved", (ev) => {
+        dispatch(removeOneQuestion(ev.key));
+      });
+    });
+  }, [connectionState]);
+}
+
+export function useAddQuestionMapListeners() {
+  const connectionState = useAppSelector(getConnectionState);
+  const dispatch = useAppDispatch();
+
+  const syncClient = useSyncClient();
+
+  useEffect(() => {
+    if (connectionState !== "connected") return;
+
+    syncClient.map(SYNC_Q_MAP_NAME).then((map) => {
       map.on("itemAdded", (ev) => {
         dispatch(setOneCall(ev.item.data));
       });

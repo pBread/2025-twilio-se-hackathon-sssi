@@ -1,9 +1,10 @@
 import { configureStore, Middleware } from "@reduxjs/toolkit";
 import { createLogger } from "redux-logger";
 import { callsSlice } from "./calls";
-import { messagesSlice } from "./messages";
-import { syncSlice } from "./sync";
 import { logsSlice } from "./logs";
+import { messagesSlice } from "./messages";
+import { questionsSlice } from "./questions";
+import { syncSlice } from "./sync";
 
 const middleware: Middleware[] = [];
 if (process.env.NODE_ENV === "development") middleware.push(createLogger());
@@ -17,6 +18,7 @@ export const makeStore = () => {
       [callsSlice.name]: callsSlice.reducer,
       [logsSlice.name]: logsSlice.reducer,
       [messagesSlice.name]: messagesSlice.reducer,
+      [questionsSlice.name]: questionsSlice.reducer,
       [syncSlice.name]: syncSlice.reducer,
     },
   });

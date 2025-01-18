@@ -1,0 +1,64 @@
+import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
+import { AIQuestion } from "@shared/entities";
+import type { RootState } from "./store";
+
+const SLICE_NAME = "questions";
+
+const adapter = createEntityAdapter<AIQuestion>({
+  sortComparer: (a, b) =>
+    new Date(b.createdAt)
+      .toISOString()
+      .localeCompare(new Date(a.createdAt).toISOString()),
+});
+
+export const questionsSlice = createSlice({
+  name: SLICE_NAME,
+  initialState: adapter.getInitialState(),
+  reducers: {
+    addManyQuestions: adapter.addMany,
+    addOneQuestion: adapter.addOne,
+    removeAllQuestions: adapter.removeAll,
+    removeManyQuestions: adapter.removeMany,
+    removeOneQuestion: adapter.removeOne,
+    setAllQuestions: adapter.setAll,
+    setManyQuestions: adapter.setMany,
+    setOneQuestion: adapter.setOne,
+    updateManyQuestions: adapter.updateMany,
+    updateOneQuestion: adapter.updateOne,
+    upsertManyQuestions: adapter.upsertMany,
+    upsertOneQuestion: adapter.upsertOne,
+  },
+});
+
+/****************************************************
+ Selectors
+****************************************************/
+function getSlice(state: RootState) {
+  return state[SLICE_NAME];
+}
+
+export const {
+  selectAll: selectAllQuestions,
+  selectById: selectQuestionById,
+  selectIds: selectQuestionIds,
+  selectEntities: selectQuestionEntities,
+  selectTotal: selectQuestionTotal,
+} = adapter.getSelectors(getSlice);
+
+/****************************************************
+ Actions
+****************************************************/
+export const {
+  addManyQuestions,
+  addOneQuestion,
+  removeAllQuestions,
+  removeManyQuestions,
+  removeOneQuestion,
+  setAllQuestions,
+  setManyQuestions,
+  setOneQuestion,
+  updateManyQuestions,
+  updateOneQuestion,
+  upsertManyQuestions,
+  upsertOneQuestion,
+} = questionsSlice.actions;

@@ -216,6 +216,11 @@ const tools: ChatCompletionTool[] = [
             description:
               "Provide a detailed explanation of why you are asking the question and useful background information about the request.",
           },
+          recommendation: {
+            type: "string",
+            description:
+              "This is a recommendation of what course of action the agent should take.",
+          },
         },
       },
     },

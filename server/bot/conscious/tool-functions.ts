@@ -526,6 +526,8 @@ sendConfirmationForUpdatedOrder.getFillerPhrase = (
 
 interface AskAgent {
   question: string;
+  explanation: string;
+  recommendation: string;
 }
 
 export async function askAgent(args: AskAgent, svcs: FunctionServices) {
@@ -533,11 +535,14 @@ export async function askAgent(args: AskAgent, svcs: FunctionServices) {
   log.info("bot.fn", "bot is asking an agent");
 
   const question: AIQuestion = {
+    createdAt: new Date().toLocaleString(),
     answer: "",
     callSid: svcs.store.call.callSid,
     id: makeId("ai-question"),
     question: args.question,
     status: "new",
+    explanation: args.explanation,
+    recommendation: args.recommendation ?? "No recommendation",
   };
 
   await addSyncQuestion(question);
