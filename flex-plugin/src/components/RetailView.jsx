@@ -3,9 +3,17 @@ import { Table, TBody, Td, Th, THead, Tr } from "@twilio-paste/core/table";
 import { Separator } from "@twilio-paste/separator";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@twilio-paste/tabs";
 import { withTaskContext } from "@twilio/flex-ui";
+import { useEffect, useState } from "react";
+import { SyncClient } from "twilio-sync";
 import ContactCard from "./ContactCard";
 import ConversationSummary from "./ConversationSummary";
 import HandoffReason from "./HandoffReason";
+
+const syncIdentity =
+  "flex-agent-" +
+  Math.floor(Math.random() * 1000000)
+    .toString()
+    .padStart(6, 0);
 
 const styles = {
   tableWrapper: { width: "100%" },
@@ -26,8 +34,66 @@ const styles = {
   orderItemHeading: { fontSize: 24 },
 };
 
-function RetailView(props) {
+function useSyncClient(conf) {
+  const [status, setStatus] = useState(null);
+  const [client, setSync] = useState();
+
+  useEffect(() => {
+    if (status !== null) return;
+
+    setStatus("initializing");
+
+    fetchToken(conf).then(async (token) => {
+      console.debug("fetchToken, token", token);
+
+      const sync = new SyncClient(token);
+      sync.on("connectionStateChanged", (state) => setStatus(state));
+      sync.on("tokenAboutToExpire", async () =>
+        sync.updateToken(await fetchToken(conf))
+      );
+
+      setSync(sync);
+    });
+  }, [status]);
+
+  return { client, status };
+}
+
+async function fetchToken(conf) {
+  const url = `${conf.fnBaseUrl}/sync-token?identity=${syncIdentity}`;
+  console.debug("fetchToken url", url);
+  return fetch(url)
+    .then((res) => res.json())
+    .then((data) => data.token);
+}
+
+function useOrders(sync) {
+  const [status, setStatus] = useState();
   const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    if (status) return;
+    if (!sync.client) return;
+    if (sync.status !== "connected") return;
+
+    setStatus("fetching");
+    sync.client.map("orders").then(async (map) => {
+      const result = await map.getItems();
+
+      setOrders(result.items.map((item) => item.data));
+      setStatus("complete");
+    });
+  }, [status, sync]);
+
+  return orders;
+}
+
+function RetailView({ conf, task }) {
+  const sync = useSyncClient(conf);
+  const allOrders = useOrders(sync);
+
+  const userId = task?.attributes?.customerData?.userId;
+  const orders = allOrders.filter((order) => order.userId === userId);
 
   return (
     <div style={styles.adjust}>

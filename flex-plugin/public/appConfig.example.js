@@ -3,4 +3,5 @@ var appConfig = {
   ytica: false,
   logLevel: "info",
   showSupervisorDesktopView: true,
+  fnBaseUrl: "",
 };

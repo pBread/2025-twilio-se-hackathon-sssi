@@ -16,6 +16,8 @@ export default class RetailPlugin extends FlexPlugin {
    * @param flex { typeof import('@twilio/flex-ui') }
    */
   async init(flex, manager) {
+    window.STORE = manager?.store;
+
     flex.setProviders({ PasteThemeProvider: CustomizationProvider });
 
     flex.AgentDesktopView.defaultProps.splitterOptions = {
@@ -23,8 +25,12 @@ export default class RetailPlugin extends FlexPlugin {
       minimumSecondPanelSize: "1200px",
     };
 
+    const conf = {
+      fnBaseUrl: manager.store.getState().flex.config.fnBaseUrl,
+    };
+
     flex.CRMContainer.Content.replace(
-      <RetailWrapper key={`${PLUGIN_NAME}-wrapper}`} />
+      <RetailWrapper key={`${PLUGIN_NAME}-wrapper}`} conf={conf} />
     );
   }
 }

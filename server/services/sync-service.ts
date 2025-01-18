@@ -526,7 +526,7 @@ const eventApi = new SyncEntityService<EventRecord, EventRecord>(
 );
 
 const orderApi = new SyncEntityService<OrderRecord, OrderRecord>(
-  SYNC_EVENT_MAP,
+  SYNC_ORDER_MAP,
   (item) => ({
     ...item,
     id: item.id ?? makeId("or"),
@@ -534,7 +534,7 @@ const orderApi = new SyncEntityService<OrderRecord, OrderRecord>(
 );
 
 const userApi = new SyncEntityService<UserRecord, UserRecord>(
-  SYNC_EVENT_MAP,
+  SYNC_USER_MAP,
   (item) => ({
     ...item,
     id: item.id ?? makeId("us"),
