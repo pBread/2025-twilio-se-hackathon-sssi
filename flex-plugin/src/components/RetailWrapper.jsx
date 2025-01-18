@@ -12,33 +12,11 @@ const identity =
 
 function RetailWrapper({ conf, task }) {
   const sync = useSyncClient(conf);
-  const orders = useOrders(sync);
   return (
-    <div style={{ margin: 20, width: "75%" }}>
-      {task ? <RetailView sync={sync} orders={orders} /> : <NoActiveTask />}
+    <div style={{ padding: "20px", width: "100%" }}>
+      {task ? <RetailView sync={sync} /> : <NoActiveTask />}
     </div>
   );
-}
-
-function useOrders(sync) {
-  const [status, setStatus] = useState();
-  const [orders, setOrders] = useState([]);
-
-  useEffect(() => {
-    if (status) return;
-    if (!sync.client) return;
-    if (sync.status !== "connected") return;
-
-    setStatus("fetching");
-    sync.client.map("orders").then(async (map) => {
-      const result = await map.getItems();
-
-      setOrders(result.items.map((item) => item.data));
-      setStatus("complete");
-    });
-  }, [status, sync]);
-
-  return orders;
 }
 
 function useSyncClient(conf) {

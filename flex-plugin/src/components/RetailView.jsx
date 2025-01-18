@@ -1,34 +1,21 @@
 import { Column, Grid } from "@twilio-paste/core/grid";
-import { Table, TBody, Td, Th, THead, Tr } from "@twilio-paste/core/table";
 import { Separator } from "@twilio-paste/separator";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@twilio-paste/tabs";
 import { withTaskContext } from "@twilio/flex-ui";
 import ContactCard from "./ContactCard";
 import ConversationSummary from "./ConversationSummary";
 import HandoffReason from "./HandoffReason";
+import { OrderTable } from "./OrderTable";
 
 const styles = {
   tableWrapper: { width: "100%" },
-  adjust: { width: "75%" },
+  adjust: { width: "100%" },
   convSummary: { width: "100%", marginBottom: 20 },
   table: { border: "1px solid #ededed" },
-  orderRow: { border: "1px solid #ededed", height: 30 },
-  orderCell: { width: "25%", border: "1px solid #ededed", padding: 10 },
-  orderHeading: { fontSize: 24 },
-  orderTitle: { fontSize: 14 },
-  orderItemRow: { border: "1px solid #ededed", height: 30 },
-  orderItemCell: {
-    width: "20%",
-    border: "1px solid #ededed",
-    padding: 10,
-    textAlign: "left",
-  },
-  orderItemHeading: { fontSize: 24 },
 };
 
-function RetailView({ conf, orders, task }) {
+function RetailView({ conf, sync, task }) {
   const userId = task?.attributes?.customerData?.userId;
-  const userOrders = orders.filter((order) => order.userId === userId);
 
   return (
     <div style={styles.adjust}>
@@ -65,78 +52,7 @@ function RetailView({ conf, orders, task }) {
               </Column>
               <div style={styles.tableWrapper}>
                 <p>&nbsp;</p>
-                {userOrders?.map((order) => (
-                  <Table key={`${order.id}-table`} style={{ width: "100%" }}>
-                    <TBody>
-                      <Tr style={styles.orderRow} key={`${order.id}-94j`}>
-                        <Td style={styles.orderCell} width={100}>
-                          User ID:{" "}
-                        </Td>
-                        <Td style={styles.orderCell}>{order.userId}</Td>
-                      </Tr>
-                      <Tr style={styles.orderRow}>
-                        <Td colSpan={6}>&nbsp;</Td>
-                      </Tr>
-                      <Tr style={styles.orderRow}>
-                        <Td colSpan={10}>
-                          <Table width={"100%"}>
-                            <THead>
-                              <Th style={styles.orderItemCell}>Event ID</Th>
-                              <Th style={styles.orderItemCell}>Event Date</Th>
-                              <Th style={styles.orderItemCell}>Event Name</Th>
-                              <Th style={styles.orderItemCell}>
-                                Event Description
-                              </Th>
-                              <Th style={styles.orderItemCell}>City</Th>
-                              <Th style={styles.orderItemCell}>Quantity</Th>
-                              <Th style={styles.orderItemCell}>Total Price</Th>
-                              <Th style={styles.orderItemCell}>Category</Th>
-                              <Th style={styles.orderItemCell}>Venue</Th>
-                            </THead>
-                            <TBody>
-                              <Tr
-                                style={styles.orderItemRow}
-                                key={`${order.id}-du4`}
-                              >
-                                <Td style={styles.orderItemCell}>
-                                  {order.eventId}
-                                </Td>
-                                <Td style={styles.orderItemCell}>
-                                  {order.eventDate}
-                                </Td>
-                                <Td style={styles.orderItemCell}>
-                                  {order.eventName}
-                                </Td>
-                                <Td style={styles.orderItemCell}>
-                                  {order.eventDescription}
-                                </Td>
-                                <Td style={styles.orderItemCell}>
-                                  {order.city}
-                                </Td>
-                                <Td style={styles.orderItemCell}>
-                                  {order.quantity}
-                                </Td>
-                                <Td style={styles.orderItemCell}>
-                                  {order.totalPrice}
-                                </Td>
-                                <Td style={styles.orderItemCell}>
-                                  {order.category}
-                                </Td>
-                                <Td style={styles.orderItemCell}>
-                                  {order.venue}
-                                </Td>
-                              </Tr>
-
-                              <Tr style={styles.orderItemRow}>
-                                <Td></Td>
-                              </Tr>
-                            </TBody>
-                          </Table>
-                        </Td>
-                      </Tr>
-                    </TBody>
-                  </Table>
-                ))}
+                <OrderTable conf={conf} sync={sync} userId={userId} />
               </div>
             </Grid>
           </TabPanel>
