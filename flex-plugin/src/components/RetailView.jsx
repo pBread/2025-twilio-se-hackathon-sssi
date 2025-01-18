@@ -44,8 +44,6 @@ function useSyncClient(conf) {
     setStatus("initializing");
 
     fetchToken(conf).then(async (token) => {
-      console.debug("fetchToken, token", token);
-
       const sync = new SyncClient(token);
       sync.on("connectionStateChanged", (state) => setStatus(state));
       sync.on("tokenAboutToExpire", async () =>
