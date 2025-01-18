@@ -3,8 +3,8 @@ import { Table, TBody, Td, Th, THead, Tr } from "@twilio-paste/core/table";
 import { Separator } from "@twilio-paste/separator";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@twilio-paste/tabs";
 import { withTaskContext } from "@twilio/flex-ui";
-import ConversationSummary from "./ConversationSummary";
 import ContactCard from "./ContactCard";
+import ConversationSummary from "./ConversationSummary";
 import HandoffReason from "./HandoffReason";
 
 const styles = {
