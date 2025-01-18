@@ -377,5 +377,5 @@ export interface AIQuestion {
   explanation: string;
   recommendation?: string;
   answer: string;
-  status: "new" | "accepted" | "answered"; // new = initial; accepted = once agent accepts task; answered = agent answered question
+  status: "new" | "approved" | "rejected"; // new = initial; accepted = once agent accepts task; answered = agent answered question
 }

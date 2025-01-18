@@ -5,6 +5,7 @@ import {
   initSync,
   useAddCallListeners,
   useAddCallMapListeners,
+  useAddQuestionMapListeners,
   useFetchCallData,
 } from "@/state/sync";
 import "@/styles/globals.css";
@@ -37,6 +38,7 @@ export default function App(props: AppProps) {
 
 function Main({ Component, pageProps, router }: AppProps) {
   useAddCallMapListeners();
+  useAddQuestionMapListeners();
 
   const callSid = router.query.callSid as string | undefined;
   useAddCallListeners(callSid);
