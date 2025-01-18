@@ -47,7 +47,9 @@ function ContactCard(props) {
                     <Button
                       variant="secondary"
                       size="small"
-                      onClick={(e) => handleCopySegmentId()}
+                      onClick={(e) =>
+                        console.warn("Copying Segment Id doesn't work!")
+                      }
                     >
                       <CopyIcon decorative />
                     </Button>

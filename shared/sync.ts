@@ -33,6 +33,7 @@ export function isLogListName(id: any) {
   return /^logs-CA[0-9A-Za-z]{32}$/.test(id);
 }
 
+// note: this syntax is referenced in the flex-plugin but it does not use this helper
 export function msgMapName(callSid: string) {
   const sid = getSid(callSid);
   return `msgs-${sid}`;

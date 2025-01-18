@@ -597,6 +597,7 @@ export async function transferToAgent(
     ...args,
     customerData: {
       userId: user?.id,
+      callSid: svcs.store.call.callSid,
 
       name: firstName + lastName,
       firstName,

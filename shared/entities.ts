@@ -116,6 +116,7 @@ export interface HandoffData {
     userId?: string;
 
     orders: OrderRecord[];
+    callSid: string;
   }>;
   reason: string;
   reasonCode: "live-agent-handoff";
