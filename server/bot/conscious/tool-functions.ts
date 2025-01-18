@@ -544,6 +544,22 @@ export async function askAgent(args: AskAgent, svcs: FunctionServices) {
 
   addSyncQuestionListener(question.id, (update) => {
     log.debug("fns", "askAgent addSyncQuestionListener", update);
+
+    const content = `\
+UPDATE FROM HUMAN AGENT
+
+You previously asked a question to a human agent and they have just responded to you. Here are the details to remind you:
+
+Question: ${question.question}
+Answer: ${question.answer}
+
+It is critical that you mention this to the customer and consider the implications. For instance, if you were asking for approval, you now have your response. And can either proceed or inform the customer you're not able to perform the requested task.
+`;
+
+    svcs.store.addSystemMessage({ content });
+
+    svcs.llm.abort();
+    svcs.llm.doCompletion();
   });
 
   return "agent-notified";
