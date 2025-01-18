@@ -16,10 +16,10 @@ export function TaskApproverTable({ callSid }: { callSid?: string }) {
         <thead>
           <tr>
             <th>Status</th>
-            <th style={{ width: "250px" }}>Question</th>
-            <th style={{ width: "400px" }}>Explanation</th>
-            <th style={{ width: "400px" }}>Recommendation</th>
-            <th style={{ width: "400px" }}>Answer</th>
+            <th style={{ width: "20vw" }}>Explanation</th>
+            <th style={{ width: "20vw" }}>Recommendation</th>
+            <th style={{ width: "15vw" }}>Question</th>
+            <th style={{ width: "20vw" }}>Answer</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -27,9 +27,10 @@ export function TaskApproverTable({ callSid }: { callSid?: string }) {
           {questions.map((question) => (
             <tr key={`294-${question.id}`}>
               <td>{question.status}</td>
-              <td>{question.question}</td>
               <td>{question.explanation}</td>
               <td>{question.recommendation}</td>
+
+              <td>{question.question}</td>
               <td>
                 <Textarea
                   autosize
@@ -44,14 +45,22 @@ export function TaskApproverTable({ callSid }: { callSid?: string }) {
                   }
                 />
               </td>
-              <td
-                style={{ display: "flex", flexDirection: "column", gap: "5px" }}
-              >
-                <Button size="compact-xs">Approve</Button>
+              <td>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "5px",
+                  }}
+                >
+                  <Button color="green" size="compact-xs">
+                    Approve
+                  </Button>
 
-                <Button size="compact-xs" color="red">
-                  Reject
-                </Button>
+                  <Button color="red" size="compact-xs">
+                    Reject
+                  </Button>
+                </div>
               </td>
             </tr>
           ))}
