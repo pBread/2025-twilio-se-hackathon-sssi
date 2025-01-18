@@ -44,6 +44,8 @@ function Main({ Component, pageProps, router }: AppProps) {
   useAddCallListeners(callSid);
   useFetchCallData(callSid);
 
+  if (router.route.includes("iframe")) return <Component {...pageProps} />;
+
   return (
     <>
       <Header callSid={router.query.callSid as string | undefined} />
