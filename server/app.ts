@@ -10,6 +10,7 @@ import {
   UserRecord,
 } from "../shared/entities";
 import { getInstructions } from "./bot/conscious/instructions";
+import { transferToAgent } from "./bot/conscious/tool-functions";
 import { getGreeting } from "./bot/greetings";
 import log from "./logger";
 import { CallService } from "./services/call-service";
@@ -20,6 +21,7 @@ import { RelayService } from "./services/relay-service";
 import { SubsconsciousService } from "./services/subconscious-service";
 import {
   clearSyncData,
+  createSyncToken,
   demoConfig,
   initCall,
   populateSampleSyncData,
@@ -32,7 +34,6 @@ import {
   initVectorDB,
   populateSampleVectorData,
 } from "./services/vector-db-service";
-import { transferToAgent } from "./bot/conscious/tool-functions";
 
 const {
   ENABLE_GOVERNANCE,
@@ -360,6 +361,14 @@ app.post("/live-agent-handoff", async (req, res) => {
 
     res.send(await twiml.toString());
   } else res.send("done");
+});
+
+app.get("/sync-token/:identity", async (req, res) => {
+  const identity = req.params.identity;
+
+  const token = createSyncToken(identity);
+
+  res.json(token);
 });
 
 /****************************************************

@@ -168,7 +168,10 @@ type AddUser = Partial<UserRecord> & { firstName: string; lastName: string };
 /****************************************************
  Mock Entity Service
 ****************************************************/
-interface EntityService<T extends { id: string }, ADD extends Partial<T>> {
+export interface EntityService<
+  T extends { id: string },
+  ADD extends Partial<T>
+> {
   add: (partial: ADD) => Promise<T>;
   getById: (id: string) => Promise<T | undefined>;
   init: () => Promise<void>;
@@ -255,63 +258,3 @@ class MockEntityService<T extends { id: string }, ADD extends Partial<T>>
 /****************************************************
  Sync Service Entity
 ****************************************************/
-class SyncEntityService<T extends { id: string }, P extends Partial<T>>
-  implements EntityService<T, P>
-{
-  map: SyncMapContext;
-
-  constructor(public name: string, private creator: (param: P) => T) {
-    this.map = client.sync.v1.services(TWILIO_SYNC_SVC_SID).syncMaps(this.name);
-  }
-
-  init = async () => {
-    try {
-      // create map if it doesn't exist
-      const map = await client.sync.v1
-        .services(TWILIO_SYNC_SVC_SID)
-        .syncMaps.create({ uniqueName: this.name });
-
-      if (map) console.log(`created sync map ${this.name}`);
-      else throw Error(`Error creating Sync Map for ${this.name}`);
-    } catch (error) {
-      if ((error as { code?: number })?.code === 54301) return; // ignore sync map already exists
-
-      log.error(`sync.${this.name}`, "Error creating Sync Map", error);
-    }
-  };
-
-  add = async (partial: P) => {
-    const data = this.creator(partial);
-    const result = await this.map.syncMapItems.create({ key: data.id, data });
-    return data as T;
-  };
-
-  getById = async (id: string) => {
-    const result = await this.map.syncMapItems(id).fetch();
-    return result.data as T;
-  };
-
-  list = async () => {
-    const docs = await this.map.syncMapItems.list();
-    return docs.map((doc) => doc.data) as T[];
-  };
-
-  remove = async (id: string) => {
-    const result = await this.map.syncMapItems(id).remove();
-    return result;
-  };
-
-  set = async (id: string, doc: T) => {
-    await this.map.syncMapItems(id).update({ data: doc });
-    const data = await this.getById(id);
-    return data as T;
-  };
-
-  setIn = async (id: string, update: Partial<T>) => {
-    const cur = await this.getById(id);
-    const next = { ...cur, ...update };
-    await this.map.syncMapItems(id).update({ data: next });
-
-    return next as T;
-  };
-}

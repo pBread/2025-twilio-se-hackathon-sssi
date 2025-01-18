@@ -2,13 +2,16 @@ import diff from "deep-diff";
 import { pRateLimit } from "p-ratelimit";
 import Twilio from "twilio";
 import { SyncClient } from "twilio-sync";
-import type {
-  AddLogRecord,
-  AIQuestion,
-  CallRecord,
-  DemoConfiguration,
-  LogRecord,
-  StoreMessage,
+import {
+  EventRecord,
+  OrderRecord,
+  UserRecord,
+  type AddLogRecord,
+  type AIQuestion,
+  type CallRecord,
+  type DemoConfiguration,
+  type LogRecord,
+  type StoreMessage,
 } from "../../shared/entities";
 import { sampleData } from "../../shared/sample-data";
 import {
@@ -19,7 +22,10 @@ import {
   msgMapName,
   SYNC_CALL_MAP_NAME,
   SYNC_CONFIG_NAME,
+  SYNC_EVENT_MAP,
+  SYNC_ORDER_MAP,
   SYNC_Q_MAP_NAME,
+  SYNC_USER_MAP,
 } from "../../shared/sync";
 import bot from "../bot/conscious";
 import { relayConfig } from "../bot/relay-config";
@@ -31,6 +37,9 @@ import {
 } from "../env";
 import log from "../logger";
 import { makeId } from "../utils/misc";
+import type { EntityService } from "./database-service";
+import type { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
+import { mockDatabase } from "../../shared/mock-database";
 
 const rateLimitConfig = {
   interval: 1000, // 1000 ms == 1 second
@@ -101,6 +110,21 @@ export async function setupSync() {
   } catch (error) {}
 
   try {
+    await limit(() => sync.syncMaps.create({ uniqueName: SYNC_EVENT_MAP }));
+    console.log("created sync map to store events");
+  } catch (error) {}
+
+  try {
+    await limit(() => sync.syncMaps.create({ uniqueName: SYNC_ORDER_MAP }));
+    console.log("created sync map to store orders");
+  } catch (error) {}
+
+  try {
+    await limit(() => sync.syncMaps.create({ uniqueName: SYNC_USER_MAP }));
+    console.log("created sync map to store users");
+  } catch (error) {}
+
+  try {
     console.log("sync websocket client initializing");
     await initSyncClient();
     console.log("sync websocket client connected");
@@ -164,7 +188,7 @@ async function initSyncClient() {
   });
 }
 
-function createSyncToken(identity: string) {
+export function createSyncToken(identity: string) {
   const AccessToken = Twilio.jwt.AccessToken;
   const SyncGrant = AccessToken.SyncGrant;
 
@@ -430,6 +454,94 @@ export async function addSyncQuestionListener(
 }
 
 /****************************************************
+ Database
+****************************************************/
+class SyncEntityService<T extends { id: string }, P extends Partial<T>>
+  implements EntityService<T, P>
+{
+  map: SyncMapContext;
+
+  constructor(public name: string, private creator: (param: P) => T) {
+    this.map = sync.syncMaps(this.name);
+  }
+
+  init = async () => {
+    try {
+      // create map if it doesn't exist
+      const map = await sync.syncMaps.create({ uniqueName: this.name });
+
+      if (map) console.log(`created sync map ${this.name}`);
+      else throw Error(`Error creating Sync Map for ${this.name}`);
+    } catch (error) {
+      if ((error as { code?: number })?.code === 54301) return; // ignore sync map already exists
+
+      log.error(`sync.${this.name}`, "Error creating Sync Map", error);
+    }
+  };
+
+  add = async (partial: P) => {
+    const data = this.creator(partial);
+    const result = await limit(() =>
+      this.map.syncMapItems.create({ key: data.id, data })
+    );
+    return data as T;
+  };
+
+  getById = async (id: string) => {
+    const result = await limit(() => this.map.syncMapItems(id).fetch());
+    return result.data as T;
+  };
+
+  list = async () => {
+    const docs = await limit(() => this.map.syncMapItems.list());
+    return docs.map((doc) => doc.data) as T[];
+  };
+
+  remove = async (id: string) => {
+    const result = await limit(() => this.map.syncMapItems(id).remove());
+    return result;
+  };
+
+  set = async (id: string, doc: T) => {
+    await limit(() => this.map.syncMapItems(id).update({ data: doc }));
+    const data = await this.getById(id);
+    return data as T;
+  };
+
+  setIn = async (id: string, update: Partial<T>) => {
+    const cur = await this.getById(id);
+    const next = { ...cur, ...update };
+    await limit(() => this.map.syncMapItems(id).update({ data: next }));
+
+    return next as T;
+  };
+}
+
+const eventApi = new SyncEntityService<EventRecord, EventRecord>(
+  SYNC_EVENT_MAP,
+  (item) => ({
+    ...item,
+    id: item.id ?? makeId("ev"),
+  })
+);
+
+const orderApi = new SyncEntityService<OrderRecord, OrderRecord>(
+  SYNC_EVENT_MAP,
+  (item) => ({
+    ...item,
+    id: item.id ?? makeId("or"),
+  })
+);
+
+const userApi = new SyncEntityService<UserRecord, UserRecord>(
+  SYNC_EVENT_MAP,
+  (item) => ({
+    ...item,
+    id: item.id ?? makeId("us"),
+  })
+);
+
+/****************************************************
  Demo Data Management
 ****************************************************/
 export async function clearSyncData() {
@@ -466,6 +578,21 @@ export async function clearSyncData() {
   await Promise.all(
     questions.map((question) => removeSyncQuestion(question.id))
   );
+
+  console.log("resetting events");
+  const events = await eventApi.list();
+  console.log(`deleting ${events.length} old event records`);
+  await Promise.all(events.map((item) => eventApi.remove(item.id)));
+
+  console.log("resetting orders");
+  const orders = await orderApi.list();
+  console.log(`deleting ${orders.length} old event records`);
+  await Promise.all(orders.map((item) => orderApi.remove(item.id)));
+
+  console.log("resetting users");
+  const users = await userApi.list();
+  console.log(`deleting ${users.length} old event records`);
+  await Promise.all(users.map((item) => userApi.remove(item.id)));
 }
 
 export async function populateSampleSyncData() {
@@ -482,4 +609,31 @@ export async function populateSampleSyncData() {
   await Promise.all(
     Object.values(sampleData.callMessages).flat().map(addSyncMsgItem)
   ).then(() => console.log("populated messages"));
+
+  console.log(`loading ${mockDatabase.orders.length} new event records`);
+  await Promise.all(
+    mockDatabase.events.map((item) =>
+      eventApi
+        .add(item)
+        .catch(() => console.log(`unable to load event ${item.id}`))
+    )
+  );
+
+  console.log(`loading ${mockDatabase.orders.length} new oder records`);
+  await Promise.all(
+    mockDatabase.orders.map((item) =>
+      orderApi
+        .add(item)
+        .catch(() => console.log(`unable to load order ${item.id}`))
+    )
+  );
+
+  console.log(`loading ${mockDatabase.users.length} new event records`);
+  await Promise.all(
+    mockDatabase.users.map((item) =>
+      userApi
+        .add(item)
+        .catch(() => console.log(`unable to load user ${item.id}`))
+    )
+  );
 }
