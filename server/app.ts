@@ -26,13 +26,12 @@ import {
   setupSync,
   updateSyncCallItem,
 } from "./services/sync-service";
+import { createLiveAgentHandoffTwiML } from "./services/twilio-flex";
 import {
   clearAllVectors,
   initVectorDB,
   populateSampleVectorData,
 } from "./services/vector-db-service";
-import { createLiveAgentHandoffTwiML } from "./services/twilio-flex";
-import { askAgent, transferToAgent } from "./bot/conscious/tool-functions";
 
 const {
   ENABLE_GOVERNANCE,
@@ -340,17 +339,21 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
  Twilio Flex
 ****************************************************/
 app.post("/live-agent-handoff", async (req, res) => {
-  log.info(
-    "/live-agent-handoff",
-    `call transfer webhook for call ${req.body.CallSid}`
-  );
+  const isHandoff = "HandoffData" in req.body;
 
-  const twiml = await createLiveAgentHandoffTwiML(req.body);
+  if (isHandoff) {
+    log.info(
+      "/live-agent-handoff",
+      `call transfer webhook for call ${req.body.CallSid}`
+    );
 
-  log.debug("/live-agent-handoff\n", "body\n", req.body);
-  res.type("xml");
-  // res.setHeader("Content-Type", "application/xml");
-  res.send(await twiml.toString());
+    const twiml = await createLiveAgentHandoffTwiML(req.body);
+
+    log.debug("/live-agent-handoff\n", "body\n", req.body);
+    res.type("xml");
+    // res.setHeader("Content-Type", "application/xml");
+    res.send(await twiml.toString());
+  } else res.send("done");
 });
 
 /****************************************************
