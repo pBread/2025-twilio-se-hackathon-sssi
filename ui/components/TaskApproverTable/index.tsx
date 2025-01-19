@@ -31,7 +31,6 @@ export function TaskApproverTable({ callSid }: { callSid?: string }) {
 
   return (
     <div>
-      <h2>Tasks Approver App</h2>
       <table cellPadding="10" style={{ marginTop: "20px", width: "100%" }}>
         <thead>
           <tr>
