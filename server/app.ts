@@ -125,6 +125,7 @@ app.post("/call-handler", async (req, res) => {
       callContext: ctx,
       config: { ...demoConfig },
       feedback: [],
+      hasVector: false,
     };
 
     tempCache.set(CallSid, callData);

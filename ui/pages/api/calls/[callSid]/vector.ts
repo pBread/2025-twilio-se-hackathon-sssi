@@ -37,13 +37,22 @@ const handler: NextApiHandler = async (req: NextApiRequest, res) => {
       .fetch()
       .then((res) => res.data as CallRecord);
 
+    if (call.hasVector)
+      throw Error(
+        `Attempted to insert a vector for a call (${callSid}) that already has a vector record`
+      );
+
     const msgs = await sync
       .syncMaps(msgMapName(callSid))
       .syncMapItems.list()
       .then((res) => res.map((item) => item.data as StoreMessage));
 
-    if (req.method === "POST") res.json(await insertCallVector(call, msgs));
-    else throw Error(`Invalid method: ${req.method}`);
+    await insertCallVector(call, msgs);
+
+    await sync
+      .syncMaps(SYNC_CALL_MAP_NAME)
+      .syncMapItems(callMapItemName(callSid))
+      .update({ data: { ...call, hasVector: true } });
   } catch (error) {
     console.error(`Error in api route calls/[callSid]`, error);
     res.status(500).send({ error, status: "error" });

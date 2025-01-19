@@ -14,6 +14,7 @@ export interface CallRecord {
   callContext: CallContext;
   config: DemoConfiguration;
   feedback: Annotation[];
+  hasVector: boolean;
 }
 
 export interface Annotation {

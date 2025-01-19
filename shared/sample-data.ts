@@ -96,6 +96,7 @@ const calls: CallRecord[] = [
     createdAt: new Date().toString(),
     summary: { title: "Customer called in to modify an order." },
     callContext,
+    hasVector: true,
     feedback: [
       {
         id: "sd92kd923",
@@ -127,6 +128,7 @@ const calls: CallRecord[] = [
     to: "+18444405503",
     summary: { title: "Customer called in to modify an order." },
     createdAt: new Date().toString(),
+    hasVector: true,
     callContext: {
       today: new Date().toLocaleString(),
       similarCalls: [
