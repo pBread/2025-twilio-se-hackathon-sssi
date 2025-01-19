@@ -2,6 +2,11 @@
 
 # Getting Started
 
+Populate the env variables in these files...
+.env
+/ui/.env
+/flex-plugin/public/appConfig.js
+
 ## Populating Env Variables
 
 Populate these environment variables...
