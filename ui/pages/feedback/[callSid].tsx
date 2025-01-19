@@ -74,7 +74,10 @@ function Feedback({
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         {call?.feedback.map((item) => (
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <div
+            key={`38m-${item.id}-${router.asPath}`}
+            style={{ display: "flex", alignItems: "center", gap: "6px" }}
+          >
             <Checkbox
               checked={feedbackId === item.id}
               onClick={() =>
@@ -338,7 +341,7 @@ function TurnTable({ feedbackId }: { feedbackId: string }) {
       </Table.Thead>
       <Table.Tbody>
         {msgs?.map((msg) => (
-          <Table.Tr key={`di8-${msg.id}`} bg="">
+          <Table.Tr key={`di8-${router.asPath}-${msg.id}`}>
             <Table.Td>
               <Checkbox
                 checked={!!feedback && feedback.targets.includes(msg._index)}
