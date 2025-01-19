@@ -23,6 +23,7 @@ async function getData(callSid: string) {
   const msgItems = await sync.syncMaps(uniqueName).syncMapItems.list();
 
   const result = msgItems.map((item) => item.data);
+
   return result;
 }
 

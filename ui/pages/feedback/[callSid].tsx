@@ -301,7 +301,9 @@ function useSetTargets(callSid: string, feedbackId?: string) {
     // Update the feedback item with new targets
     const updatedFeedback = {
       ...feedbackItem,
-      targets: Array.from(currentTargets).sort((a: number, b: number) => a - b),
+      targets: Array.from(currentTargets)
+        .filter((idx) => idx !== null && idx !== undefined)
+        .sort((a: number, b: number) => a - b),
     };
 
     // Update the map and recreate the feedback array
@@ -344,8 +346,8 @@ function TurnTable({ feedbackId }: { feedbackId: string }) {
           <Table.Tr key={`di8-${router.asPath}-${msg.id}`}>
             <Table.Td>
               <Checkbox
-                checked={!!feedback && feedback.targets.includes(msg._index)}
-                onClick={(ev) => setTargets(msg._index, ev.shiftKey)}
+                checked={!!feedback && feedback.targets.includes(msg.seq)}
+                onClick={(ev) => setTargets(msg.seq, ev.shiftKey)}
                 onChange={() => {}}
               />
             </Table.Td>
