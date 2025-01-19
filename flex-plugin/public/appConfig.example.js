@@ -3,5 +3,5 @@ var appConfig = {
   ytica: false,
   logLevel: "info",
   showSupervisorDesktopView: true,
-  fnBaseUrl: "",
+  fnBaseUrl: "{{TWILIO_FN_BASE_URL}}",
 };
