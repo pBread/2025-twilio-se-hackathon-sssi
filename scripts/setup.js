@@ -131,7 +131,7 @@ async function main() {
     await updateEnvFile(paths.env, pick(root, "TWILIO_SYNC_SVC_SID"));
   }
 
-  if (root.DEVELOPERS_PHONE_NUMBER) await setupDefaultNumber();
+  if (root.TWILIO_DEFAULT_NUMBER) await setupDefaultNumber();
 
   if (!root.TWILIO_DEFAULT_NUMBER) {
     const runSetup = await askQuestion(
