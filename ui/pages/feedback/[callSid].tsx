@@ -115,9 +115,12 @@ function useSaveCall(callSid: string) {
       );
 
     setStatus("in-progress");
+
+    if (!call.hasVector) await fetch(`/api/calls/${callSid}/vector`);
+
     const res = await fetch(`/api/calls/${callSid}`, {
       method: "POST",
-      body: JSON.stringify(call),
+      body: JSON.stringify({ ...call, hasVector: true }),
     });
 
     if (res.ok) setStatus("complete");

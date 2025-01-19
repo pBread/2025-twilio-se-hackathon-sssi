@@ -49,10 +49,7 @@ const handler: NextApiHandler = async (req: NextApiRequest, res) => {
 
     await insertCallVector(call, msgs);
 
-    await sync
-      .syncMaps(SYNC_CALL_MAP_NAME)
-      .syncMapItems(callMapItemName(callSid))
-      .update({ data: { ...call, hasVector: true } });
+    res.json({ status: "success" });
   } catch (error) {
     console.error(`Error in api route calls/[callSid]`, error);
     res.status(500).send({ error, status: "error" });
