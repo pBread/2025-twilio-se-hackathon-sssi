@@ -11,11 +11,12 @@
   "dependencies": {
     "@mantine/core": "^7.15.3",
     "@mantine/hooks": "^7.15.3",
+    "@pinecone-database/pinecone": "^4.1.0",
     "@reduxjs/toolkit": "^2.5.0",
     "@tabler/icons-react": "^3.28.1",
     "lodash.startcase": "^4.4.0",
     "next": "15.1.4",
-    "openai": "^4.78.1",
+    "openai": "^4.79.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-redux": "^9.2.0",

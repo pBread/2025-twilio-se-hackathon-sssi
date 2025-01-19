@@ -175,6 +175,7 @@ async function main() {
     pick(
       root,
       "DEVELOPERS_PHONE_NUMBER",
+      "OPENAI_API_KEY",
       "PINCONE_API_KEY",
       "PINECONE_INDEX_NAME",
       "TWILIO_ACCOUNT_SID",
