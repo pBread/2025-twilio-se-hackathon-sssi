@@ -174,10 +174,13 @@ async function main() {
     paths.ui,
     pick(
       root,
+      "DEVELOPERS_PHONE_NUMBER",
+      "PINCONE_API_KEY",
+      "PINECONE_INDEX_NAME",
       "TWILIO_ACCOUNT_SID",
       "TWILIO_API_KEY",
       "TWILIO_API_SECRET",
-      "DEVELOPERS_PHONE_NUMBER"
+      "TWILIO_SYNC_SVC_SID"
     )
   );
 

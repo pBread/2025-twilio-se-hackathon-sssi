@@ -2,6 +2,24 @@
 
 # Getting Started
 
+## Populate Root Env Variables
+
+Populate all of the required variables in the root `.env` file. The setup script will automatically populate the remaining.
+
+## Deploy Serverless Function
+
+```bash
+twilio login
+# The Account SID for your Twilio Account or Subaccount: ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# Your Twilio Auth Token for your Twilio Account or Subaccount: [hidden]
+# Shorthand identifier for your profile: my-dev-account
+
+twilio profiles:use my-dev-account
+
+```
+
+# DEP
+
 Populate the env variables in these files...
 .env
 /ui/.env
