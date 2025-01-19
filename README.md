@@ -2,6 +2,33 @@
 
 # Getting Started
 
+## Populating Env Variables
+
+Populate these environment variables...
+
+```bash
+TWILIO_ACCOUNT_SID=
+TWILIO_AUTH_TOKEN=
+
+# your ngrok domain
+HOSTNAME=
+
+# your personal phone number
+DEVELOPERS_PHONE_NUMBER=
+
+OPENAI_API_KEY=
+
+PINCONE_API_KEY=
+# any string will do
+PINECONE_INDEX_NAME=
+```
+
+Then run this script...
+
+```bash
+
+```
+
 ## To Do
 
 ### Build Script
