@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "nodemon -x ts-node server/app.ts -e ts,js,json -i flex-plugin/ -i ui/ ",
     "grok": "node scripts/ngrok.js",
-    "setup:env": "node scripts/setup-env.js",
+    "setup": "node scripts/setup-env.js",
     "start": "ts-node server/app.ts"
   },
   "version": "1.0.0",
@@ -15,7 +15,7 @@
     "dotenv-flow": "^4.1.0",
     "express": "^4.21.0",
     "express-ws": "^5.0.2",
-    "lodash.snakecase": "^4.1.1",
+    "lodash.kebabcase": "^4.1.1",
     "openai": "^4.68.4",
     "p-ratelimit": "^1.0.1",
     "twilio": "^5.3.5",
@@ -27,6 +27,7 @@
     "@types/deepmerge": "^2.2.3",
     "@types/express": "^5.0.0",
     "@types/express-ws": "^3.0.5",
+    "@types/lodash.kebabcase": "^4.1.9",
     "@types/node": "^22.7.4",
     "@types/twilio": "^3.19.3",
     "@types/ws": "^8.5.12",

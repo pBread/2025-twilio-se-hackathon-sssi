@@ -1,9 +1,9 @@
-const fs = require("fs").promises;
-const path = require("path");
 const { Twilio } = require("twilio");
 const dotenv = require("dotenv");
+const fs = require("fs").promises;
+const kebabCase = require("lodash.kebabcase");
+const path = require("path");
 const readline = require("readline");
-const snakeCase = require("lodash.snakecase");
 
 let tIdx = 0;
 const log = makeLogger();
@@ -34,7 +34,7 @@ const rl = readline.createInterface({
 
 const askQuestion = (query) =>
   new Promise((resolve) =>
-    rl.question(pad(query), (answer) => resolve(answer))
+    rl.question(pad(query) + "\t", (answer) => resolve(answer))
   );
 
 /****************************************************
@@ -75,7 +75,7 @@ let root = {
 async function main() {
   const name = (await askQuestion("What is your name? (Optional)"))?.trim();
   if (name.length) {
-    friendlyName = snakeCase(`${name}-${randStr()}`).toLowerCase();
+    friendlyName = kebabCase(`${name}-convo-relay-${randStr()}`).toLowerCase();
     log.info(`The friendlyName of created services will be: ${friendlyName}`);
   }
 
@@ -222,7 +222,6 @@ async function checkOrCreateFile(target, example) {
 
   try {
     await fs.access(target);
-    log.info(`File exists: ${pTarget}`);
   } catch {
     log.info(`Copying ${pExample} to ${pTarget}`);
     await fs.copyFile(example, target);
@@ -443,11 +442,11 @@ async function updateEnvFile(file, updates) {
 }
 
 async function updateAppConfig() {
-  logger.info("Updating appConfig.js");
+  log.info("Updating appConfig.js");
   let content = await fs.readFile(paths.flex, "utf-8");
   content = content.replace(/{{TWILIO_FN_BASE_URL}}/g, root.TWILIO_FN_BASE_URL);
   await fs.writeFile(paths.flex, content);
-  logger.success("Updated appConfig.js");
+  log.success("Updated appConfig.js");
 }
 
 /****************************************************
