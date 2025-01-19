@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "nodemon -x ts-node server/app.ts -e ts,js,json -i flex-plugin/ -i ui/ ",
     "grok": "node scripts/ngrok.js",
+    "setup:env": "node scripts/setup-env.js",
     "start": "ts-node server/app.ts"
   },
   "version": "1.0.0",
