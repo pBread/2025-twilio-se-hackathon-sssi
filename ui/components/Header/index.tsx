@@ -20,6 +20,7 @@ export function Header({ callSid }: { callSid?: string }) {
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         {isConnected || <Connection />}
         {isConnected && callSid && <CallDetails callSid={callSid} />}
+        {isConnected && callSid && <DataNavButton callSid={callSid} />}
         {isConnected && callSid && <CallViewNav callSid={callSid} />}
         {isConnected && <QuestionNavButton />}
       </div>
@@ -36,6 +37,20 @@ function QuestionNavButton() {
     <Link href="/tasks">
       <Button variant="default" style={{ overflow: "visible" }}>
         AI Questions
+      </Button>
+    </Link>
+  );
+}
+
+function DataNavButton({ callSid }: { callSid: string }) {
+  const router = useRouter();
+
+  if (router.route.includes("data")) return;
+
+  return (
+    <Link href={`/data/${callSid}`}>
+      <Button variant="default" style={{ overflow: "visible" }}>
+        Call Data
       </Button>
     </Link>
   );
