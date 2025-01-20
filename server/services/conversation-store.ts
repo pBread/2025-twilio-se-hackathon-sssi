@@ -17,7 +17,7 @@ import type {
   SystemMessage,
 } from "../../shared/entities";
 import log from "../logger";
-import { getJSONSize, makeId, makeTimestamp } from "../utils/misc";
+import { makeId, makeTimestamp } from "../utils/misc";
 import {
   addSyncMsgItem,
   removeSyncMsgItem,
