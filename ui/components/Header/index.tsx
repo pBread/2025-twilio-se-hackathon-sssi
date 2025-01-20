@@ -14,12 +14,9 @@ export function Header({ callSid }: { callSid?: string }) {
       <Link href="/">
         <img className="header-logo" alt="logo" src={"/logo.png"} />
       </Link>
-      <div className="header-section"></div>
+      <div></div>
 
-      <div
-        className="header-section"
-        style={{ display: "flex", alignItems: "center" }}
-      >
+      <div style={{ display: "flex", alignItems: "center" }}>
         {isConnected || <Connection />}
         {isConnected && callSid && <CallDetails callSid={callSid} />}
         {isConnected && <QuestionNavButton />}
