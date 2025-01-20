@@ -405,7 +405,16 @@ export async function setSyncMsgItem(msg: StoreMessage) {
   const uniqueName = msgMapName(msg.callSid);
 
   return limitMsg(async () => {
-    sync.syncMaps(uniqueName).syncMapItems(msg.id).update({ data: msg });
+    try {
+      return await sync
+        .syncMaps(uniqueName)
+        .syncMapItems(msg.id)
+        .update({ data: msg });
+    } catch (error) {
+      if (isErrorTypeNotFound(error)) return;
+
+      throw error;
+    }
   });
 }
 
@@ -638,5 +647,18 @@ export async function populateSampleSyncData() {
         .add(item)
         .catch(() => console.log(`unable to load user ${item.id}`))
     )
+  );
+}
+
+/****************************************************
+ Utilities
+****************************************************/
+function isErrorTypeNotFound(error: any) {
+  return (
+    error &&
+    typeof error === "object" &&
+    "code" in error &&
+    "status" in error &&
+    (error as { code: number }).code === 20404
   );
 }
