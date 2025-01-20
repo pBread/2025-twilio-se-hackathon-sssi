@@ -51,7 +51,6 @@ let root = {
   DEVELOPERS_PHONE_NUMBER: null,
   TWILIO_DEFAULT_NUMBER: null,
   OPENAI_API_KEY: null,
-  PINCONE_API_KEY: null,
   PINECONE_INDEX_NAME: null,
 
   // Optional: will be created if not included
@@ -152,7 +151,7 @@ async function main() {
     );
 
   log.title("Checking Misc");
-  let hasPinecone = !!root.PINCONE_API_KEY?.length;
+  let hasPinecone = !!root.PINECONE_API_KEY?.length;
   if (hasPinecone && !root.PINECONE_INDEX_NAME) {
     // set default for PINECONE_INDEX_NAME
     log.info(`Setting default PINECONE_INDEX_NAME to "sample-data"`);
@@ -162,11 +161,11 @@ async function main() {
 
   if (hasPinecone && root.ENABLE_RECALL?.toLowerCase() !== "true")
     log.warn(
-      `PINCONE_API_KEY is included in env variables, but ENABLE_RECALL is false. You must set ENABLE_RECALL to enable these capabilities.`
+      `PINECONE_API_KEY is included in env variables, but ENABLE_RECALL is false. You must set ENABLE_RECALL to enable these capabilities.`
     );
 
   if (!hasPinecone)
-    log.warn(`Missing PINCONE_API_KEY. Vector DB services will be disabled.`);
+    log.warn(`Missing PINECONE_API_KEY. Vector DB services will be disabled.`);
 
   log.title("Updating Nested Env Variable Files");
   log.info("Updating ui environment variables");
@@ -176,7 +175,7 @@ async function main() {
       root,
       "DEVELOPERS_PHONE_NUMBER",
       "OPENAI_API_KEY",
-      "PINCONE_API_KEY",
+      "PINECONE_API_KEY",
       "PINECONE_INDEX_NAME",
       "TWILIO_ACCOUNT_SID",
       "TWILIO_API_KEY",

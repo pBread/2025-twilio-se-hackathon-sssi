@@ -101,7 +101,9 @@ function DataActions() {
     <div
       style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}
     >
-      <Button color="red">Delete</Button>
+      <Button color="red" onClick={() => {}}>
+        Delete
+      </Button>
       <Button onClick={handleDownload}>Download</Button>
       {status === "loading" && <Loader />}
       {status === "error" && <div> ERROR </div>}
