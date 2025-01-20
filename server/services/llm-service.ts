@@ -45,7 +45,7 @@ export class LLMService extends EventEmitter {
     // There should only be one completion stream open at a time. The stream will be aborted if the user interrupts.
     if (this.stream) {
       log.warn(
-        "llm.completion",
+        "llm.comp",
         `completion started while another is ongoing. cancelled original completion.`
       );
       this.abort(); // aborts old completion so another can be started
@@ -155,7 +155,7 @@ export class LLMService extends EventEmitter {
         else {
           // this is an active bug. this should be unreachable but it's not. it seems to fire when completions include some combination of parallel text / tool requests
           log.error(
-            "llm.completion",
+            "llm.comp",
             "No params created on first iteration",
             JSON.stringify({ params, botText, botTool, chunk }, null, 2)
           );
@@ -308,7 +308,21 @@ export class LLMService extends EventEmitter {
    */
 
   getMessageParams = () =>
-    this.store.getMessages().flatMap(this.translateStoreMsgToLLMParam);
+    this.store
+      .getMessages()
+      .flatMap(this.translateStoreMsgToLLMParam)
+      .map((msg) => {
+        return msg.role === "tool" && !msg.content
+          ? {
+              ...msg,
+              content: JSON.stringify({
+                status: "unknown",
+                message:
+                  "The API request may still be open or it may have errored out.",
+              }),
+            }
+          : msg;
+      });
 
   /**
    * Converts the store's message schema to the OpenAI schema
@@ -329,6 +343,16 @@ export class LLMService extends EventEmitter {
       ];
 
       for (const tool of msg.tool_calls) {
+        try {
+          if (tool?.result === null) {
+            log.debug(
+              "llm",
+              "Tool result is null. This should never happen. ",
+              { tool, msg, allMsgs: this.store.getMessages() }
+            );
+          }
+        } catch (error) {}
+
         let content: string;
         try {
           content = JSON.stringify(tool.result);
