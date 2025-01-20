@@ -12,7 +12,6 @@ import {
   Paper,
   Radio,
   Table,
-  Text,
   Textarea,
   Title,
 } from "@mantine/core";
