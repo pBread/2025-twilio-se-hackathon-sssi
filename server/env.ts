@@ -19,7 +19,7 @@ export const TWILIO_DEFAULT_NUMBER = process.env.TWILIO_DEFAULT_NUMBER;
 export const FLEX_WORKFLOW_SID = process.env.FLEX_WORKFLOW_SID as string;
 export const HOSTNAME = process.env.HOSTNAME as string;
 export const OPENAI_API_KEY = process.env.OPENAI_API_KEY as string;
-export const PINCONE_API_KEY = process.env.PINCONE_API_KEY as string;
+export const PINECONE_API_KEY = process.env.PINECONE_API_KEY as string;
 export const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME as string;
 export const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID as string;
 export const TWILIO_API_KEY = process.env.TWILIO_API_KEY as string;
@@ -31,7 +31,7 @@ export const TWILIO_SYNC_SVC_SID = process.env.TWILIO_SYNC_SVC_SID as string;
 if (!FLEX_WORKFLOW_SID) console.error(`Missing env var FLEX_WORKFLOW_SID`);
 if (!HOSTNAME) console.error(`Missing env var HOSTNAME`);
 if (!OPENAI_API_KEY) console.error(`Missing env var OPENAI_API_KEY`);
-if (!PINCONE_API_KEY) console.error(`Missing env var PINCONE_API_KEY`);
+if (!PINECONE_API_KEY) console.error(`Missing env var PINECONE_API_KEY`);
 if (!PINECONE_INDEX_NAME) console.error(`Missing env var PINECONE_INDEX_NAME`);
 if (!TWILIO_ACCOUNT_SID) console.error(`Missing env var TWILIO_ACCOUNT_SID`);
 if (!TWILIO_API_KEY) console.error(`Missing env var TWILIO_API_KEY`);
@@ -41,7 +41,7 @@ if (!TWILIO_SYNC_SVC_SID) console.error(`Missing env var TWILIO_SYNC_SVC_SID`);
 
 // Delete sensitive credentials from process.env after they've been securely accessed. This minimizes the risk of exposure to untrusted libraries or parts of the application that might inadvertently access them. For example, this reduces the likelihood of sensitive data leaks via third-party npm packages or debugging tools.
 // delete process.env.OPENAI_API_KEY;
-// delete process.env.PINCONE_API_KEY;
+// delete process.env.PINECONE_API_KEY;
 // delete process.env.PINECONE_INDEX_NAME;
 // delete process.env.TWILIO_ACCOUNT_SID;
 // delete process.env.TWILIO_API_KEY;

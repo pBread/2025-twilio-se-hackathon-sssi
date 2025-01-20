@@ -3,7 +3,7 @@ import OpenAI from "openai";
 import { pRateLimit } from "p-ratelimit";
 import { CallRecord, StoreMessage } from "../../shared/entities";
 import { sampleData } from "../../shared/sample-data";
-import { OPENAI_API_KEY, PINCONE_API_KEY, PINECONE_INDEX_NAME } from "../env";
+import { OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_INDEX_NAME } from "../env";
 import log from "../logger";
 import { makeId } from "../utils/misc";
 
@@ -11,7 +11,7 @@ const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 const EMBEDDING_MODEL = "text-embedding-3-large";
 const NS = "conversations";
 
-const pc = new Pinecone({ apiKey: PINCONE_API_KEY });
+const pc = new Pinecone({ apiKey: PINECONE_API_KEY });
 
 const limit = pRateLimit({
   interval: 1000, // 1000 ms == 1 second

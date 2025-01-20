@@ -13,7 +13,7 @@ const {
   PINECONE_INDEX_NAME,
   TWILIO_SYNC_SVC_SID,
   OPENAI_API_KEY,
-  PINCONE_API_KEY,
+  PINECONE_API_KEY,
 } = process.env;
 
 const client = twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
@@ -26,7 +26,7 @@ const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 const EMBEDDING_MODEL = "text-embedding-3-large";
 const NS = "conversations";
 
-const pc = new Pinecone({ apiKey: PINCONE_API_KEY });
+const pc = new Pinecone({ apiKey: PINECONE_API_KEY });
 
 const handler: NextApiHandler = async (req: NextApiRequest, res) => {
   try {
