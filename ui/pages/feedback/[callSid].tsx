@@ -7,11 +7,14 @@ import {
   Button,
   Checkbox,
   Group,
+  Input,
   Loader,
   Paper,
   Radio,
   Table,
+  Text,
   Textarea,
+  Title,
 } from "@mantine/core";
 import { Annotation, BotMessage, HumanMessage } from "@shared/entities";
 import { useRouter } from "next/router";
@@ -26,11 +29,22 @@ export default function CallReview() {
 
   return (
     <div style={{ display: "flex", gap: "8px" }}>
-      <div style={{ flex: 2 }}>
+      <div
+        style={{
+          flex: 2,
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
+        }}
+      >
+        <Paper style={paperStyle}>
+          <CallSummary />
+        </Paper>
         <Paper style={paperStyle}>
           <TurnTable feedbackId={feedbackId} />
         </Paper>
       </div>
+
       <div
         style={{
           display: "flex",
@@ -41,6 +55,31 @@ export default function CallReview() {
       >
         <Feedback feedbackId={feedbackId} setFeedbackId={setFeedbackId} />
       </div>
+    </div>
+  );
+}
+
+function CallSummary() {
+  const router = useRouter();
+  const callSid = router.query.callSid as string;
+
+  const call = useAppSelector((state) => selectCallById(state, callSid));
+
+  const dispatch = useAppDispatch();
+  return (
+    <div>
+      <Title order={6}>Call Title</Title>
+      <Input
+        value={call?.summary?.title}
+        onChange={(ev) => {
+          dispatch(
+            setOneCall({
+              ...call,
+              summary: { ...call.summary, title: ev.target.value },
+            })
+          );
+        }}
+      />
     </div>
   );
 }
