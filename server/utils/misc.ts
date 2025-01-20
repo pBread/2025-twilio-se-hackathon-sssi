@@ -1,3 +1,6 @@
+import { APP_DEBUG } from "../env";
+import log from "../logger";
+
 export function getJSONSize(obj: {}) {
   function getStringBytes(str: string) {
     return new TextEncoder().encode(str).length;
@@ -59,4 +62,27 @@ export function safeParse(data: any) {
   try {
     return JSON.parse(data);
   } catch (error) {}
+}
+
+export function ignore(
+  checks: (error: any) => boolean | ((error: any) => boolean)[]
+) {
+  const _checks = Array.isArray(checks) ? checks : [checks];
+
+  return (error: any) => {
+    const hit = _checks.find((check) => check(error));
+    if (hit) {
+      if (APP_DEBUG)
+        log.debug(
+          "ignore",
+          `error was ignored. check: `,
+          hit,
+          "\nerror: ",
+          error
+        );
+
+      return;
+    }
+    throw error;
+  };
 }

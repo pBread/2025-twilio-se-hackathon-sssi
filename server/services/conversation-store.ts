@@ -17,12 +17,13 @@ import type {
   SystemMessage,
 } from "../../shared/entities";
 import log from "../logger";
-import { makeId, makeTimestamp } from "../utils/misc";
+import { ignore, makeId, makeTimestamp } from "../utils/misc";
 import {
   addSyncMsgItem,
+  isErrorTypeNotFound,
   removeSyncMsgItem,
   setSyncCallItem,
-  setSyncMsgItem,
+  updateSyncMsgItem,
 } from "./sync-service";
 
 export class ConversationStore {
@@ -70,7 +71,7 @@ export class ConversationStore {
   forceSync = (id: string) => {
     const msg = this.msgMap.get(id);
     if (!msg) return;
-    if (msg) setSyncMsgItem(msg);
+    if (msg) updateSyncMsgItem(msg).catch(ignore(isErrorTypeNotFound));
   };
 
   deleteMsg = (id: string) => {
@@ -246,7 +247,7 @@ class StoreMessageMap extends Map<string, StoreMessage> {
     const prev = this.get(key);
     super.set(key, msg);
 
-    if (prev) setSyncMsgItem(msg);
+    if (prev) updateSyncMsgItem(msg).catch(ignore(isErrorTypeNotFound));
     else addSyncMsgItem(msg);
 
     return this;

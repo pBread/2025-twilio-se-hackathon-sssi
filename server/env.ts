@@ -2,7 +2,7 @@
 
 import "dotenv-flow/config"; // dotenv-flow supports multiple .env files for different environments (e.g., .env, .env.local).
 
-export const TWILIO_DEFAULT_NUMBER = process.env.TWILIO_DEFAULT_NUMBER;
+export const APP_DEBUG = bool(process.env.APP_DEBUG);
 export const DEVELOPERS_PHONE_NUMBER = process.env.DEVELOPERS_PHONE_NUMBER;
 export const ENABLE_GOVERNANCE = bool(process.env.ENABLE_GOVERNANCE);
 export const ENABLE_RECALL = bool(process.env.ENABLE_RECALL);
@@ -13,6 +13,7 @@ export const RECORD_CALL = bool(process.env.RECORD_CALL);
 export const STT_PROVIDER = process.env.STT_PROVIDER;
 export const TTS_PROVIDER = process.env.TTS_PROVIDER;
 export const TTS_VOICE = process.env.TTS_VOICE;
+export const TWILIO_DEFAULT_NUMBER = process.env.TWILIO_DEFAULT_NUMBER;
 
 // Required environment variables must be explicitly defined in `.env` files or the runtime environment
 export const FLEX_WORKFLOW_SID = process.env.FLEX_WORKFLOW_SID as string;

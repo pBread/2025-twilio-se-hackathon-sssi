@@ -36,7 +36,7 @@ import {
   TWILIO_SYNC_SVC_SID,
 } from "../env";
 import log from "../logger";
-import { makeId } from "../utils/misc";
+import { ignore, makeId } from "../utils/misc";
 import type { EntityService } from "./database-service";
 import type { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
 import { mockDatabase } from "../../shared/mock-database";
@@ -394,28 +394,12 @@ export async function addSyncMsgItem(msg: StoreMessage) {
   });
 }
 
-async function updateSyncMsgItem(msg: StoreMessage) {
+export async function updateSyncMsgItem(msg: StoreMessage) {
   const uniqueName = msgMapName(msg.callSid);
+
   return limitMsg(() =>
     sync.syncMaps(uniqueName).syncMapItems(msg.id).update({ data: msg })
   );
-}
-
-export async function setSyncMsgItem(msg: StoreMessage) {
-  const uniqueName = msgMapName(msg.callSid);
-
-  return limitMsg(async () => {
-    try {
-      return await sync
-        .syncMaps(uniqueName)
-        .syncMapItems(msg.id)
-        .update({ data: msg });
-    } catch (error) {
-      if (isErrorTypeNotFound(error)) return;
-
-      throw error;
-    }
-  });
 }
 
 export async function removeSyncMsgItem(msg: StoreMessage) {
@@ -653,7 +637,7 @@ export async function populateSampleSyncData() {
 /****************************************************
  Utilities
 ****************************************************/
-function isErrorTypeNotFound(error: any) {
+export function isErrorTypeNotFound(error: any) {
   return (
     error &&
     typeof error === "object" &&
