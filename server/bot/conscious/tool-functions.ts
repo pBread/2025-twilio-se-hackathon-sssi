@@ -551,14 +551,14 @@ export async function askAgent(args: AskAgent, svcs: FunctionServices) {
     log.debug("fns", "askAgent addSyncQuestionListener", update);
 
     const content = `\
-UPDATE FROM HUMAN AGENT
+IMPORTANT UPDATE: A human agent has responded to your previous question. It is critical that your next response informs the customer and 
 
-You previously asked a question to a human agent and they have just responded to you. Here are the details to remind you:
+They have ${question.status} your request. Here is the comment they provided: 
+== Start of Comment ==
+${question.answer}.
+== End of Comment ==
 
-Question: ${question.question}
-Answer: ${question.answer}
-
-It is critical that you mention this to the customer and consider the implications. For instance, if you were asking for approval, you now have your response. And can either proceed or inform the customer you're not able to perform the requested task.
+As a reminder, here is the question you asked: ${question.question}
 `;
 
     svcs.store.setHumanInput(content);
