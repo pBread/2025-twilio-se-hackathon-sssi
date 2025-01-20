@@ -58,13 +58,13 @@ TWILIO_SYNC_SVC_SID=
 npm run dev
 ```
 
-The server should be running on localhost:3001
+The server should be running on `localhost:3001`
 
 #### Populate Sample Data
 
-After you start your server, open localhost:3001/api/reset in a browser. This will populate your demo with sample data.
+After you start your server, open `localhost:3001/api/reset` in a browser. This will populate your demo with sample data.
 
-_Note: You can reset your demo anytime by simply opening localhost:3001/api/reset in a browser._
+_Note: You can reset your demo anytime by simply opening `localhost:3001/api/reset` in a browser._
 
 ### Terminal 2: ngrok
 
@@ -80,7 +80,7 @@ npm install
 npm run dev
 ```
 
-The UI will be running on localhost:3002.
+The UI will be running on `localhost:3002`.
 
 _Note: It will crash if you haven't populated your demo w/data, see above_
 
@@ -92,7 +92,7 @@ npm install
 npm run dev
 ```
 
-Flex should be running on localhost:3000
+Flex should be running on `localhost:3000`
 
 ## To Do
 
