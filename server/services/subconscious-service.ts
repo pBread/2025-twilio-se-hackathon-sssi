@@ -132,8 +132,12 @@ export class SubsconsciousService {
 
     let actions: LogActions[] = ["Updated Context"];
 
-    if (newStatus === "missed" || newStatus === "unresolved")
+    if (newStatus === "missed" || newStatus === "unresolved") {
       actions.push("Added System Message");
+      this.store.addSystemMessage({
+        content: `The procedure ${procedureId} step ${step} was ${newStatus}`,
+      });
+    }
 
     addSyncLogItem({
       callSid: this.store.call.callSid,

@@ -31,6 +31,8 @@ function Conscious() {
   const router = useRouter();
   const callSid = router.query.callSid as string;
 
+  const [showSystem, setShowSystem] = useState(false);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       <Paper
@@ -47,9 +49,18 @@ function Conscious() {
       </Paper>
 
       <Paper style={{ ...paperStyle }}>
-        <Title order={4}>Turns</Title>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <Title order={4}>Turns</Title>
+          <Button
+            onClick={() => setShowSystem(!showSystem)}
+            size="sm"
+            variant="default"
+          >
+            {showSystem ? "Hide System" : "Show System"}
+          </Button>
+        </div>
         <div style={{ height: "400px", overflow: "scroll" }}>
-          <TurnsTable callSid={callSid} />
+          <TurnsTable callSid={callSid} showSystem={showSystem} />
         </div>
       </Paper>
 

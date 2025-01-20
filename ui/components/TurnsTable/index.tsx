@@ -7,9 +7,11 @@ import type { BotMessage, HumanMessage } from "@shared/entities";
 export function TurnsTable({
   callSid,
   targets,
+  showSystem,
 }: {
   callSid: string;
   targets?: number[];
+  showSystem: boolean;
 }) {
   const msgs = useAppSelector((state) => getCallMessages(state, callSid));
   useFetchCallData(callSid);
@@ -37,7 +39,9 @@ export function TurnsTable({
             >
               {msg.role === "bot" && <BotRow msgId={msg.id} />}
               {msg.role === "human" && <HumanRow msgId={msg.id} />}
-              {msg.role === "system" && <SystemRow msgId={msg.id} />}
+              {msg.role === "system" && showSystem && (
+                <SystemRow msgId={msg.id} />
+              )}
             </Table.Tr>
           ))}
       </Table.Tbody>

@@ -44,7 +44,7 @@ export class LLMService extends EventEmitter {
     if (this.store.parkingLot.length) {
       while (this.store.parkingLot.length) {
         const content = this.store.parkingLot.shift() as string;
-        this.store.addSystemMessage({ content, flag: "no-display" });
+        this.store.addSystemMessage({ content });
       }
       this.store.addHumanText({
         content: "What did the human agent tell you?",

@@ -68,6 +68,7 @@ function RecallRow({ callSid, score }: { callSid: string; score: number }) {
               <Title order={5}>Turns</Title>
               <TurnsTable
                 callSid={callSid}
+                showSystem={false}
                 targets={call.feedback.flatMap((feedback) => feedback.targets)}
               />
             </div>

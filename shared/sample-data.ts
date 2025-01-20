@@ -224,7 +224,6 @@ const callMessages: Record<string, StoreMessage[]> = {
       seq: 13,
       role: "system",
       _index: 0,
-      flag: "no-display",
     },
     {
       callSid: calls[0].callSid,
@@ -246,7 +245,6 @@ const callMessages: Record<string, StoreMessage[]> = {
       seq: 3,
       role: "system",
       _index: 2,
-      flag: "no-display",
     },
     {
       callSid: calls[0].callSid,
@@ -528,7 +526,6 @@ const callMessages: Record<string, StoreMessage[]> = {
       seq: 13,
       role: "system",
       _index: 0,
-      flag: "no-display",
     },
     {
       callSid: calls[1].callSid,
@@ -550,7 +547,6 @@ const callMessages: Record<string, StoreMessage[]> = {
       seq: 3,
       role: "system",
       _index: 2,
-      flag: "no-display",
     },
     {
       callSid: calls[1].callSid,
