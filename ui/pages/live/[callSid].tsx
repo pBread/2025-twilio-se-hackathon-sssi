@@ -5,11 +5,10 @@ import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
 import { getCallLogs } from "@/state/logs";
 import { getCallQuestions } from "@/state/questions";
-import { Badge, Button, Modal, Paper, Table, Text, Title } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { AIQuestion, LogActions } from "@shared/entities";
-import { useRouter } from "next/router";
+import { Badge, Button, Paper, Table, Text, Title } from "@mantine/core";
+import { LogActions } from "@shared/entities";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 export default function LiveCall() {
@@ -43,9 +42,6 @@ function Conscious() {
         }}
       >
         <Title order={3}>Conscious Bot</Title>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <BotConfigModal />
-        </div>
       </Paper>
 
       <Paper style={{ ...paperStyle }}>
@@ -128,31 +124,6 @@ function ActionBadge({ action }: { action: LogActions }) {
   if (action === "Updated Instructions") color = "gray";
 
   return <Badge color={color}>{action} </Badge>;
-}
-
-function BotConfigModal() {
-  const [opened, { open, close, toggle }] = useDisclosure(false);
-
-  const router = useRouter();
-  const callSid = router.query.callSid as string;
-
-  const call = useAppSelector((state) => selectCallById(state, callSid));
-
-  return (
-    <>
-      <Modal
-        opened={opened}
-        onClose={close}
-        title="Bot Configuration"
-        size="100%"
-      >
-        <div>TBD</div>;
-      </Modal>
-      <Button variant="default" onClick={toggle}>
-        Bot Configuration
-      </Button>
-    </>
-  );
 }
 
 function Subconsciousness() {
