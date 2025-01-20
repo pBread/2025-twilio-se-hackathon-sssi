@@ -81,12 +81,28 @@ function DataActions() {
   const logs = useAppSelector((state) => getCallLogs(state, callSid));
   const questions = useAppSelector((state) => getCallQuestions(state, callSid));
 
+  function handleDownload() {
+    const data = { call, messages, logs, questions };
+    const jsonString = JSON.stringify(data, null, 2);
+
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${callSid}-data.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div
       style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}
     >
       <Button color="red">Delete</Button>
-      <Button>Download</Button>
+      <Button onClick={handleDownload}>Download</Button>
       {status === "loading" && <Loader />}
       {status === "error" && <div> ERROR </div>}
 
