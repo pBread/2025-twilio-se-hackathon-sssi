@@ -68,7 +68,7 @@ export class LLMService extends EventEmitter {
           2
         )
       );
-      throw error;
+      throw error; // to do: stability. only enable this in development
     }
 
     // One completion may generate multiple store messages, e.g. one text completion saying "Hold on while I check" and one tool execution to query a database.
