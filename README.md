@@ -6,6 +6,38 @@
 
 Populate all of the required variables in the root `.env` file. The setup script will automatically populate the remaining.
 
+```bash
+# Your ngrok or server URL, e.g. 123.ngrok.app or myserver.fly.dev
+HOSTNAME=
+
+# Twilio credentials can be found here: https://www.twilio.com/user/account
+TWILIO_ACCOUNT_SID=
+TWILIO_AUTH_TOKEN=
+
+# Flex Workflow SID
+FLEX_WORKFLOW_SID=
+
+# this is your (you the developer) personal phone number. it is used in the mock-database.
+# must be E164 format, i.e. +12223330001
+DEVELOPERS_PHONE_NUMBER=
+# This will be the phone number you can call into and the AI will use to send SMS messages, if applicable
+# must be E164 format, i.e. +12223330001
+TWILIO_DEFAULT_NUMBER=
+
+OPENAI_API_KEY=
+
+PINCONE_API_KEY=
+PINECONE_INDEX_NAME=sample-data
+```
+
+## Run Setup
+
+After you've populated the required env variables, run the setup script.
+
+```bash
+npm run setup
+```
+
 ## Deploy Serverless Function
 
 ```bash
@@ -16,41 +48,16 @@ twilio login
 
 twilio profiles:use my-dev-account
 
-```
-
-# DEP
-
-Populate the env variables in these files...
-.env
-/ui/.env
-/flex-plugin/public/appConfig.js
-
-## Populating Env Variables
-
-Populate these environment variables...
-
-```bash
-TWILIO_ACCOUNT_SID=
-TWILIO_AUTH_TOKEN=
-
-# your ngrok domain
-HOSTNAME=
-
-# your personal phone number
-DEVELOPERS_PHONE_NUMBER=
-
-OPENAI_API_KEY=
-
-PINCONE_API_KEY=
-# any string will do
-PINECONE_INDEX_NAME=
-```
-
-Then run this script...
-
-```bash
+cd serverless
+twilio serverless:deploy
 
 ```
+
+Once it's deployed, take the base url of the service and add it to the root env file as `TWILIO_FN_BASE_URL`.
+
+## Run Setup Again
+
+Run the setup script again after you deploy your service and add `TWILIO_FN_BASE_URL` to the root env file.
 
 ## To Do
 
