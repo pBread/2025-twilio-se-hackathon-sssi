@@ -48,8 +48,14 @@ export class RelayService {
   /**
    * Switches the transcription language.
    */
-  switchLanguage = (lang: string) =>
-    this.dispatch({ type: "transcriptionLanguage", lang });
+  switchSTTLanguage = (ttsLanguage: string) =>
+    this.dispatch({ type: "language", ttsLanguage });
+
+  /**
+   * Switches the spoken language.
+   */
+  switchTTSLanguage = (ttsLanguage: string) =>
+    this.dispatch({ type: "language", ttsLanguage });
 
   /****************************************************
    Websocket Listeners
@@ -140,8 +146,9 @@ type SendTextToken = {
 };
 
 type SwitchLanguage = {
-  type: "transcriptionLanguage";
-  lang: string;
+  type: "language";
+  ttsLanguage?: string;
+  transcriptionLanguage?: string;
 };
 
 /****************************************************
