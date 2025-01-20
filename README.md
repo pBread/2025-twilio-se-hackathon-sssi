@@ -44,13 +44,21 @@ npm run setup
 
 ## Open 4 (yes 4) Terminal Tabs
 
-### Terminal 1: root
+### Terminal 1: server
 
 ```bash
 npm run dev
 ```
 
-### Terminal 2: mgrok
+The server should be running on localhost:3001
+
+#### Populate Sample Data
+
+After you start your server, open localhost:3001/api/reset in a browser. This will populate your demo with sample data.
+
+_Note: You can reset your demo anytime by simply opening localhost:3001/api/reset in a browser._
+
+### Terminal 2: ngrok
 
 ```bash
 npm run grok
@@ -64,6 +72,10 @@ npm install
 npm run dev
 ```
 
+The UI will be running on localhost:3002.
+
+_Note: It will crash if you haven't populated your demo w/data, see above_
+
 ### Terminal 4: Flex-Plugin
 
 ```bash
@@ -71,6 +83,8 @@ cd flex-plugin
 npm install
 npm run dev
 ```
+
+Flex should be running on localhost:3000
 
 ## To Do
 
