@@ -1,7 +1,7 @@
 import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
 import { getConnectionState } from "@/state/sync";
-import { Loader, Paper, Skeleton, Text } from "@mantine/core";
+import { Button, Loader, Paper, Skeleton, Text } from "@mantine/core";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -16,11 +16,27 @@ export function Header({ callSid }: { callSid?: string }) {
       </Link>
       <div className="header-section"></div>
 
-      <div className="header-section">
+      <div
+        className="header-section"
+        style={{ display: "flex", alignItems: "center" }}
+      >
         {isConnected || <Connection />}
         {isConnected && callSid && <CallDetails callSid={callSid} />}
+        {isConnected && <QuestionNavButton />}
       </div>
     </header>
+  );
+}
+
+function QuestionNavButton() {
+  const router = useRouter();
+
+  if (router.route.includes("tasks")) return;
+
+  return (
+    <Link href="/tasks">
+      <Button style={{ overflow: "visible" }}>AI Questions</Button>
+    </Link>
   );
 }
 
