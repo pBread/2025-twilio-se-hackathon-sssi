@@ -35,7 +35,9 @@ function QuestionNavButton() {
 
   return (
     <Link href="/tasks">
-      <Button style={{ overflow: "visible" }}>AI Questions</Button>
+      <Button variant="default" style={{ overflow: "visible" }}>
+        AI Questions
+      </Button>
     </Link>
   );
 }
