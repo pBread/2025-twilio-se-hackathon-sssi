@@ -24,9 +24,6 @@ DEVELOPERS_PHONE_NUMBER=
 # must be E164 format, i.e. +12223330001
 TWILIO_DEFAULT_NUMBER=
 
-# Base URL of the Twilio Function Service
-TWILIO_FN_BASE_URL=
-
 OPENAI_API_KEY=
 
 PINCONE_API_KEY=
@@ -40,6 +37,17 @@ After you've populated the required env variables, run the setup script.
 ```bash
 npm install
 npm run setup
+```
+
+## Create a Serverless Function
+
+Deploy the serverless function in the `/serverless` directory. Note, these env variables need to:
+
+```bash
+TWILIO_API_KEY=
+TWILIO_API_SECRET=
+
+TWILIO_SYNC_SVC_SID=
 ```
 
 ## Open Four (yes 4) Terminal Tabs
