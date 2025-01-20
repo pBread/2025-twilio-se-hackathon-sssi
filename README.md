@@ -42,7 +42,7 @@ npm install
 npm run setup
 ```
 
-## Open 4 (yes 4) Terminal Tabs
+## Open Four (yes 4) Terminal Tabs
 
 ### Terminal 1: server
 
