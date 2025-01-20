@@ -44,7 +44,6 @@ function useSyncClient(conf) {
 
 async function fetchToken(conf) {
   const url = `${conf.fnBaseUrl}/sync-token?identity=${identity}`;
-  console.debug("fetchToken url", url);
   return fetch(url)
     .then((res) => res.json())
     .then((data) => data.token);
