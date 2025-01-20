@@ -19,8 +19,6 @@ import { Annotation, BotMessage, HumanMessage } from "@shared/entities";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useState } from "react";
 
-const paperStyle = { padding: "6px" };
-
 type SetFeedbackId = Dispatch<SetStateAction<string>>;
 
 export default function CallReview() {
@@ -36,10 +34,10 @@ export default function CallReview() {
           gap: "8px",
         }}
       >
-        <Paper style={paperStyle}>
+        <Paper className="paper">
           <CallSummary />
         </Paper>
-        <Paper style={paperStyle}>
+        <Paper className="paper">
           <TurnTable feedbackId={feedbackId} />
         </Paper>
       </div>
@@ -189,14 +187,13 @@ function FeedbackCard({
 
   return (
     <Paper
+      className="paper"
       style={{
-        ...paperStyle,
         flex: "auto",
         display: "flex",
         flexDirection: "column",
         gap: "6px",
 
-        boxShadow: "var(--mantine-shadow-xs)",
         border: isSelected
           ? "1px solid var(--mantine-primary-color-1)"
           : "1px solid transparent",

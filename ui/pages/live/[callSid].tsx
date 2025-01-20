@@ -24,8 +24,6 @@ export default function LiveCall() {
   );
 }
 
-const paperStyle = { padding: "6px" };
-
 function Conscious() {
   const router = useRouter();
   const callSid = router.query.callSid as string;
@@ -36,15 +34,15 @@ function Conscious() {
     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       <Paper
         style={{
-          ...paperStyle,
           display: "flex",
           justifyContent: "space-between",
         }}
+        className="paper"
       >
         <Title order={3}>Conscious Bot</Title>
       </Paper>
 
-      <Paper style={{ ...paperStyle }}>
+      <Paper className="paper">
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <Title order={4}>Turns</Title>
           <Button
@@ -60,7 +58,7 @@ function Conscious() {
         </div>
       </Paper>
 
-      <Paper style={{ ...paperStyle }}>
+      <Paper className="paper">
         <Title order={4}>Calibrations</Title>
         <div style={{ height: "400px", overflow: "scroll" }}>
           <CalibrationsContainer />
@@ -129,26 +127,26 @@ function ActionBadge({ action }: { action: LogActions }) {
 function Subconsciousness() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-      <Paper style={paperStyle}>
+      <Paper className="paper">
         <Title order={3}>Subconscious Bots</Title>
       </Paper>
-      <Paper style={paperStyle}>
+      <Paper className="paper">
         <Title order={4}>Conversation Recall</Title>
         <Title order={6}>Most Similar Conversations</Title>
         <RecallContainer />
       </Paper>
-      <Paper style={paperStyle}>
+      <Paper className="paper">
         <Title order={4}>Discussion with Human Agent</Title>
         <HumanInput />
       </Paper>
-      <Paper style={paperStyle}>
+      <Paper className="paper">
         <Title order={4}>Procedure Governance</Title>
         <div style={{ height: "300px", overflow: "scroll" }}>
           <GovernanceContainer />
         </div>
       </Paper>
 
-      <Paper style={paperStyle}>
+      <Paper className="paper">
         <Title order={4}>Call Summary</Title>
         <CallSummary />
       </Paper>

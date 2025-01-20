@@ -46,7 +46,7 @@ function CallDetails({ callSid }: { callSid?: string }) {
 
   return (
     <Skeleton visible={!call} style={{ minWidth: "200px" }}>
-      <Paper className="section" style={{ display: "flex", gap: "8px" }}>
+      <div className="section" style={{ display: "flex", gap: "8px" }}>
         <div style={{ display: "flex", gap: "4px", flexDirection: "column" }}>
           <Text size="sm">From: {call?.from}</Text>
           <Text size="sm">
@@ -60,7 +60,7 @@ function CallDetails({ callSid }: { callSid?: string }) {
           </Text>
           <Text size="sm">Status: {call?.callStatus}</Text>
         </div>
-      </Paper>
+      </div>
     </Skeleton>
   );
 }

@@ -22,7 +22,7 @@ function CallTable() {
   const callIds = useAppSelector(selectCallIds);
 
   return (
-    <Paper style={{ padding: "6px" }}>
+    <Paper className="paper">
       <Title order={3}>Calls</Title>
       <Table>
         <Table.Thead>
