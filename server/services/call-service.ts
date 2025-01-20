@@ -1,8 +1,6 @@
 import { Twilio, twiml as TwiML } from "twilio";
 import type { RecordingListInstanceCreateOptions } from "twilio/lib/rest/api/v2010/account/call/recording";
 import * as env from "../env";
-import { safeParse } from "../utils/misc";
-import log from "../logger";
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } = env;
 const client = new Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
