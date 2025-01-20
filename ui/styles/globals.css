@@ -28,9 +28,6 @@ header {
   height: auto;
 }
 
-.header-section {
-}
-
 .icon-primary {
   color: var(--mantine-primary-color-filled);
 }
