@@ -4,10 +4,13 @@ import { TurnsTable } from "@/components/TurnsTable";
 import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
 import { getCallLogs } from "@/state/logs";
+import { getCallQuestions } from "@/state/questions";
 import { Badge, Button, Modal, Paper, Table, Text, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { LogActions } from "@shared/entities";
+import { AIQuestion, LogActions } from "@shared/entities";
 import { useRouter } from "next/router";
+import { IconMinus, IconPlus } from "@tabler/icons-react";
+import { useState } from "react";
 
 export default function LiveCall() {
   return (
@@ -63,8 +66,6 @@ function Conscious() {
 function CalibrationsContainer() {
   const router = useRouter();
   const callSid = router.query.callSid as string;
-
-  const call = useAppSelector((state) => selectCallById(state, callSid));
 
   const logs = useAppSelector((state) => getCallLogs(state, callSid));
 
@@ -155,6 +156,10 @@ function Subconsciousness() {
         <RecallContainer />
       </Paper>
       <Paper style={paperStyle}>
+        <Title order={4}>Discussion with Human Agent</Title>
+        <HumanInput />
+      </Paper>
+      <Paper style={paperStyle}>
         <Title order={4}>Procedure Governance</Title>
         <div style={{ height: "300px", overflow: "scroll" }}>
           <GovernanceContainer />
@@ -166,6 +171,98 @@ function Subconsciousness() {
         <CallSummary />
       </Paper>
     </div>
+  );
+}
+
+function HumanInput() {
+  const router = useRouter();
+  const callSid = router.query.callSid as string;
+
+  const questions = useAppSelector((state) => getCallQuestions(state, callSid));
+
+  return (
+    <div>
+      {!questions?.length && (
+        <Text size="sm"> AI hasn't asked a human agent for help. </Text>
+      )}
+      {questions.map((question) => (
+        <div key={`${router.asPath}-8s8-${callSid}`}>
+          <Question
+            answer={question.answer}
+            callSid={question.callSid}
+            explanation={question.explanation}
+            question={question.question}
+            recommendation={question.recommendation}
+            status={question.status}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Question({
+  answer,
+  callSid,
+  explanation,
+  question,
+  recommendation,
+  status,
+}: {
+  answer: string;
+  callSid: string;
+  explanation: string;
+  question: string;
+  recommendation: string;
+  status: "new" | "approved" | "rejected";
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "2px",
+          cursor: "pointer",
+        }}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {isOpen ? <IconMinus size={12} /> : <IconPlus size={12} />}
+        <Text size="sm" style={{ flex: 1 }}>
+          <b>AI Question: </b> {question}
+        </Text>
+
+        <Badge
+          color={
+            status === "approved"
+              ? "green"
+              : status === "rejected"
+              ? "red"
+              : "blue"
+          }
+        >
+          {status}
+        </Badge>
+      </div>
+      {isOpen && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "6px",
+            paddingLeft: "12px",
+          }}
+        >
+          <Text size="sm">{explanation}</Text>
+          <Text size="sm">{recommendation}</Text>
+          <Text size="sm">
+            <b>Human Answer: </b> {answer}
+          </Text>
+        </div>
+      )}
+    </>
   );
 }
 

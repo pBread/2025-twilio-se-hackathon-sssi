@@ -53,6 +53,12 @@ export const {
   selectTotal: selectQuestionTotal,
 } = adapter.getSelectors(getSlice);
 
+export function getCallQuestions(state: RootState, callSid: string) {
+  return selectAllQuestions(state).filter(
+    (question) => question.callSid === callSid
+  );
+}
+
 /****************************************************
  Actions
 ****************************************************/
