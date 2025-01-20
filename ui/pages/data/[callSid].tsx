@@ -12,7 +12,7 @@ import {
   selectQuestionEntities,
   setManyQuestions,
 } from "@/state/questions";
-import { Loader, Paper, Tabs, Title } from "@mantine/core";
+import { Button, Loader, Paper, Tabs, Title } from "@mantine/core";
 import type {
   AIQuestion,
   CallRecord,
@@ -22,6 +22,7 @@ import type {
 import { diff } from "deep-diff";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 const JsonEditor = dynamic(
   () => import("json-edit-react").then(({ JsonEditor }) => JsonEditor),
@@ -31,8 +32,17 @@ const JsonEditor = dynamic(
 export default function Debug() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-      <Paper className="paper">
+      <Paper
+        className="paper"
+        style={{
+          alignItems: "center",
+          display: "flex",
+          flex: 1,
+          justifyContent: "space-between",
+        }}
+      >
         <Title order={3}>Call Data</Title>
+        <DataActions />
       </Paper>
       <Paper className="paper">
         <Tabs defaultValue="call">
@@ -56,6 +66,52 @@ export default function Debug() {
           </Tabs.Panel>
         </Tabs>
       </Paper>
+    </div>
+  );
+}
+
+function DataActions() {
+  const router = useRouter();
+  const callSid = router.query.callSid as string;
+
+  const [status, setStatus] = useState<string>();
+
+  const call = useAppSelector((state) => selectCallById(state, callSid));
+  const messages = useAppSelector((state) => getCallMessages(state, callSid));
+  const logs = useAppSelector((state) => getCallLogs(state, callSid));
+  const questions = useAppSelector((state) => getCallQuestions(state, callSid));
+
+  return (
+    <div
+      style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}
+    >
+      <Button color="red">Delete</Button>
+      <Button>Download</Button>
+      {status === "loading" && <Loader />}
+      {status === "error" && <div> ERROR </div>}
+
+      {!status && (
+        <Button
+          color={status === "error" ? "red" : "green"}
+          onClick={async () => {
+            setStatus("loading");
+
+            try {
+              await fetch(`/api/calls/${callSid}/save`, {
+                method: "POST",
+                body: JSON.stringify({ call, messages, logs, questions }),
+              });
+
+              setStatus(null);
+            } catch (error) {
+              console.error("Error on save", error);
+              throw error;
+            }
+          }}
+        >
+          Save
+        </Button>
+      )}
     </div>
   );
 }
