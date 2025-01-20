@@ -1,11 +1,11 @@
 import { Pinecone } from "@pinecone-database/pinecone";
 import OpenAI from "openai";
+import { pRateLimit } from "p-ratelimit";
 import { CallRecord, StoreMessage } from "../../shared/entities";
 import { sampleData } from "../../shared/sample-data";
 import { OPENAI_API_KEY, PINCONE_API_KEY, PINECONE_INDEX_NAME } from "../env";
 import log from "../logger";
 import { makeId } from "../utils/misc";
-import { pRateLimit } from "p-ratelimit";
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 const EMBEDDING_MODEL = "text-embedding-3-large";
