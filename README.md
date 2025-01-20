@@ -24,6 +24,9 @@ DEVELOPERS_PHONE_NUMBER=
 # must be E164 format, i.e. +12223330001
 TWILIO_DEFAULT_NUMBER=
 
+# Base URL of the Twilio Function Service
+TWILIO_FN_BASE_URL=
+
 OPENAI_API_KEY=
 
 PINCONE_API_KEY=
@@ -35,29 +38,39 @@ PINECONE_INDEX_NAME=sample-data
 After you've populated the required env variables, run the setup script.
 
 ```bash
+npm install
 npm run setup
 ```
 
-## Deploy Serverless Function
+## Open 4 (yes 4) Terminal Tabs
+
+### Terminal 1: root
 
 ```bash
-twilio login
-# The Account SID for your Twilio Account or Subaccount: ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-# Your Twilio Auth Token for your Twilio Account or Subaccount: [hidden]
-# Shorthand identifier for your profile: my-dev-account
-
-twilio profiles:use my-dev-account
-
-cd serverless
-twilio serverless:deploy
-
+npm run dev
 ```
 
-Once it's deployed, take the base url of the service and add it to the root env file as `TWILIO_FN_BASE_URL`.
+### Terminal 2: mgrok
 
-## Run Setup Again
+```bash
+npm run grok
+```
 
-Run the setup script again after you deploy your service and add `TWILIO_FN_BASE_URL` to the root env file.
+### Terminal 3: UI
+
+```bash
+cd ui
+npm install
+npm run dev
+```
+
+### Terminal 4: Flex-Plugin
+
+```bash
+cd flex-plugin
+npm install
+npm run dev
+```
 
 ## To Do
 
