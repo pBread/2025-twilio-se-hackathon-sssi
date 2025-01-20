@@ -561,10 +561,7 @@ Answer: ${question.answer}
 It is critical that you mention this to the customer and consider the implications. For instance, if you were asking for approval, you now have your response. And can either proceed or inform the customer you're not able to perform the requested task.
 `;
 
-    svcs.store.addSystemMessage({ content });
-
-    svcs.llm.abort();
-    svcs.llm.doCompletion();
+    svcs.store.setHumanInput(content);
   });
 
   return "agent-notified";

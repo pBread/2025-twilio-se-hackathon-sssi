@@ -29,6 +29,7 @@ import {
 export class ConversationStore {
   constructor(call: CallRecord) {
     this.msgMap = new StoreMessageMap();
+    this.parkingLot = [];
 
     this._call = JSON.parse(JSON.stringify(call)) as CallRecord;
   }
@@ -45,6 +46,11 @@ export class ConversationStore {
     if (updates) setSyncCallItem(call);
     this._call = call;
   }
+
+  parkingLot: string[]; // will be injected before the next completion
+  setHumanInput = (content: string) => {
+    this.parkingLot.push(content);
+  };
 
   setInstructions = (instructions: string) => {
     this.addSystemMessage({

@@ -235,12 +235,6 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
   relay.onSetup((ev) => {
     store.setCall({ callStatus: "connected" });
 
-    // log.debug("onSetup", "TRANSFERRING TO AGENT");
-    // transferToAgent(
-    //   { reason: "customer wants to return expensive tickets" },
-    //   { ctx: store.call.callContext, store, db, llm, relay }
-    // );
-
     store.setInstructions(getInstructions(store.call.callContext));
 
     const greeting = ev.customParameters?.greeting;

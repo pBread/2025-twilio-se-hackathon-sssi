@@ -40,6 +40,12 @@ export class LLMService extends EventEmitter {
    * Triggers an LLM completion to begin. The conversation history is extracted from the store and sent to an llm for processing. The LLM may return a tool requests or a text completion. Tool requests will trigger a local execution of said tool, add the result to the store, then another completion will be triggered with the results.
    */
   doCompletion = async (): Promise<undefined | Promise<any>> => {
+    // inject the "parking lot" into system messages. this is to ensure human messages are injected into the conscious bot before the next completion so it's top of mind
+    while (this.store.parkingLot.length) {
+      const content = this.store.parkingLot.shift() as string;
+      this.store.addSystemMessage({ content });
+    }
+
     const messages = this.getMessageParams();
 
     // There should only be one completion stream open at a time. The stream will be aborted if the user interrupts.
