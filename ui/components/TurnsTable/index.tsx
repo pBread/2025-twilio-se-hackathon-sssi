@@ -14,8 +14,6 @@ export function TurnsTable({
   const msgs = useAppSelector((state) => getCallMessages(state, callSid));
   useFetchCallData(callSid);
 
-  const isHighlighted = !!targets?.length;
-
   return (
     <Table stickyHeader>
       <Table.Thead>
@@ -26,19 +24,22 @@ export function TurnsTable({
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>
-        {msgs.map((msg) => (
-          <Table.Tr
-            key={`di8-${msg.id}`}
-            bg={
-              targets?.includes(msg._index)
-                ? "var(--mantine-color-blue-light)"
-                : ""
-            }
-          >
-            {msg.role === "bot" && <BotRow msgId={msg.id} />}
-            {msg.role === "human" && <HumanRow msgId={msg.id} />}
-          </Table.Tr>
-        ))}
+        {msgs
+          .filter((msg) => msg?.flag !== "no-display")
+          .map((msg) => (
+            <Table.Tr
+              key={`di8-${msg.id}`}
+              bg={
+                targets?.includes(msg._index)
+                  ? "var(--mantine-color-blue-light)"
+                  : ""
+              }
+            >
+              {msg.role === "bot" && <BotRow msgId={msg.id} />}
+              {msg.role === "human" && <HumanRow msgId={msg.id} />}
+              {msg.role === "system" && <SystemRow msgId={msg.id} />}
+            </Table.Tr>
+          ))}
       </Table.Tbody>
     </Table>
   );
@@ -80,6 +81,20 @@ function BotRow({ msgId }: { msgId: string }) {
           </span>
         </div>
       </Table.Td>
+    </>
+  );
+}
+
+function SystemRow({ msgId }: { msgId: string }) {
+  const msg = useAppSelector((state) =>
+    getMessageById(state, msgId)
+  ) as HumanMessage;
+
+  return (
+    <>
+      <Table.Td> {msg.role}</Table.Td>
+      <Table.Td> {msg.type}</Table.Td>
+      <Table.Td> {msg.content}</Table.Td>
     </>
   );
 }

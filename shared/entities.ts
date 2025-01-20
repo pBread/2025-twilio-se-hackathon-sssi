@@ -142,9 +142,12 @@ interface StoreRecord {
   _index?: number; // added dynamically by getMessages
   callSid: string;
   createdAt: string;
+  flag?: RecordFlag;
   id: string;
   seq: number; // sequence tracks the order in which messages were added. seq is not guaranteed to be the index of a message, only that it is greater than the last message
 }
+
+export type RecordFlag = "no-display"; // no-display prevents the message from showing up in ui
 
 // represents DTMF tones from the bot
 export interface BotDTMF extends StoreRecord {

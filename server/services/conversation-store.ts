@@ -56,6 +56,7 @@ export class ConversationStore {
     this.addSystemMessage({
       content: instructions,
       id: `instructions-${this.call.callSid}`,
+      flag: "no-display",
     });
   };
 
