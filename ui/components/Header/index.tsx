@@ -1,9 +1,10 @@
 import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
 import { getConnectionState } from "@/state/sync";
-import { Button, Loader, Paper, Skeleton, Text } from "@mantine/core";
+import { Button, Loader, Text } from "@mantine/core";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 export function Header({ callSid }: { callSid?: string }) {
   const connectionState = useAppSelector(getConnectionState);
@@ -16,9 +17,10 @@ export function Header({ callSid }: { callSid?: string }) {
       </Link>
       <div></div>
 
-      <div style={{ display: "flex", alignItems: "center" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         {isConnected || <Connection />}
         {isConnected && callSid && <CallDetails callSid={callSid} />}
+        {isConnected && callSid && <CallViewNav callSid={callSid} />}
         {isConnected && <QuestionNavButton />}
       </div>
     </header>
@@ -39,29 +41,87 @@ function QuestionNavButton() {
   );
 }
 
-function CallDetails({ callSid }: { callSid?: string }) {
+function CallViewNav({ callSid }: { callSid: string }) {
   const router = useRouter();
   const isLive = router?.route?.startsWith("/live");
-  const call = useAppSelector((state) => selectCallById(state, callSid));
 
   return (
-    <Skeleton visible={!call} style={{ minWidth: "200px" }}>
-      <div className="section" style={{ display: "flex", gap: "8px" }}>
-        <div style={{ display: "flex", gap: "4px", flexDirection: "column" }}>
-          <Text size="sm">From: {call?.from}</Text>
-          <Text size="sm">
-            {"To:".padEnd(6, " ")} {call?.to}
-          </Text>
-        </div>
-        <div style={{ display: "flex", gap: "4px", flexDirection: "column" }}>
-          <Text size="sm">
-            {isLive && <Link href={`/feedback/${callSid}`}>Add Feedback</Link>}
-            {!isLive && <Link href={`/live/${callSid}`}>Go to Live View</Link>}
-          </Text>
-          <Text size="sm">Status: {call?.callStatus}</Text>
-        </div>
-      </div>
-    </Skeleton>
+    <div style={{ display: "flex", gap: "4px", flexDirection: "column" }}>
+      <Text size="sm">
+        {isLive && (
+          <Link href={`/feedback/${callSid}`}>
+            <Button variant="default" style={{ overflow: "visible" }}>
+              Add Feedback
+            </Button>
+          </Link>
+        )}
+        {!isLive && (
+          <Link href={`/live/${callSid}`}>
+            <Button variant="default" style={{ overflow: "visible" }}>
+              View Call
+            </Button>
+          </Link>
+        )}
+      </Text>
+    </div>
+  );
+}
+
+function CallDetails({ callSid }: { callSid?: string }) {
+  const from =
+    useAppSelector((state) => selectCallById(state, callSid)?.from) ??
+    "+•••••••••••";
+  const to =
+    useAppSelector((state) => selectCallById(state, callSid)?.to) ??
+    "+•••••••••••";
+
+  const [showFrom, setShowFrom] = useState(false);
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        gap: "4px",
+        flexDirection: "column",
+        width: "max-content",
+      }}
+    >
+      <Text
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          gap: "12px",
+        }}
+      >
+        <span>From:</span>
+        {showFrom && (
+          <span
+            onClick={() => setShowFrom(!showFrom)}
+            style={{ cursor: "pointer" }}
+          >
+            {from}
+          </span>
+        )}
+        {!showFrom && (
+          <span
+            onClick={() => setShowFrom(!showFrom)}
+            style={{ cursor: "pointer", fontFamily: "monospace" }}
+          >
+            {from?.replace(/\d/g, "•")}
+          </span>
+        )}
+      </Text>
+      <Text
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          gap: "6px",
+        }}
+      >
+        <span>To:</span>
+        <span>{to}</span>
+      </Text>
+    </div>
   );
 }
 
