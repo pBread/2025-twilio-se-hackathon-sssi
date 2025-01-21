@@ -200,6 +200,7 @@ function FeedbackCard({
       }}
     >
       <Textarea
+        autosize
         description="This feedback will be provided voice bots who are having similar conversations"
         label="Feedback"
         onChange={(ev) => setFeedback("comment", ev.target.value)}
