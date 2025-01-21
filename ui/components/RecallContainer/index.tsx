@@ -60,11 +60,13 @@ function RecallRow({ callSid, score }: { callSid: string; score: number }) {
             </div>
             <div>
               <Title order={5}>Annotations</Title>
-              <Text>
+              <div>
                 {call?.feedback.map((item) => (
-                  <div key={`d302-${item.id}`}>{item.comment}</div>
+                  <div key={`d302-${item.id}`}>
+                    <Text>{item.comment} </Text>
+                  </div>
                 ))}
-              </Text>
+              </div>
             </div>
             <div>
               <Title order={5}>Turns</Title>
