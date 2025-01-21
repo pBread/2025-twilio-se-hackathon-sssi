@@ -101,9 +101,27 @@ function DataActions() {
     <div
       style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}
     >
-      <Button color="red" onClick={() => {}}>
-        Delete
-      </Button>
+      {status === "loading" && <Loader />}
+      {status === "error" && <div> ERROR </div>}
+
+      {!status && (
+        <Button
+          color="red"
+          onClick={async () => {
+            setStatus("loading");
+
+            try {
+              await fetch(`/api/calls/${callSid}`, { method: "DELETE" });
+              setStatus(null);
+              router.push("/");
+            } catch (error) {
+              setStatus("error");
+            }
+          }}
+        >
+          Delete
+        </Button>
+      )}
       <Button onClick={handleDownload}>Download</Button>
       {status === "loading" && <Loader />}
       {status === "error" && <div> ERROR </div>}

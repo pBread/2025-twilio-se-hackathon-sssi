@@ -38,6 +38,8 @@ function RecallRow({ callSid, score }: { callSid: string; score: number }) {
 
   const call = useAppSelector((state) => selectCallById(state, callSid));
 
+  if (!call) return;
+
   return (
     <Table.Tr>
       <Table.Td>{call.summary.title}</Table.Td>
