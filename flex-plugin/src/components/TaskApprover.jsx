@@ -4,6 +4,11 @@ export function TaskApprover({ callSid }) {
     : `http://localhost:3002/tasks/iframe`;
 
   return (
-    <iframe height="100%" src={src} style={{ border: "none" }} width="100%" />
+    <iframe
+      height="100%"
+      src={src}
+      style={{ border: "none", minHeight: "800px" }}
+      width="100%"
+    />
   );
 }
