@@ -17,7 +17,7 @@ export function Header({ callSid }: { callSid?: string }) {
       </Link>
       <div></div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         {isConnected || <Connection />}
         {isConnected && callSid && <CallDetails callSid={callSid} />}
         {isConnected && callSid && <DataNavButton callSid={callSid} />}
