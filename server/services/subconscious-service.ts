@@ -164,9 +164,10 @@ export class SubsconsciousService {
     const matches = await vectorQuery(this.store.getMessages());
 
     const similarCalls: SimilarCall[] = matches.map((match) => ({
-      id: match.id,
       callSid: match.metadata?.callSid as string,
+      id: match.id,
       score: match.score as number,
+      title: match.metadata?.title as string,
     }));
 
     const newMatches = await Promise.all(

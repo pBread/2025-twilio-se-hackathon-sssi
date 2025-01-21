@@ -58,6 +58,7 @@ export interface SimilarCall {
   callSid: string;
   id: string;
   score: number;
+  title: string;
 }
 
 export interface DemoConfiguration {

@@ -26,6 +26,7 @@ export function RecallContainer() {
             key={`rr29-${item.id}-${callSid}`}
             callSid={item.callSid}
             score={item.score}
+            title={item.title}
           />
         ))}
       </Table.Tbody>
@@ -33,16 +34,22 @@ export function RecallContainer() {
   );
 }
 
-function RecallRow({ callSid, score }: { callSid: string; score: number }) {
+function RecallRow({
+  callSid,
+  score,
+  title,
+}: {
+  callSid: string;
+  score: number;
+  title: string;
+}) {
   const [opened, { open, close, toggle }] = useDisclosure(false);
 
   const call = useAppSelector((state) => selectCallById(state, callSid));
 
-  if (!call) return;
-
   return (
     <Table.Tr>
-      <Table.Td>{call.summary.title}</Table.Td>
+      <Table.Td>{call?.summary.title ?? title}</Table.Td>
       <Table.Td>{`${Math.round(score * 100)}%`}</Table.Td>
       <Table.Td>
         <Modal opened={opened} onClose={close} title="Recall Summary" size="xl">
@@ -73,14 +80,14 @@ function RecallRow({ callSid, score }: { callSid: string; score: number }) {
               <TurnsTable
                 callSid={callSid}
                 showSystem={false}
-                targets={call.feedback.flatMap((feedback) => feedback.targets)}
+                targets={call?.feedback.flatMap((feedback) => feedback.targets)}
               />
             </div>
           </div>
         </Modal>
 
         <a onClick={toggle} style={{ color: "blue", cursor: "pointer" }}>
-          {call.feedback.length}
+          {call?.feedback.length ?? 0}
         </a>
       </Table.Td>
     </Table.Tr>

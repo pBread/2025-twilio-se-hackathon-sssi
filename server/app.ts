@@ -10,7 +10,6 @@ import {
   UserRecord,
 } from "../shared/entities";
 import { getInstructions } from "./bot/conscious/instructions";
-import { transferToAgent } from "./bot/conscious/tool-functions";
 import { getGreeting } from "./bot/greetings";
 import log from "./logger";
 import { CallService } from "./services/call-service";
