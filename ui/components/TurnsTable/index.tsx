@@ -1,5 +1,5 @@
 import { useAppSelector } from "@/state/hooks";
-import { getCallMessages, getMessageById } from "@/state/messages";
+import { getMessageById, useCallMessages } from "@/state/messages";
 import { useFetchCallData } from "@/state/sync";
 import { Badge, Table } from "@mantine/core";
 import type { BotMessage, HumanMessage } from "@shared/entities";
@@ -13,7 +13,7 @@ export function TurnsTable({
   targets?: number[];
   showSystem: boolean;
 }) {
-  const msgs = useAppSelector((state) => getCallMessages(state, callSid));
+  const msgs = useCallMessages(callSid);
   useFetchCallData(callSid);
 
   return (

@@ -1,6 +1,7 @@
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
 import { AIQuestion } from "@shared/entities";
 import type { RootState } from "./store";
+import { useAppSelector } from "./hooks";
 
 const SLICE_NAME = "questions";
 
@@ -57,6 +58,11 @@ export function getCallQuestions(state: RootState, callSid: string) {
   return selectAllQuestions(state).filter(
     (question) => question.callSid === callSid
   );
+}
+
+export function useCallQuestions(callSid: string) {
+  const questions = useAppSelector(selectAllQuestions);
+  return questions.filter((question) => question.callSid === callSid);
 }
 
 /****************************************************

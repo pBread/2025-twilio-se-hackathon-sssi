@@ -1,16 +1,16 @@
 "use client";
 import { selectCallById, setOneCall } from "@/state/calls";
 import { useAppDispatch, useAppSelector } from "@/state/hooks";
-import { getCallLogs, getLogEntities, setManyLogs } from "@/state/logs";
+import { getLogEntities, setManyLogs, useCallLogs } from "@/state/logs";
 import {
-  getCallMessages,
   getMessageEntities,
   setManyMessages,
+  useCallMessages,
 } from "@/state/messages";
 import {
-  getCallQuestions,
   selectQuestionEntities,
   setManyQuestions,
+  useCallQuestions,
 } from "@/state/questions";
 import { Button, Loader, Paper, Tabs, Title } from "@mantine/core";
 import type {
@@ -77,9 +77,9 @@ function DataActions() {
   const [status, setStatus] = useState<string>();
 
   const call = useAppSelector((state) => selectCallById(state, callSid));
-  const messages = useAppSelector((state) => getCallMessages(state, callSid));
-  const logs = useAppSelector((state) => getCallLogs(state, callSid));
-  const questions = useAppSelector((state) => getCallQuestions(state, callSid));
+  const messages = useCallMessages(callSid);
+  const logs = useCallLogs(callSid);
+  const questions = useCallQuestions(callSid);
 
   function handleDownload() {
     const data = { call, messages, logs, questions };
@@ -183,7 +183,7 @@ function CallMessages() {
   const router = useRouter();
   const callSid = router.query.callSid as string;
 
-  const msgs = useAppSelector((state) => getCallMessages(state, callSid));
+  const msgs = useCallMessages(callSid);
   const msgMap = useAppSelector(getMessageEntities);
 
   const dispatch = useAppDispatch();
@@ -205,7 +205,7 @@ function CallQuestions() {
   const router = useRouter();
   const callSid = router.query.callSid as string;
 
-  const questions = useAppSelector((state) => getCallQuestions(state, callSid));
+  const questions = useCallQuestions(callSid);
   const entityMap = useAppSelector(selectQuestionEntities);
 
   const dispatch = useAppDispatch();
@@ -227,7 +227,7 @@ function CallLogs() {
   const router = useRouter();
   const callSid = router.query.callSid as string;
 
-  const logs = useAppSelector((state) => getCallLogs(state, callSid));
+  const logs = useCallLogs(callSid);
   const entityMap = useAppSelector(getLogEntities);
 
   const dispatch = useAppDispatch();

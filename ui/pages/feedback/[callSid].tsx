@@ -1,6 +1,6 @@
 import { selectCallById, setOneCall } from "@/state/calls";
 import { useAppDispatch, useAppSelector } from "@/state/hooks";
-import { getCallMessages, getMessageById } from "@/state/messages";
+import { getMessageById, useCallMessages } from "@/state/messages";
 import { makeId } from "@/util/misc";
 import {
   Badge,
@@ -363,9 +363,8 @@ function TurnTable({ feedbackId }: { feedbackId: string }) {
     return call?.feedback?.find((item) => item.id === feedbackId);
   });
 
-  const msgs = useAppSelector((state) =>
-    getCallMessages(state, callSid).filter((msg) => msg.role !== "system")
-  );
+  const callMsgs = useCallMessages(callSid);
+  const msgs = callMsgs.filter((msg) => msg.role !== "system");
 
   const setTargets = useSetTargets(callSid, feedbackId);
 

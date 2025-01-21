@@ -5,6 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import { LogRecord } from "@shared/entities";
 import type { RootState } from "./store";
+import { useAppSelector } from "./hooks";
 
 const SLICE_NAME = "logs";
 
@@ -98,7 +99,7 @@ export const {
   selectTotal: getLogTotal,
 } = adapter.getSelectors(getSlice);
 
-export function getCallLogIds(state: RootState, callSid: string) {
+function getCallLogIds(state: RootState, callSid: string) {
   return getAllLogs(state)
     .filter((log) => log.callSid === callSid)
     .map((log) => log.id);
@@ -106,6 +107,12 @@ export function getCallLogIds(state: RootState, callSid: string) {
 
 export function getCallLogs(state: RootState, callSid: string) {
   return getAllLogs(state).filter((log) => log.callSid === callSid);
+}
+
+export function useCallLogs(callSid: string) {
+  const logs = useAppSelector(getAllLogs);
+
+  return logs.filter((log) => log.callSid === callSid);
 }
 
 /****************************************************

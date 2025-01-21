@@ -5,6 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import { StoreMessage } from "@shared/entities";
 import type { RootState } from "./store";
+import { useAppSelector } from "./hooks";
 
 const SLICE_NAME = "messages";
 
@@ -98,7 +99,7 @@ export const {
   selectTotal: getMessageTotal,
 } = adapter.getSelectors(getSlice);
 
-export function getCallMessageIds(state: RootState, callSid: string) {
+function getCallMessageIds(state: RootState, callSid: string) {
   return getAllMessages(state)
     .filter((message) => message.callSid === callSid)
     .map((message) => message.id);
@@ -106,6 +107,11 @@ export function getCallMessageIds(state: RootState, callSid: string) {
 
 export function getCallMessages(state: RootState, callSid: string) {
   return getAllMessages(state).filter((message) => message.callSid === callSid);
+}
+
+export function useCallMessages(callSid: string) {
+  const msgs = useAppSelector(getAllMessages);
+  return msgs.filter((message) => message.callSid === callSid);
 }
 
 /****************************************************

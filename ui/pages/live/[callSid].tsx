@@ -3,8 +3,8 @@ import { RecallContainer } from "@/components/RecallContainer";
 import { TurnsTable } from "@/components/TurnsTable";
 import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
-import { getCallLogs } from "@/state/logs";
-import { getCallQuestions } from "@/state/questions";
+import { useCallLogs } from "@/state/logs";
+import { useCallQuestions } from "@/state/questions";
 import { Badge, Button, Paper, Table, Text, Title } from "@mantine/core";
 import { LogActions } from "@shared/entities";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
@@ -72,7 +72,7 @@ function CalibrationsContainer() {
   const router = useRouter();
   const callSid = router.query.callSid as string;
 
-  const logs = useAppSelector((state) => getCallLogs(state, callSid));
+  const logs = useCallLogs(callSid);
 
   return (
     <Table stickyHeader>
@@ -158,7 +158,7 @@ function HumanInput() {
   const router = useRouter();
   const callSid = router.query.callSid as string;
 
-  const questions = useAppSelector((state) => getCallQuestions(state, callSid));
+  const questions = useCallQuestions(callSid);
 
   return (
     <div>
