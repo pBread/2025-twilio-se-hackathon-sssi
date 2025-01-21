@@ -4,6 +4,7 @@ import {
   TWILIO_ACCOUNT_SID,
   TWILIO_API_KEY,
   TWILIO_API_SECRET,
+  TWILIO_DEFAULT_NUMBER,
 } from "../../env";
 import log from "../../logger";
 import {
@@ -455,19 +456,35 @@ payByExistingMethod.getFillerPhrase = (
 /****************************************************
  Send Confirmation for New Order
 ****************************************************/
-
 interface SendConfirmationForNewOrder {
   orderId: string;
   phoneNumber: string;
 }
 
 export async function sendConfirmationForNewOrder(
-  args: SendConfirmationForNewOrder,
+  { phoneNumber }: SendConfirmationForNewOrder,
   svcs: FunctionServices
 ) {
   // Placeholder for new order confirmation implementation
   log.info("bot.fn", "sendConfirmationForNewOrder placeholder called");
-  return "confirmation-sent";
+
+  let body =
+    "Here are the details of your Owl Events orders. Please ensure these are correct before submitting payment information.";
+
+  const name = svcs?.ctx.user?.firstName;
+  if (name) body = `Hello ${name}, ${body}`;
+
+  try {
+    await twilio.messages.create({
+      body,
+      from: TWILIO_DEFAULT_NUMBER,
+      to: phoneNumber,
+    });
+
+    return "success";
+  } catch (error) {
+    return "failed to send message";
+  }
 }
 
 sendConfirmationForNewOrder.getFillerPhrase = (
