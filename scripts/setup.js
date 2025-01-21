@@ -51,6 +51,7 @@ let root = {
   DEVELOPERS_PHONE_NUMBER: null,
   TWILIO_DEFAULT_NUMBER: null,
   OPENAI_API_KEY: null,
+  PINECONE_API_KEY: null,
   PINECONE_INDEX_NAME: null,
 
   // Optional: will be created if not included
