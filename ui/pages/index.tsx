@@ -117,11 +117,14 @@ function CallRow({ callSid }: { callSid: string }) {
       </Table.Td>
       <Table.Td>
         <Text>
-          <Link href={`/live/${callSid}`}>Live View</Link>
+          <Link href={`/live/${callSid}`}>View</Link>
         </Text>
       </Table.Td>
       <Table.Td>
-        <Link href={`/feedback/${callSid}`}>Add Feedback</Link>
+        <Link href={`/feedback/${callSid}`}>Feedback</Link>
+      </Table.Td>
+      <Table.Td>
+        <Link href={`/data/${callSid}`}>Data</Link>
       </Table.Td>
     </Table.Tr>
   );
