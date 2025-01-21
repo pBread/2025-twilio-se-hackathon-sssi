@@ -38,21 +38,28 @@ export async function initVectorDB(attempt = 0) {
   });
 
   if (!index) {
-    // find the dimension of the model by creating an embedding
-    const dimension = await openai.embeddings
-      .create({ input: "hello world", model: EMBEDDING_MODEL })
-      .then((result) => result.data[0].embedding.length);
+    let dimension: number;
+    try {
+      // find the dimension of the model by creating an embedding
+      dimension = await openai.embeddings
+        .create({ input: "hello world", model: EMBEDDING_MODEL })
+        .then((result) => result.data[0].embedding.length);
 
-    log.info(
-      "vector-db",
-      `Pinecone Index not found. Creating new index: "${PINECONE_INDEX_NAME}"`
-    );
-    await pc.createIndex({
-      name: PINECONE_INDEX_NAME,
-      dimension,
-      metric: "cosine",
-      spec: { serverless: { cloud: "aws", region: "us-east-1" } },
-    });
+      log.info(
+        "vector-db",
+        `Pinecone Index not found. Creating new index: "${PINECONE_INDEX_NAME}"`
+      );
+
+      await pc.createIndex({
+        name: PINECONE_INDEX_NAME,
+        dimension,
+        metric: "cosine",
+        spec: { serverless: { cloud: "aws", region: "us-east-1" } },
+      });
+    } catch (error) {
+      log.error("Error creating Pinecone Index", error);
+      throw error;
+    }
   }
 
   if (index?.status.ready) {

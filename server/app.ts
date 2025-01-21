@@ -400,6 +400,10 @@ app.get("/api/populate", async (req, res) => {
   res.send("complete");
 });
 
+app.get("/debug", async (req, res) => {
+  res.json({ status: "complete" });
+});
+
 /****************************************************
  Start Server
 ****************************************************/
