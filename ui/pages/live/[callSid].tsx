@@ -6,7 +6,7 @@ import { useAppSelector } from "@/state/hooks";
 import { useCallLogs } from "@/state/logs";
 import { useCallQuestions } from "@/state/questions";
 import { Badge, Button, Paper, Table, Text, Title } from "@mantine/core";
-import { LogActions } from "@shared/entities";
+import { LogActions, LogRecord } from "@shared/entities";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -85,30 +85,60 @@ function CalibrationsContainer() {
       </Table.Thead>
       <Table.Tbody>
         {logs.map((item) => (
-          <Table.Tr key={`sw4-${item.id}`}>
-            <Table.Td>{item.source}</Table.Td>
-            <Table.Td>{item.description}</Table.Td>
-            <Table.Td
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "2px",
-                width: "max-content",
-              }}
-            >
-              {[...item.actions]
-                .sort((a, b) => a.localeCompare(b))
-                .map((action) => (
-                  <ActionBadge
-                    action={action}
-                    key={`s28-${item.id}-${action}`}
-                  />
-                ))}
-            </Table.Td>
-          </Table.Tr>
+          <LogTableRow
+            key={`sw4-${item.id}`}
+            id={item.id}
+            source={item.source}
+            description={item.description}
+            actions={item.actions}
+          />
         ))}
       </Table.Tbody>
     </Table>
+  );
+}
+
+function LogTableRow({
+  id,
+  source,
+  description,
+  actions,
+}: Pick<LogRecord, "actions" | "id" | "description" | "source">) {
+  const contentSplit = description?.split("\n") ?? [];
+  const router = useRouter();
+
+  return (
+    <Table.Tr>
+      <Table.Td>{source}</Table.Td>
+      <Table.Td>
+        <div style={{ maxHeight: "100px", overflow: "scroll" }}>
+          {contentSplit?.length <= 1 && contentSplit?.join("")}
+          {contentSplit?.length > 1 && (
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "6px" }}
+            >
+              {contentSplit?.map((content, idx) => (
+                <div key={`${router.asPath}-${content}-${idx}`}>{content}</div>
+              ))}
+            </div>
+          )}
+        </div>
+      </Table.Td>
+      <Table.Td
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "2px",
+          width: "max-content",
+        }}
+      >
+        {[...actions]
+          .sort((a, b) => a.localeCompare(b))
+          .map((action) => (
+            <ActionBadge action={action} key={`s28-${id}-${action}`} />
+          ))}
+      </Table.Td>
+    </Table.Tr>
   );
 }
 

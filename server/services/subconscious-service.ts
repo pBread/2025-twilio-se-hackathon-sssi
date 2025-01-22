@@ -195,16 +195,20 @@ export class SubsconsciousService {
 
     this.store.setContext({ similarCalls });
 
-    newFeedback.forEach((feedback) =>
-      this.addRecallAnnotation(feedback.match, feedback.annotation)
-    );
+    if (!newFeedback.length) return;
+
+    const annotationText = newFeedback
+      .map((item) => item.annotation.comment)
+      .join("\n");
+
+    this.addRecallAnnotation(annotationText);
   };
 
-  addRecallAnnotation = (match: SimilarCall, annotation: Annotation) => {
+  addRecallAnnotation = (description: string) => {
     addSyncLogItem({
       actions: ["Updated Instructions"],
       callSid: this.store.call.callSid,
-      description: `Recall identified a new relevant conversation and supplied the bot with the annotation: ${annotation.comment}`,
+      description,
       source: "Recall",
     });
   };
