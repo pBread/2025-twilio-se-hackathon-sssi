@@ -128,14 +128,16 @@ function Subconsciousness() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       <Paper className="paper">
-        <Title order={3}>Subconscious Bots</Title>
+        <Title order={3}>Subconscious</Title>
       </Paper>
       <Paper className="paper">
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <Title order={4}>Conversation Recall</Title>
           <Title order={6}>Most Similar Conversations</Title>
         </div>
-        <RecallContainer />
+        <div style={{ maxHeight: "300px", overflow: "scroll" }}>
+          <RecallContainer />
+        </div>
       </Paper>
       <Paper className="paper">
         <Title order={4}>Discussion with Human Agent</Title>

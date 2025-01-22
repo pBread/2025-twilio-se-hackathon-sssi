@@ -12,12 +12,12 @@ export function RecallContainer() {
   const call = useAppSelector((state) => selectCallById(state, callSid));
 
   return (
-    <Table verticalSpacing={2}>
+    <Table verticalSpacing={2} stickyHeader>
       <Table.Thead>
         <Table.Tr>
-          <Table.Td>Call Summary</Table.Td>
-          <Table.Td>Score</Table.Td>
-          <Table.Td>Annotations</Table.Td>
+          <Table.Th>Call Summary</Table.Th>
+          <Table.Th>Score</Table.Th>
+          <Table.Th>Notes</Table.Th>
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>
@@ -86,9 +86,11 @@ function RecallRow({
           </div>
         </Modal>
 
-        <a onClick={toggle} style={{ color: "blue", cursor: "pointer" }}>
-          {call?.feedback.length ?? 0}
-        </a>
+        <div style={{ display: "flex", justifyContent: "space-around" }}>
+          <a onClick={toggle} style={{ color: "blue", cursor: "pointer" }}>
+            {call?.feedback.length ?? 0}
+          </a>
+        </div>
       </Table.Td>
     </Table.Tr>
   );
