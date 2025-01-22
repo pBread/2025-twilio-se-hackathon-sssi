@@ -131,8 +131,10 @@ function Subconsciousness() {
         <Title order={3}>Subconscious Bots</Title>
       </Paper>
       <Paper className="paper">
-        <Title order={4}>Conversation Recall</Title>
-        <Title order={6}>Most Similar Conversations</Title>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <Title order={4}>Conversation Recall</Title>
+          <Title order={6}>Most Similar Conversations</Title>
+        </div>
         <RecallContainer />
       </Paper>
       <Paper className="paper">
