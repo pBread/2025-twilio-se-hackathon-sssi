@@ -91,6 +91,7 @@ function CallDetails({ callSid }: { callSid?: string }) {
     "+•••••••••••";
 
   const [showFrom, setShowFrom] = useState(false);
+  const [showTo, setShowTo] = useState(false);
 
   return (
     <div
@@ -134,7 +135,22 @@ function CallDetails({ callSid }: { callSid?: string }) {
         }}
       >
         <span>To:</span>
-        <span>{to}</span>
+        {showTo && (
+          <span
+            onClick={() => setShowTo(!showTo)}
+            style={{ cursor: "pointer" }}
+          >
+            {to}
+          </span>
+        )}
+        {!showTo && (
+          <span
+            onClick={() => setShowTo(!showTo)}
+            style={{ cursor: "pointer", fontFamily: "monospace" }}
+          >
+            {to?.replace(/\d/g, "•")}
+          </span>
+        )}
       </Text>
     </div>
   );
