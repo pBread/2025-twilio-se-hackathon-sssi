@@ -1,13 +1,9 @@
 import { useAppDispatch, useAppSelector } from "@/state/hooks";
 import { selectAllQuestions, updateOneQuestion } from "@/state/questions";
-import { Badge, Button, Text, Textarea } from "@mantine/core";
+import { Button, Text, Textarea } from "@mantine/core";
 import { AIQuestion } from "@shared/entities";
+import { IconCircleCheckFilled, IconXboxXFilled } from "@tabler/icons-react";
 import { useState } from "react";
-import {
-  IconCircleCheckFilled,
-  IconXboxAFilled,
-  IconXboxXFilled,
-} from "@tabler/icons-react";
 
 export function TaskApproverTable({ callSid }: { callSid?: string }) {
   const questions = useAppSelector(selectAllQuestions)?.filter(
