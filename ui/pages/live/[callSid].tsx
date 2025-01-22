@@ -141,7 +141,7 @@ function Subconsciousness() {
       </Paper>
       <Paper className="paper">
         <Title order={4}>Procedure Governance</Title>
-        <div style={{ height: "300px", overflow: "scroll" }}>
+        <div style={{ maxHeight: "300px", overflow: "scroll" }}>
           <GovernanceContainer />
         </div>
       </Paper>
