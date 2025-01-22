@@ -13,7 +13,7 @@ const identity =
 function RetailWrapper({ conf, task, ...props }) {
   const sync = useSyncClient(conf);
   console.debug("RetailWrapper props", { conf, task, ...props });
-  return <div>Hello</div>;
+
   return (
     <div style={{ padding: "20px", width: "100%" }}>
       {task ? <RetailView sync={sync} /> : <NoActiveTask />}
