@@ -62,7 +62,7 @@ export function TaskApproverTable({ callSid }: { callSid?: string }) {
                     )
                   }
                 />
-              </td>{" "}
+              </td>
               <td>
                 <div
                   style={{
