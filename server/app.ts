@@ -414,7 +414,9 @@ app.get("/api/populate", async (req, res) => {
   res.send("complete");
 });
 
-app.get("/debug", async (req, res) => {
+app.post("/debug", async (req, res) => {
+  console.debug("Incoming Request\n", JSON.stringify(req.body, null, 2));
+
   res.json({ status: "complete" });
 });
 
