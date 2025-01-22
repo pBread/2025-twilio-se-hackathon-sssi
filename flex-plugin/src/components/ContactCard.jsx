@@ -28,7 +28,7 @@ function ContactCard(props) {
             <Column span={2}>
               <Avatar
                 size="sizeIcon100"
-                name={props.task.attributes.customerData.name}
+                name={props.task?.attributes?.customerData?.name}
               />
             </Column>
 
@@ -39,8 +39,8 @@ function ContactCard(props) {
                 justifyContent="space-between"
               >
                 <Heading as="h2" variant="heading30" marginBottom="space0">
-                  {props.task.attributes.customerData.firstName}{" "}
-                  {props.task.attributes.customerData.lastName}
+                  {props?.task?.attributes?.customerData?.firstName}{" "}
+                  {props?.task?.attributes?.customerData?.lastName}
                 </Heading>
                 <Box>
                   <Tooltip text="Copy Segment ID.">
@@ -67,7 +67,7 @@ function ContactCard(props) {
                       }}
                     />
                     <Text as={"div"} marginLeft="space60">
-                      {props.task.attributes.customerData.loyaltyTier}
+                      {props?.task?.attributes?.customerData?.loyaltyTier}
                     </Text>
                   </PasteFlex>
                 </ListItem>
@@ -75,7 +75,7 @@ function ContactCard(props) {
                   <PasteFlex>
                     <EmailIcon decorative />
                     <Text as={"div"} marginLeft="space30">
-                      {props.task.attributes.customerData.email}
+                      {props?.task?.attributes?.customerData?.email}
                     </Text>
                   </PasteFlex>
                 </ListItem>
@@ -84,7 +84,7 @@ function ContactCard(props) {
                   <PasteFlex>
                     <CallIcon decorative />
                     <Text as={"div"} marginLeft="space30">
-                      {props.task.attributes.customerData.phoneNumber}
+                      {props?.task?.attributes?.customerData?.phoneNumber}
                     </Text>
                   </PasteFlex>
                 </ListItem>

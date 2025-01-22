@@ -24,7 +24,7 @@ function ConversationSummary(props) {
                 justifyContent="space-between"
               >
                 <Paragraph marginBottom="space0">
-                  {props.task.attributes.conversationSummary}
+                  {props?.task?.attributes?.conversationSummary}
                 </Paragraph>
               </Box>
             </Column>

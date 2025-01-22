@@ -34,22 +34,22 @@ export function TranscriptTable({ callSid, conf, sync }) {
         <Th>Content</Th>
       </THead>
       <TBody>
-        {transcriptMsgs.flatMap((msg) =>
+        {transcriptMsgs?.flatMap((msg) =>
           msg.role === "bot" && msg.type === "tool" ? (
             msg.tool_calls.map((tool) => (
               <Tr key={`52g-${msg.id}-${tool.id}`}>
                 <Td>{msg.role}</Td>
                 <Td>
-                  {`${tool.function.name}(${JSON.stringify(
-                    tool.function.arguments
+                  {`${tool.function?.name}(${JSON.stringify(
+                    tool.function?.arguments
                   )})`}
                 </Td>
               </Tr>
             ))
           ) : (
             <Tr key={`di2-${msg.id}`}>
-              <Td>{msg.role}</Td>
-              <Td> {msg.content}</Td>
+              <Td>{msg?.role}</Td>
+              <Td> {msg?.content}</Td>
             </Tr>
           )
         )}

@@ -24,7 +24,7 @@ function HandoffReason(props) {
                 justifyContent="space-between"
               >
                 <Paragraph marginBottom="space0">
-                  {props.task.attributes.handoffReason}
+                  {props?.task?.attributes?.handoffReason}
                 </Paragraph>
               </Box>
             </Column>
