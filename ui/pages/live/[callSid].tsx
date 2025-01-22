@@ -53,7 +53,9 @@ function Conscious() {
             {showSystem ? "Hide System" : "Show System"}
           </Button>
         </div>
-        <div style={{ height: "400px", overflow: "scroll" }}>
+        <div
+          style={{ minHeight: "200px", maxHeight: "400px", overflow: "scroll" }}
+        >
           <TurnsTable callSid={callSid} showSystem={showSystem} />
         </div>
       </Paper>
