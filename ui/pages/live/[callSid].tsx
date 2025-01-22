@@ -111,7 +111,7 @@ function LogTableRow({
     <Table.Tr>
       <Table.Td>{source}</Table.Td>
       <Table.Td>
-        <div style={{ maxHeight: "100px", overflow: "scroll" }}>
+        <div style={{ maxHeight: "85px", overflow: "scroll" }}>
           {contentSplit?.length <= 1 && contentSplit?.join("")}
           {contentSplit?.length > 1 && (
             <div
