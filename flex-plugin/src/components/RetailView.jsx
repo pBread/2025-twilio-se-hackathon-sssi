@@ -9,6 +9,7 @@ import HandoffReason from "./HandoffReason";
 import { OrderTable } from "./OrderTable";
 import { TranscriptTable } from "./TranscriptTable";
 import { TaskApprover } from "./TaskApprover";
+import { useEffect } from "react";
 
 const styles = {
   tableWrapper: { width: "100%" },
@@ -20,8 +21,10 @@ const styles = {
 function RetailView({ conf, sync, task }) {
   const callSid = task?.attributes?.customerData?.callSid;
   const userId = task?.attributes?.customerData?.userId;
+  useUpdateName();
 
   console.debug("RetaulView task", task);
+
   return (
     <div style={styles.adjust}>
       <Tabs baseId="retail-tabs">
@@ -81,3 +84,16 @@ function RetailView({ conf, sync, task }) {
 }
 
 export default withTaskContext(RetailView);
+
+function useUpdateName() {
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const element = document.querySelector(
+        '[data-testid="message-sendername"]'
+      );
+      if (element) element.innerText = "AI Agent";
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
+}
