@@ -6,7 +6,7 @@ export default function TaskContainer() {
       <TaskApproverTable />
       <style jsx global>{`
         body {
-          background-color: white !important;
+          background-color: rgba(255, 255, 255, 0.9) !important;
         }
       `}</style>
     </>
