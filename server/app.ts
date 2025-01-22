@@ -33,6 +33,7 @@ import {
   initVectorDB,
   populateSampleVectorData,
 } from "./services/vector-db-service";
+import { askAgent } from "./bot/conscious/tool-functions";
 
 const {
   ENABLE_GOVERNANCE,

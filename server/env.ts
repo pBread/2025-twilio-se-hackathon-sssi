@@ -16,7 +16,10 @@ export const TTS_VOICE = process.env.TTS_VOICE;
 export const TWILIO_DEFAULT_NUMBER = process.env.TWILIO_DEFAULT_NUMBER;
 
 // Required environment variables must be explicitly defined in `.env` files or the runtime environment
+export const FLEX_QUEUE_SID = process.env.FLEX_QUEUE_SID as string;
+export const FLEX_WORKER_SID = process.env.FLEX_WORKER_SID as string;
 export const FLEX_WORKFLOW_SID = process.env.FLEX_WORKFLOW_SID as string;
+export const FLEX_WORKSPACE_SID = process.env.FLEX_WORKSPACE_SID as string;
 export const HOSTNAME = process.env.HOSTNAME as string;
 export const OPENAI_API_KEY = process.env.OPENAI_API_KEY as string;
 export const PINECONE_API_KEY = process.env.PINECONE_API_KEY as string;
@@ -28,7 +31,10 @@ export const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN as string;
 export const TWILIO_SYNC_SVC_SID = process.env.TWILIO_SYNC_SVC_SID as string;
 
 // Check for missing required environment variables and log errors to aid debugging
+if (!FLEX_QUEUE_SID) console.error(`Missing env var FLEX_WORKFLOW_SID`);
+if (!FLEX_WORKER_SID) console.error(`Missing env var FLEX_WORKER_SID`);
 if (!FLEX_WORKFLOW_SID) console.error(`Missing env var FLEX_WORKFLOW_SID`);
+if (!FLEX_WORKSPACE_SID) console.error(`Missing env var FLEX_WORKFLOW_SID`);
 if (!HOSTNAME) console.error(`Missing env var HOSTNAME`);
 if (!OPENAI_API_KEY) console.error(`Missing env var OPENAI_API_KEY`);
 if (!PINECONE_API_KEY) console.error(`Missing env var PINECONE_API_KEY`);

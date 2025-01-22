@@ -1,12 +1,16 @@
 import { Twilio, twiml as TwiML } from "twilio";
+import { AIQuestion, HandoffData } from "../../shared/entities";
 import {
+  FLEX_QUEUE_SID,
+  FLEX_WORKER_SID,
   FLEX_WORKFLOW_SID,
+  FLEX_WORKSPACE_SID,
   TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN,
+  TWILIO_DEFAULT_NUMBER,
 } from "../env";
 import log from "../logger";
 import { safeParse } from "../utils/misc";
-import { HandoffData } from "../../shared/entities";
 
 const client = new Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 const VoiceResponse = TwiML.VoiceResponse;
@@ -52,4 +56,51 @@ export async function createLiveAgentHandoffTwiML(
     .task({ priority: 1000 }, JSON.stringify(taskAttributes));
 
   return twiml;
+}
+
+export async function createFlexTask(
+  attributes: HandoffData,
+  question: AIQuestion
+) {
+  const result = await client.flexApi.v1.interaction.create({
+    channel: {
+      type: "chat",
+      initiated_by: "agent",
+      participants: [{ identity: "AI Agent" }],
+    },
+    routing: {
+      properties: {
+        workspace_sid: FLEX_WORKSPACE_SID,
+        workflow_sid: FLEX_WORKFLOW_SID,
+        queue_sid: FLEX_QUEUE_SID,
+        worker_sid: FLEX_WORKER_SID,
+        task_channel_unique_name: "chat",
+        from: attributes.customerData.phone,
+
+        attributes: {
+          ...attributes,
+          customer: { from: attributes.customerData.phone },
+          customerAddress: "AI Agent",
+          from: attributes.customerData.phone,
+          phone: attributes.customerData.phone,
+          to: TWILIO_DEFAULT_NUMBER,
+        },
+      },
+    },
+  });
+
+  const attr = JSON.parse(result.routing.properties.attributes);
+
+  await client.conversations.v1
+    .conversations(attr.conversationSid)
+    .messages.create({
+      author: "AI Agent",
+      body: `${question.question} \n ${question.explanation}\n ${question.recommendation}`,
+    });
+
+  const participants = await client.conversations.v1
+    .conversations(attr.conversationSid)
+    .participants.list();
+
+  log.debug("flex", "participants", participants);
 }

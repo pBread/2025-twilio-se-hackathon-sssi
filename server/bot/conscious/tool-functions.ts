@@ -16,6 +16,7 @@ import { getStateName } from "../../utils/dictionary-regions";
 import { parseE164 } from "../../utils/e164";
 import { makeId } from "../../utils/misc";
 import { type FunctionServices } from "../helpers";
+import { createFlexTask } from "../../services/twilio-flex";
 
 const twilio = new Twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   accountSid: TWILIO_ACCOUNT_SID,
@@ -581,6 +582,9 @@ As a reminder, here is the question you asked: ${question.question}
     svcs.store.setHumanInput(content);
   });
 
+  const handoffData = await makeHandoffData(args.question, svcs);
+  await createFlexTask(handoffData, question);
+
   return "agent-notified";
 }
 
@@ -596,10 +600,7 @@ interface TransferToAgent {
   reason: string;
 }
 
-export async function transferToAgent(
-  args: TransferToAgent,
-  svcs: FunctionServices
-) {
+async function makeHandoffData(reason: string, svcs: FunctionServices) {
   let user = svcs.ctx.user;
   if (!user)
     user = await svcs.db.users.getByChannel(
@@ -609,11 +610,11 @@ export async function transferToAgent(
   const firstName = user?.firstName ?? "";
   const lastName = user?.lastName ?? "";
 
-  let orders: OrderRecord[] = [];
+  const orders: OrderRecord[] = [];
 
-  await sleep(4000);
   const handoffData: HandoffData = {
-    ...args,
+    reason,
+
     customerData: {
       userId: user?.id,
       callSid: svcs.store.call.callSid,
@@ -638,6 +639,17 @@ export async function transferToAgent(
       "Call summary placeholder",
     reasonCode: "live-agent-handoff",
   };
+
+  return handoffData;
+}
+
+export async function transferToAgent(
+  args: TransferToAgent,
+  svcs: FunctionServices
+) {
+  const handoffData = await makeHandoffData(args.reason, svcs);
+
+  await sleep(4000);
 
   log.info("bot.fns", `transferring to agent`);
 
