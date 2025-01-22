@@ -96,7 +96,7 @@ export async function createFlexTask(
     .conversations(attr.conversationSid)
     .messages.create({
       author: "AI Agent",
-      body: `${question.question} \n ${question.explanation}\n ${question.recommendation}`,
+      body: `${question.question} \n${question.explanation}\n\nHere is my recommendation: ${question.recommendation}`,
     });
 
   await client.conversations.v1
