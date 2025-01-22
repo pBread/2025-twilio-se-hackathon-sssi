@@ -26,6 +26,7 @@ import {
   populateSampleSyncData,
   setupSync,
   updateSyncCallItem,
+  updateSyncQuestion,
 } from "./services/sync-service";
 import { createLiveAgentHandoffTwiML } from "./services/twilio-flex";
 import {
@@ -33,7 +34,6 @@ import {
   initVectorDB,
   populateSampleVectorData,
 } from "./services/vector-db-service";
-import { askAgent } from "./bot/conscious/tool-functions";
 
 const {
   ENABLE_GOVERNANCE,
@@ -364,6 +364,19 @@ app.get("/sync-token/:identity", async (req, res) => {
   const token = createSyncToken(identity);
 
   res.json(token);
+});
+
+app.post("/api/ai-question/:questionId", async (req, res) => {
+  try {
+    const questionId = req.params.questionId;
+    const answer = req.body.Body;
+
+    updateSyncQuestion(questionId, { answer });
+
+    res.json({ status: "success" });
+  } catch (error) {
+    res.json({ status: "error" });
+  }
 });
 
 /****************************************************

@@ -5,6 +5,7 @@ import {
   FLEX_WORKER_SID,
   FLEX_WORKFLOW_SID,
   FLEX_WORKSPACE_SID,
+  HOSTNAME,
   TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN,
   TWILIO_DEFAULT_NUMBER,
@@ -98,9 +99,12 @@ export async function createFlexTask(
       body: `${question.question} \n ${question.explanation}\n ${question.recommendation}`,
     });
 
-  const participants = await client.conversations.v1
+  await client.conversations.v1
     .conversations(attr.conversationSid)
-    .participants.list();
-
-  log.debug("flex", "participants", participants);
+    .webhooks.create({
+      "configuration.filters": ["onMessageAdded"],
+      "configuration.method": "POST",
+      "configuration.url": `https://${HOSTNAME}/api/ai-question/${question.id}`,
+      target: "webhook",
+    });
 }

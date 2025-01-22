@@ -2,6 +2,7 @@ import diff from "deep-diff";
 import { pRateLimit } from "p-ratelimit";
 import Twilio from "twilio";
 import { SyncClient } from "twilio-sync";
+import type { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
 import {
   EventRecord,
   OrderRecord,
@@ -13,6 +14,7 @@ import {
   type LogRecord,
   type StoreMessage,
 } from "../../shared/entities";
+import { mockDatabase } from "../../shared/mock-database";
 import { sampleData } from "../../shared/sample-data";
 import {
   callMapItemName,
@@ -36,10 +38,8 @@ import {
   TWILIO_SYNC_SVC_SID,
 } from "../env";
 import log from "../logger";
-import { ignore, makeId } from "../utils/misc";
+import { makeId } from "../utils/misc";
 import type { EntityService } from "./database-service";
-import type { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
-import { mockDatabase } from "../../shared/mock-database";
 
 const rateLimitConfig = {
   interval: 1000, // 1000 ms == 1 second
@@ -443,6 +443,26 @@ export async function addSyncQuestionListener(
       const question = ev.item.data as AIQuestion;
       if (question.id === questionId) handler(question);
     })
+  );
+}
+
+export async function updateSyncQuestion(
+  questionId: string,
+  update: Partial<AIQuestion>
+) {
+  const question = await limit(() =>
+    sync
+      .syncMaps(SYNC_Q_MAP_NAME)
+      .syncMapItems(questionId)
+      .fetch()
+      .then((res) => res.data)
+  );
+
+  return limitMsg(() =>
+    sync
+      .syncMaps(SYNC_Q_MAP_NAME)
+      .syncMapItems(questionId)
+      .update({ data: { ...question, ...update } })
   );
 }
 
