@@ -1,8 +1,13 @@
 import { useAppDispatch, useAppSelector } from "@/state/hooks";
 import { selectAllQuestions, updateOneQuestion } from "@/state/questions";
-import { Button, Textarea } from "@mantine/core";
+import { Badge, Button, Text, Textarea } from "@mantine/core";
 import { AIQuestion } from "@shared/entities";
 import { useState } from "react";
+import {
+  IconCircleCheckFilled,
+  IconXboxAFilled,
+  IconXboxXFilled,
+} from "@tabler/icons-react";
 
 export function TaskApproverTable({ callSid }: { callSid?: string }) {
   const questions = useAppSelector(selectAllQuestions)?.filter(
@@ -11,16 +16,16 @@ export function TaskApproverTable({ callSid }: { callSid?: string }) {
 
   const dispatch = useAppDispatch();
 
-  const [status, setStatus] = useState(null);
+  const [loadId, setLoadId] = useState(null);
 
   const saveQuestion = async (question: AIQuestion) => {
-    setStatus("saving");
+    setLoadId(question.id);
     try {
       const res = await fetch(`/api/questions/${question.id}`, {
         method: "POST",
         body: JSON.stringify(question),
       }).then((res) => res.json());
-      if (res.status === "success") return setStatus(null);
+      if (res.status === "success") return setLoadId(null);
 
       throw Error(res.error);
     } catch (error) {
@@ -34,18 +39,17 @@ export function TaskApproverTable({ callSid }: { callSid?: string }) {
       <table cellPadding="10" style={{ marginTop: "20px", width: "100%" }}>
         <thead>
           <tr>
-            <th>Status</th>
             <th style={{ width: "15vw" }}>Question</th>
             <th style={{ width: "20vw" }}>Explanation</th>
             <th style={{ width: "20vw" }}>Recommendation</th>
             <th style={{ width: "20vw" }}>Answer</th>
             <th>Actions</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
           {questions.map((question) => (
             <tr key={`294-${question.id}`}>
-              <td>{question.status}</td>
               <td>{question.question}</td>
               <td>{question.explanation}</td>
               <td>{question.recommendation}</td>
@@ -62,7 +66,7 @@ export function TaskApproverTable({ callSid }: { callSid?: string }) {
                     )
                   }
                 />
-              </td>
+              </td>{" "}
               <td>
                 <div
                   style={{
@@ -73,6 +77,7 @@ export function TaskApproverTable({ callSid }: { callSid?: string }) {
                 >
                   <Button
                     color="green"
+                    variant={question.status !== "new" && "default"}
                     size="compact-xs"
                     onClick={() => {
                       saveQuestion({ ...question, status: "approved" });
@@ -83,6 +88,7 @@ export function TaskApproverTable({ callSid }: { callSid?: string }) {
 
                   <Button
                     color="red"
+                    variant={question.status !== "new" && "default"}
                     size="compact-xs"
                     onClick={() => {
                       saveQuestion({ ...question, status: "rejected" });
@@ -90,6 +96,25 @@ export function TaskApproverTable({ callSid }: { callSid?: string }) {
                   >
                     Reject
                   </Button>
+                </div>
+              </td>
+              <td>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {question.status === "approved" && (
+                    <IconCircleCheckFilled color="green" />
+                  )}
+                  {question.status === "rejected" && (
+                    <IconXboxXFilled color="red" />
+                  )}
+                  {question.status === "new" && (
+                    <Text size="sm">{question.status}</Text>
+                  )}
                 </div>
               </td>
             </tr>
