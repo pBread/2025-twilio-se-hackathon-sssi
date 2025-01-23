@@ -1,5 +1,10 @@
 import { Twilio } from "twilio";
-import { AIQuestion, HandoffData, OrderRecord } from "../../../shared/entities";
+import {
+  AIQuestion,
+  HandoffData,
+  LogActions,
+  OrderRecord,
+} from "../../../shared/entities";
 import {
   TWILIO_ACCOUNT_SID,
   TWILIO_API_KEY,
@@ -8,6 +13,7 @@ import {
 } from "../../env";
 import log from "../../logger";
 import {
+  addSyncLogItem,
   addSyncQuestion,
   addSyncQuestionListener,
 } from "../../services/sync-service";
@@ -565,6 +571,9 @@ export async function askAgent(args: AskAgent, svcs: FunctionServices) {
 
   await addSyncQuestion(question);
 
+  let isApprovalAdded = false;
+  let isCommentAdded = false;
+
   addSyncQuestionListener(question.id, (update) => {
     let content =
       "IMPORTANT UPDATE: A human agent has responded to your previous question. It is critical that your next response informs the customer.\n";
@@ -576,6 +585,29 @@ export async function askAgent(args: AskAgent, svcs: FunctionServices) {
     content += `As a reminder, here is the question you asked: ${question.question}`;
 
     svcs.store.setHumanInput(content);
+
+    if (update?.status !== "new" && !isApprovalAdded) {
+      isApprovalAdded = true;
+      addSyncLogItem({
+        actions: ["Approval"],
+        callSid: svcs.store.call.callSid,
+        source: "Agent",
+        description:
+          update.status === "approved"
+            ? "Agent approved request"
+            : "Agent rejected request",
+      });
+    }
+
+    if (!isCommentAdded && update?.answer?.length) {
+      isCommentAdded = true;
+      addSyncLogItem({
+        actions: ["Added System Message"],
+        callSid: svcs.store.call.callSid,
+        description: update?.answer,
+        source: "Agent",
+      });
+    }
   });
 
   const handoffData = await makeHandoffData(args.question, svcs);
