@@ -176,7 +176,11 @@ function Subconsciousness() {
         <HumanInput />
       </Paper>
       <Paper className="paper">
-        <Title order={4}>Procedure Governance</Title>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <Title order={4}>Governance Bot</Title>
+          <Title order={6}></Title>
+        </div>
+
         <div style={{ maxHeight: "300px", overflow: "scroll" }}>
           <GovernanceContainer />
         </div>
