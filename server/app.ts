@@ -168,7 +168,7 @@ app.post("/call-handler", async (req, res) => {
           transcriptionProvider="${demoConfig.relayConfig.sttProvider}"
 
           welcomeGreeting="${greeting}"
-          welcomeGreetingInterruptible="true"
+          welcomeGreetingInterruptible="false"
 
           dtmfDetection="true"
           interruptByDtmf="true"
