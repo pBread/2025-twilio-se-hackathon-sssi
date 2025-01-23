@@ -28,9 +28,7 @@ export function injectContext(prompt: string, ctx: CallContext) {
   // Inject annotations into the prompt
   _p = _p.replace(
     "{{recallSuggestions}}",
-    ctx.suggestions
-      .map((suggestion, idx) => `(${idx + 1}) ${suggestion}`)
-      .join("\n")
+    ctx.suggestions.map((suggestion) => `- ${suggestion}`).join("\n")
   );
 
   // Inject context variables

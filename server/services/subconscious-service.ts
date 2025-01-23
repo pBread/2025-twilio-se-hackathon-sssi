@@ -237,7 +237,10 @@ export class SubsconsciousService {
 
     this.store.setContext({
       similarCalls,
-      suggestions: newFeedback.map((item) => item.annotation.comment),
+      suggestions: [
+        ...newFeedback.map((item) => item.annotation.comment),
+        ...this.store.call.callContext.suggestions,
+      ].slice(0, 20),
     });
 
     this.store.setInstructions(getInstructions(this.store.call.callContext));
