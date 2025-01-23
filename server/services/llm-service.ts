@@ -171,7 +171,7 @@ export class LLMService extends EventEmitter {
             "No params created on first iteration",
             JSON.stringify({ params, botText, botTool, chunk }, null, 2)
           );
-          throw Error(`No params created on first iteration`); // should be unreachable
+          this.abort();
         }
       }
     }
