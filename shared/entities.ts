@@ -86,7 +86,7 @@ export interface LogRecord {
 
 export type AddLogRecord = Omit<LogRecord, "seq" | "createdAt" | "id">;
 
-type LogSources = "Agent" | "Governance" | "Recall" | "Segment";
+export type LogSources = "Agent" | "Governance" | "Recall" | "Segment";
 
 export type LogActions =
   | "Approval"

@@ -6,7 +6,7 @@ import { useAppSelector } from "@/state/hooks";
 import { useCallLogs } from "@/state/logs";
 import { useCallQuestions } from "@/state/questions";
 import { Badge, Button, Paper, Table, Text, Title } from "@mantine/core";
-import { LogActions, LogRecord } from "@shared/entities";
+import { LogActions, LogRecord, LogSources } from "@shared/entities";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -61,10 +61,7 @@ function Conscious() {
       </Paper>
 
       <Paper className="paper">
-        <Title order={4}>Calibrations</Title>
-        <div style={{ minHeight: "400px", overflow: "scroll" }}>
-          <CalibrationsContainer />
-        </div>
+        <CalibrationsContainer />
       </Paper>
     </div>
   );
@@ -76,41 +73,88 @@ function CalibrationsContainer() {
 
   const logs = useCallLogs(callSid);
 
+  const [filter, setFilter] = useState<LogSources>(null);
+  function toggle(source: LogSources) {
+    if (filter === source) setFilter(null);
+    else setFilter(source);
+  }
+
   return (
-    <Table stickyHeader>
-      <Table.Thead>
-        <Table.Tr>
-          <Table.Th>Source</Table.Th>
-          <Table.Th>Description</Table.Th>
-          <Table.Th>Actions</Table.Th>
-        </Table.Tr>
-      </Table.Thead>
-      <Table.Tbody>
-        {logs.map((item) => (
-          <LogTableRow
-            key={`sw4-${item.id}`}
-            id={item.id}
-            source={item.source}
-            description={item.description}
-            actions={item.actions}
-          />
-        ))}
-      </Table.Tbody>
-    </Table>
+    <>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <Title order={4}>Calibrations</Title>
+        <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+          <Badge
+            onClick={() => toggle("Agent")}
+            style={{ cursor: "pointer" }}
+            variant={filter === "Agent" ? "filled" : "outline"}
+          >
+            Agent
+          </Badge>
+          <Badge
+            onClick={() => toggle("Governance")}
+            style={{ cursor: "pointer" }}
+            variant={filter === "Governance" ? "filled" : "outline"}
+          >
+            Governance
+          </Badge>
+          <Badge
+            onClick={() => toggle("Recall")}
+            style={{ cursor: "pointer" }}
+            variant={filter === "Recall" ? "filled" : "outline"}
+          >
+            Recall
+          </Badge>
+          <Badge
+            onClick={() => toggle("Segment")}
+            style={{ cursor: "pointer" }}
+            variant={filter === "Segment" ? "filled" : "outline"}
+          >
+            Segment
+          </Badge>
+        </div>
+      </div>
+      <div style={{ height: "500px", overflow: "scroll" }}>
+        <Table stickyHeader>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th style={{ width: "100px" }}>Source</Table.Th>
+              <Table.Th>Description</Table.Th>
+              <Table.Th style={{ width: "200px" }}>Actions</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {logs.map((item) => (
+              <LogTableRow
+                actions={item.actions}
+                description={item.description}
+                id={item.id}
+                key={`4tr-${item.id}`}
+                source={item.source}
+                isVisible={filter === null || item.source === filter}
+              />
+            ))}
+          </Table.Tbody>
+        </Table>
+      </div>
+    </>
   );
 }
 
 function LogTableRow({
-  id,
-  source,
-  description,
   actions,
-}: Pick<LogRecord, "actions" | "id" | "description" | "source">) {
+  description,
+  id,
+  isVisible,
+  source,
+}: Pick<LogRecord, "actions" | "id" | "description" | "source"> & {
+  isVisible: boolean;
+}) {
   const contentSplit = description?.split("\n") ?? [];
   const router = useRouter();
 
   return (
-    <Table.Tr>
+    <Table.Tr style={{ display: isVisible ? "" : "none" }}>
       <Table.Td>{source}</Table.Td>
       <Table.Td>
         <div style={{ maxHeight: "85px", overflow: "scroll" }}>
