@@ -14,6 +14,7 @@ import { safeParse } from "../utils/misc";
 import type { ConversationStore } from "./conversation-store";
 import { addSyncLogItem, getCallItem } from "./sync-service";
 import { vectorQuery } from "./vector-db-service";
+import startCase from "lodash.startcase";
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
@@ -96,55 +97,69 @@ export class SubsconsciousService {
 
       this.store.setContext({ governance: newTracker });
 
-      for (const procedureId of changes.newProcedures)
-        this.newProcedure(procedureId);
+      if (changes.newProcedures.length) {
+        addSyncLogItem({
+          callSid: this.store.call.callSid,
+          actions: ["Updated Context", "Updated Instructions"],
+          source: "Governance",
+          description:
+            `New producere${
+              changes.newProcedures.length > 1 ? "s" : ""
+            } identified: ` + changes.newProcedures.join(", "),
+        });
+      }
 
-      for (const change of changes.updatedSteps)
-        this.updateProcedure(
-          change.procedureId,
-          change.stepId,
-          change.newStatus,
-          change.oldStatus
+      if (changes.updatedSteps.length) {
+        let actions: LogActions[] = ["Updated Context"];
+        if (
+          changes.updatedSteps.some(
+            (step) =>
+              step.newStatus === "missed" || step.newStatus === "unresolved"
+          )
+        ) {
+          actions.push("Added System Message");
+        }
+
+        const updateMap = changes.updatedSteps.reduce(
+          (acc, step) =>
+            Object.assign(acc, {
+              [step.procedureId]:
+                step.procedureId in acc && Array.isArray(acc[step.procedureId])
+                  ? acc[step.procedureId].concat(step)
+                  : [step],
+            }),
+          {} as {
+            [key: string]: {
+              procedureId: string;
+              stepId: string;
+              oldStatus: GovernanceStepStatus;
+              newStatus: GovernanceStepStatus;
+            }[];
+          }
         );
+
+        let description = "";
+        Object.entries(updateMap).forEach(([procedureId, steps], idx) => {
+          if (idx !== 0) description += "\n";
+
+          description +=
+            `${startCase(procedureId)}: ` +
+            " " +
+            steps
+              .map((step) => `${step.stepId} is ${step.newStatus}`)
+              .join(", ");
+
+          description += "\n";
+        });
+
+        addSyncLogItem({
+          callSid: this.store.call.callSid,
+          actions,
+          source: "Governance",
+          description,
+        });
+      }
     }
-  };
-
-  newProcedure = (procedureId: string) => {
-    const description = `Added new procedure '${procedureId} to governance tracker'`;
-    log.info("sub.gov", description);
-
-    addSyncLogItem({
-      callSid: this.store.call.callSid,
-      actions: ["Updated Context", "Updated Instructions"],
-      description,
-      source: "Governance",
-    });
-  };
-
-  updateProcedure = (
-    procedureId: string,
-    step: string,
-    newStatus: GovernanceStepStatus,
-    oldStatus: GovernanceStepStatus = "not-started"
-  ) => {
-    const description = `Updated the '${procedureId}' procedure step '${step}' from '${oldStatus}' to '${newStatus}''`;
-    log.info("sub.gov", description);
-
-    let actions: LogActions[] = ["Updated Context"];
-
-    if (newStatus === "missed" || newStatus === "unresolved") {
-      actions.push("Added System Message");
-      this.store.addSystemMessage({
-        content: `The procedure ${procedureId} step ${step} was ${newStatus}`,
-      });
-    }
-
-    addSyncLogItem({
-      callSid: this.store.call.callSid,
-      actions,
-      description,
-      source: "Governance",
-    });
   };
 
   /****************************************************
