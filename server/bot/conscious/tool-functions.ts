@@ -568,16 +568,14 @@ export async function askAgent(args: AskAgent, svcs: FunctionServices) {
   addSyncQuestionListener(question.id, (update) => {
     log.debug("fns", "askAgent addSyncQuestionListener", update);
 
-    const content = `\
-IMPORTANT UPDATE: A human agent has responded to your previous question. It is critical that your next response informs the customer. 
+    let content =
+      "IMPORTANT UPDATE: A human agent has responded to your previous question. It is critical that your next response informs the customer.\n";
 
-They have ${question.status} your request. Here is the comment they provided: 
-== Start of Comment ==
-${question.answer}.
-== End of Comment ==
+    if (update.status !== "new")
+      content += `The request has been ${update.status}. \n`;
 
-As a reminder, here is the question you asked: ${question.question}
-`;
+    content += `Here is the comment they provided: ${question.answer}. \n\n`;
+    content += `As a reminder, here is the question you asked: ${question.question}`;
 
     svcs.store.setHumanInput(content);
   });
