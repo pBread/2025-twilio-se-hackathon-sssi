@@ -15,6 +15,7 @@ import type { ConversationStore } from "./conversation-store";
 import { addSyncLogItem, getCallItem } from "./sync-service";
 import { vectorQuery } from "./vector-db-service";
 import startCase from "lodash.startcase";
+import { getInstructions } from "../bot/conscious/instructions";
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
@@ -162,6 +163,32 @@ export class SubsconsciousService {
     }
   };
 
+  newProcedure = (procedureId: string) => {
+    addSyncLogItem({
+      callSid: this.store.call.callSid,
+      actions: ["Updated Context", "Updated Instructions"],
+      description: `New producere identified: ${startCase(procedureId)}`,
+      source: "Governance",
+    });
+  };
+
+  updateProcedure = (
+    procedureId: string,
+    step: string,
+    newStatus: GovernanceStepStatus,
+    oldStatus: GovernanceStepStatus = "not-started"
+  ) => {
+    const description = `${startCase(procedureId)}: ${step} is ${newStatus}'`;
+    let actions: LogActions[] = ["Updated Context"];
+
+    addSyncLogItem({
+      callSid: this.store.call.callSid,
+      actions,
+      description,
+      source: "Governance",
+    });
+  };
+
   /****************************************************
    Recall
   ****************************************************/
@@ -208,7 +235,12 @@ export class SubsconsciousService {
         }))
       );
 
-    this.store.setContext({ similarCalls });
+    this.store.setContext({
+      similarCalls,
+      suggestions: newFeedback.map((item) => item.annotation.comment),
+    });
+
+    this.store.setInstructions(getInstructions(this.store.call.callContext));
 
     if (!newFeedback.length) return;
 
