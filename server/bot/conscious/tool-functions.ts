@@ -566,8 +566,6 @@ export async function askAgent(args: AskAgent, svcs: FunctionServices) {
   await addSyncQuestion(question);
 
   addSyncQuestionListener(question.id, (update) => {
-    log.debug("fns", "askAgent addSyncQuestionListener", update);
-
     let content =
       "IMPORTANT UPDATE: A human agent has responded to your previous question. It is critical that your next response informs the customer.\n";
 
