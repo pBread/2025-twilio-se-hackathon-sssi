@@ -62,7 +62,7 @@ function Conscious() {
 
       <Paper className="paper">
         <Title order={4}>Calibrations</Title>
-        <div style={{ height: "400px", overflow: "scroll" }}>
+        <div style={{ minHeight: "400px", overflow: "scroll" }}>
           <CalibrationsContainer />
         </div>
       </Paper>
