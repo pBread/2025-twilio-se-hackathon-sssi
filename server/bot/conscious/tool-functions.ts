@@ -568,8 +568,10 @@ export async function askAgent(args: AskAgent, svcs: FunctionServices) {
   addSyncQuestionListener(question.id, (update) => {
     log.debug("fns", "askAgent addSyncQuestionListener", update);
 
+    if (update.status === "new") return;
+
     const content = `\
-IMPORTANT UPDATE: A human agent has responded to your previous question. It is critical that your next response informs the customer and 
+IMPORTANT UPDATE: A human agent has responded to your previous question. It is critical that your next response informs the customer. 
 
 They have ${question.status} your request. Here is the comment they provided: 
 == Start of Comment ==
