@@ -240,7 +240,7 @@ export class SubsconsciousService {
       suggestions: [
         ...newFeedback.map((item) => item.annotation.comment),
         ...this.store.call.callContext.suggestions,
-      ].slice(0, 20),
+      ].slice(0, 40),
     });
 
     this.store.setInstructions(getInstructions(this.store.call.callContext));
