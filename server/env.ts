@@ -14,6 +14,7 @@ export const STT_PROVIDER = process.env.STT_PROVIDER;
 export const TTS_PROVIDER = process.env.TTS_PROVIDER;
 export const TTS_VOICE = process.env.TTS_VOICE;
 export const TWILIO_DEFAULT_NUMBER = process.env.TWILIO_DEFAULT_NUMBER;
+export const WELCOME_INTERRUPTABLE = bool(process.env.WELCOME_INTERRUPTABLE);
 
 // Required environment variables must be explicitly defined in `.env` files or the runtime environment
 export const FLEX_QUEUE_SID = process.env.FLEX_QUEUE_SID as string;

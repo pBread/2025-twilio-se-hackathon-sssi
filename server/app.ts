@@ -38,10 +38,11 @@ import {
 const {
   ENABLE_GOVERNANCE,
   ENABLE_RECALL,
-  HOSTNAME,
   ENABLE_SUMMARIZATION,
+  HOSTNAME,
   PORT,
   RECORD_CALL,
+  WELCOME_INTERRUPTABLE,
 } = env;
 
 const { app } = ExpressWs(express());
@@ -168,7 +169,7 @@ app.post("/call-handler", async (req, res) => {
           transcriptionProvider="${demoConfig.relayConfig.sttProvider}"
 
           welcomeGreeting="${greeting}"
-          welcomeGreetingInterruptible="false"
+          welcomeGreetingInterruptible="${WELCOME_INTERRUPTABLE}"
 
           dtmfDetection="true"
           interruptByDtmf="true"
