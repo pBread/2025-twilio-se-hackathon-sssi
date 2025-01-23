@@ -70,6 +70,13 @@ export class ConversationStore {
       ...this.call,
       callContext: { ...this.call.callContext, ...ctx },
     };
+
+    this.addSystemMessage({
+      content: `Here is the database record of a person believed to be the person you are speaking to. Do not assume this is correct. You should confirm with them. Record: ${JSON.stringify(
+        this.call.callContext?.user
+      )}. `,
+      id: `context-${this.call.callSid}`,
+    });
   };
 
   msgMap: StoreMessageMap; // note: msgs are stored in a map. adding a message w/the same id as another will override the previous
