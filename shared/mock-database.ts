@@ -54,9 +54,9 @@ export const mockDatabase: {
       userId: "us-100001",
 
       confirmationNumber: "CR-24-12-01",
-      createdDateTime: "2024-11-15 10:30",
+      createdDateTime: makeDate(-2),
 
-      eventDate: "2024-12-21",
+      eventDate: "2025-01-01", // updated programmatically to match the event
       eventTime: "14:00",
 
       eventName: "Disney's The Lion King",
@@ -82,8 +82,8 @@ export const mockDatabase: {
       eventId: "ev-100004",
       userId: "us-100001",
       confirmationNumber: "CR-23-12-02",
-      createdDateTime: "2023-11-20 15:45",
-      eventDate: "2023-12-10",
+      createdDateTime: makeDate(-10),
+      eventDate: "2025-01-01", // updated programmatically to match the event
       eventTime: "15:00",
       eventName: "A Christmas Carol",
       eventDescription:
@@ -115,8 +115,8 @@ export const mockDatabase: {
       eventId: "ev-100006",
       userId: "us-100001",
       confirmationNumber: "CR-23-07-03",
-      createdDateTime: "2023-06-01 09:15",
-      eventDate: "2023-07-15",
+      createdDateTime: makeDate(-5),
+      eventDate: "2025-01-01", // updated programmatically to match the event
       eventTime: "14:00",
       eventName: "Pinocchio",
       eventDescription:
@@ -138,7 +138,7 @@ export const mockDatabase: {
       eventId: "ev-100008",
       userId: "us-100001",
       confirmationNumber: "CR-23-05-04",
-      createdDateTime: "2023-04-15 11:30",
+      createdDateTime: makeDate(-2),
       eventDate: "2023-05-20",
       eventTime: "19:00",
       eventName: "The Very Hungry Caterpillar Show",
@@ -161,8 +161,8 @@ export const mockDatabase: {
       eventId: "ev-100010",
       userId: "us-100001",
       confirmationNumber: "CR-22-12-05",
-      createdDateTime: "2022-12-01 14:20",
-      eventDate: "2022-12-30",
+      createdDateTime: makeDate(-5),
+      eventDate: "2025-01-01", // updated programmatically to match the event
       eventTime: "20:00",
       eventName: "Noon Year's Eve",
       eventDescription: "Chicago Children's Museum New Year's Eve Celebration",
@@ -185,8 +185,8 @@ export const mockDatabase: {
       eventId: "ev-100007",
       userId: "us-100002",
       confirmationNumber: "CR-24-03-06",
-      createdDateTime: "2023-12-15 09:00",
-      eventDate: "2024-03-22",
+      createdDateTime: makeDate(-2),
+      eventDate: "2025-01-30", // updated programmatically to match the event
       eventTime: "21:00",
       eventName: "Ultra Music Festival 2024",
       eventDescription: "Ultra Music Festival 2024 - 3 Day Pass",
@@ -218,8 +218,8 @@ export const mockDatabase: {
       eventId: "ev-100002",
       userId: "us-100002",
       confirmationNumber: "CR-24-02-07",
-      createdDateTime: "2024-01-10 10:15",
-      eventDate: "2024-02-15",
+      createdDateTime: makeDate(-2),
+      eventDate: "2022-02-15",
       eventTime: "19:00",
       eventName: "Bulls vs Celtics",
       eventDescription: "Chicago Bulls vs Boston Celtics - Regular Season Game",
@@ -251,8 +251,8 @@ export const mockDatabase: {
       eventId: "ev-100003",
       userId: "us-100002",
       confirmationNumber: "CR-23-08-08",
-      createdDateTime: "2023-07-01 16:45",
-      eventDate: "2023-08-12",
+      createdDateTime: makeDate(-4),
+      eventDate: "2025-03-12",
       eventTime: "20:00",
       eventName: "Deadmau5 Live",
       eventDescription: "Deadmau5 Presents: We Are Friends Tour",
@@ -283,8 +283,8 @@ export const mockDatabase: {
       eventId: "ev-100005",
       userId: "us-100002",
       confirmationNumber: "CR-23-03-09",
-      createdDateTime: "2023-02-15 13:30",
-      eventDate: "2023-03-18",
+      createdDateTime: makeDate(-5),
+      eventDate: "2025-03-18",
       eventTime: "19:30",
       eventName: "NCAA Tournament - Second Round",
       eventDescription: "NCAA March Madness Second Round",
@@ -315,8 +315,8 @@ export const mockDatabase: {
       eventId: "ev-100009",
       userId: "us-100002",
       confirmationNumber: "CR-23-01-10",
-      createdDateTime: "2023-01-15 11:30",
-      eventDate: "2023-01-28",
+      createdDateTime: makeDate(-1),
+      eventDate: "2025-02-15",
       eventTime: "19:30",
       eventName: "Bulls vs Bucks",
       eventDescription:
@@ -348,7 +348,7 @@ export const mockDatabase: {
   events: [
     {
       id: "ev-100001",
-      date: "2024-12-21",
+      date: makeDate(2),
       time: "14:00",
       city: "Chicago",
       state: "IL",
@@ -374,7 +374,7 @@ export const mockDatabase: {
     },
     {
       id: "ev-100002",
-      date: "2024-02-15",
+      date: makeDate(3),
       time: "19:00",
       city: "Chicago",
       state: "IL",
@@ -400,7 +400,7 @@ export const mockDatabase: {
     },
     {
       id: "ev-100003",
-      date: "2023-08-12",
+      date: makeDate(5),
       time: "20:00",
       city: "Chicago",
       state: "IL",
@@ -425,7 +425,7 @@ export const mockDatabase: {
     },
     {
       id: "ev-100004",
-      date: "2023-12-10",
+      date: makeDate(7),
       time: "15:00",
       city: "Chicago",
       state: "IL",
@@ -451,7 +451,7 @@ export const mockDatabase: {
     },
     {
       id: "ev-100005",
-      date: "2023-03-18",
+      date: makeDate(9),
       time: "19:30",
       city: "Las Vegas",
       state: "NV",
@@ -476,7 +476,7 @@ export const mockDatabase: {
     },
     {
       id: "ev-100006",
-      date: "2023-07-15",
+      date: makeDate(14),
       time: "14:00",
       city: "Chicago",
       state: "IL",
@@ -502,7 +502,7 @@ export const mockDatabase: {
     },
     {
       id: "ev-100007",
-      date: "2024-03-22",
+      date: makeDate(21),
       time: "21:00",
       city: "Miami",
       state: "FL",
@@ -528,7 +528,7 @@ export const mockDatabase: {
     },
     {
       id: "ev-100008",
-      date: "2023-05-20",
+      date: makeDate(21),
       time: "19:00",
       city: "Chicago",
       state: "IL",
@@ -553,7 +553,7 @@ export const mockDatabase: {
     },
     {
       id: "ev-100009",
-      date: "2023-01-28",
+      date: makeDate(21),
       time: "19:30",
       city: "Chicago",
       state: "IL",
@@ -579,7 +579,7 @@ export const mockDatabase: {
     },
     {
       id: "ev-100010",
-      date: "2022-12-30",
+      date: makeDate(21),
       time: "20:00",
       city: "Chicago",
       state: "IL",
