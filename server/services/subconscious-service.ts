@@ -104,7 +104,7 @@ export class SubsconsciousService {
           actions: ["Updated Context", "Updated Instructions"],
           source: "Governance",
           description:
-            `New producere${
+            `New procedure${
               changes.newProcedures.length > 1 ? "s" : ""
             } identified: ` + changes.newProcedures.join(", "),
         });
@@ -167,7 +167,7 @@ export class SubsconsciousService {
     addSyncLogItem({
       callSid: this.store.call.callSid,
       actions: ["Updated Context", "Updated Instructions"],
-      description: `New producere identified: ${startCase(procedureId)}`,
+      description: `New procedure identified: ${startCase(procedureId)}`,
       source: "Governance",
     });
   };
