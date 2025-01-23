@@ -1,19 +1,10 @@
-import twilio from "twilio";
-import type { SyncMapContext } from "twilio/lib/rest/sync/v1/service/syncMap";
 import type {
   EventRecord,
   OrderRecord,
   UserRecord,
 } from "../../shared/entities";
-import {
-  TWILIO_ACCOUNT_SID,
-  TWILIO_AUTH_TOKEN,
-  TWILIO_SYNC_SVC_SID,
-} from "../env";
 import log from "../logger";
 import { makeId } from "../utils/misc";
-
-const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
 export class DatabaseService {
   constructor() {
