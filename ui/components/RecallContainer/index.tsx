@@ -1,8 +1,6 @@
-import { TurnsTable } from "@/components/TurnsTable";
 import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
-import { Modal, Table, Text, Title } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { HoverCard, Table } from "@mantine/core";
 import { useRouter } from "next/router";
 
 export function RecallContainer() {
@@ -43,8 +41,6 @@ function RecallRow({
   score: number;
   title: string;
 }) {
-  const [opened, { open, close, toggle }] = useDisclosure(false);
-
   const call = useAppSelector((state) => selectCallById(state, callSid));
 
   return (
@@ -52,45 +48,22 @@ function RecallRow({
       <Table.Td>{call?.summary.title ?? title}</Table.Td>
       <Table.Td>{`${Math.round(score * 100)}%`}</Table.Td>
       <Table.Td>
-        <Modal opened={opened} onClose={close} title="Recall Summary" size="xl">
-          <div
-            style={{
-              padding: "12px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "10px",
-            }}
-          >
-            <div>
-              <Title order={5}>Call Summary</Title>
-              <Text> {call?.summary.title}</Text>
+        <HoverCard width={"500px"} position="left">
+          <HoverCard.Target>
+            <div style={{ display: "flex", justifyContent: "space-around" }}>
+              <a style={{ color: "blue", cursor: "pointer" }}>
+                {call?.feedback.length ?? 0}
+              </a>
             </div>
-            <div>
-              <Title order={5}>Annotations</Title>
-              <div>
-                {call?.feedback.map((item) => (
-                  <div key={`d302-${item.id}`}>
-                    <Text>{item.comment} </Text>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div>
-              <Title order={5}>Turns</Title>
-              <TurnsTable
-                callSid={callSid}
-                showSystem={false}
-                targets={call?.feedback.flatMap((feedback) => feedback.targets)}
-              />
-            </div>
-          </div>
-        </Modal>
-
-        <div style={{ display: "flex", justifyContent: "space-around" }}>
-          <a onClick={toggle} style={{ color: "blue", cursor: "pointer" }}>
-            {call?.feedback.length ?? 0}
-          </a>
-        </div>
+          </HoverCard.Target>
+          <HoverCard.Dropdown>
+            <ul>
+              {call?.feedback.map((item) => (
+                <li key={`${callSid}-${item.id}-d92`}>{item.comment}</li>
+              ))}
+            </ul>
+          </HoverCard.Dropdown>
+        </HoverCard>
       </Table.Td>
     </Table.Tr>
   );
