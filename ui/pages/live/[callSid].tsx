@@ -30,16 +30,22 @@ function Conscious() {
 
   const [showSystem, setShowSystem] = useState(false);
 
+  const title = useAppSelector(
+    (state) => selectCallById(state, callSid)?.summary?.title
+  );
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       <Paper
         style={{
           display: "flex",
           justifyContent: "space-between",
+          alignItems: "center",
         }}
         className="paper"
       >
         <Title order={3}>Conscious Bot</Title>
+        <Title order={6}>{title}</Title>
       </Paper>
 
       <Paper className="paper">
@@ -216,7 +222,9 @@ function Subconsciousness() {
         </div>
       </Paper>
       <Paper className="paper">
-        <Title order={4}>Discussion with Human Agent</Title>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <Title order={4}>Human in the Loop</Title>
+        </div>
         <HumanInput />
       </Paper>
       <Paper className="paper">
