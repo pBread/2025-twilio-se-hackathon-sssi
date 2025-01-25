@@ -9,7 +9,7 @@ import { Badge, Button, Paper, Table, Text, Title } from "@mantine/core";
 import { LogActions, LogRecord, LogSources } from "@shared/entities";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function LiveCall() {
   return (
@@ -84,6 +84,10 @@ function CalibrationsContainer() {
     if (filter === source) setFilter(null);
     else setFilter(source);
   }
+
+  useEffect(() => {
+    setFilter(null);
+  }, [callSid]);
 
   return (
     <>
