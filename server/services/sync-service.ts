@@ -44,16 +44,16 @@ import type { EntityService } from "./database-service";
 const rateLimitConfig = {
   interval: 1000, // 1000 ms == 1 second
   rate: 100, // 30 API calls per interval
-  maxDelay: 30 * 1000, // an API call delayed > 10 sec is rejected
+  maxDelay: 30 * 1000, // ms until an API call is cancelled
 };
 
 const limit = pRateLimit({ ...rateLimitConfig, concurrency: 50 }); // global limiter applied to everything to ensure concurrency & rates don't exceed Sync limitations
 
-function composeDoubleLimiter() {
+function composeDoubleLimiter(sec: number = 5) {
   const extraLimiter = pRateLimit({
     ...rateLimitConfig,
     concurrency: 1,
-    maxDelay: 5 * 1000,
+    maxDelay: sec * 1000,
   });
   return async function <T>(fn: () => Promise<T>): Promise<T> {
     return limit(() => extraLimiter(fn));
@@ -62,7 +62,7 @@ function composeDoubleLimiter() {
 
 const limitConfig = composeDoubleLimiter(); // limiter to avoid race conditions for demo config
 const limitCall = composeDoubleLimiter(); // limiter to avoid race conditions for call items
-const limitMsg = composeDoubleLimiter(); // limiter to avoid race conditions for messages
+const limitMsg = composeDoubleLimiter(10); // limiter to avoid race conditions for messages
 
 const twilio = Twilio(TWILIO_API_KEY, TWILIO_API_SECRET, {
   accountSid: TWILIO_ACCOUNT_SID,

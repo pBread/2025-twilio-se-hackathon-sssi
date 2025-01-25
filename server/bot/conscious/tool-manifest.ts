@@ -53,23 +53,23 @@ const tools: ChatCompletionTool[] = [
       },
     },
   },
-  {
-    type: "function",
-    function: {
-      name: "findEventsByFuzzySearch",
-      description: "Search for events using natural language description.",
-      parameters: {
-        type: "object",
-        properties: {
-          query: {
-            type: "string",
-            description: "Natural language description of the event.",
-          },
-        },
-        required: ["query"],
-      },
-    },
-  },
+  // {
+  //   type: "function",
+  //   function: {
+  //     name: "findEventsByFuzzySearch",
+  //     description: "Search for events using natural language description.",
+  //     parameters: {
+  //       type: "object",
+  //       properties: {
+  //         query: {
+  //           type: "string",
+  //           description: "Natural language description of the event.",
+  //         },
+  //       },
+  //       required: ["query"],
+  //     },
+  //   },
+  // },
   {
     type: "function",
     function: {
