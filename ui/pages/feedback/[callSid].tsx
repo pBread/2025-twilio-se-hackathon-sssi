@@ -365,7 +365,9 @@ function TurnTable({ feedbackId }: { feedbackId: string }) {
   });
 
   const callMsgs = useCallMessages(callSid);
-  const msgs = callMsgs.filter((msg) => msg.role !== "system");
+  const msgs = callMsgs.filter(
+    (msg) => msg.role !== "system" && msg.flag !== "no-display"
+  );
 
   const setTargets = useSetTargets(callSid, feedbackId);
 
