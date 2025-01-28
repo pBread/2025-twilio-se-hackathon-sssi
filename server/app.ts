@@ -111,9 +111,9 @@ app.post("/call-handler", async (req, res) => {
         ],
       };
 
-    const title = user
-      ? `A call from ${user.firstName} ${user.lastName}`
-      : `A call from ${From}`;
+    const fullName = `${user?.firstName} ${user?.lastName}`;
+
+    const title = user ? `A call from ${fullName}` : `A call from ${From}`;
 
     const callData: CallRecord = {
       id: CallSid,
@@ -134,8 +134,6 @@ app.post("/call-handler", async (req, res) => {
     await initCall(callData);
     const store = new ConversationStore(callData);
     const subconscious = new SubsconsciousService(store);
-
-    const fullName = `${user?.firstName} ${user?.lastName}`;
 
     subconscious.addSegmentLog(
       `Fetched ${fullName}'s the customer's Segment Profile and provided it to the bot.`
