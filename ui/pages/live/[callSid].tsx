@@ -168,15 +168,13 @@ function LogTableRow({
       </Table.Td>
       <Table.Td>
         <div style={{ maxHeight: "85px", overflow: "scroll" }}>
-          {contentSplit?.length <= 1 && contentSplit?.join("")}}
+          {contentSplit?.length <= 1 && contentSplit?.join("")}
           {contentSplit?.length > 1 && (
             <div
               style={{ display: "flex", flexDirection: "column", gap: "6px" }}
             >
               {contentSplit?.map((content, idx) => (
-                <div key={`${router.asPath}-${content}-${idx}`}>
-                  {content}
-                </div>
+                <div key={`${router.asPath}-${content}-${idx}`}>{content}</div>
               ))}
             </div>
           )}
