@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@formkit/auto-animate": "^0.8.2",
     "@mantine/core": "^7.15.3",
     "@mantine/hooks": "^7.15.3",
     "@pinecone-database/pinecone": "^4.1.0",

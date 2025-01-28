@@ -10,6 +10,7 @@ import { LogActions, LogRecord, LogSources } from "@shared/entities";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 export default function LiveCall() {
   return (
@@ -77,13 +78,17 @@ function CalibrationsContainer() {
   const router = useRouter();
   const callSid = router.query.callSid as string;
 
-  const logs = useCallLogs(callSid);
-
   const [filter, setFilter] = useState<LogSources>(null);
   function toggle(source: LogSources) {
     if (filter === source) setFilter(null);
     else setFilter(source);
   }
+
+  const logs = useCallLogs(callSid)?.filter(
+    (log) => filter === null || log.source === filter
+  );
+
+  const [parent, enableAnimations] = useAutoAnimate({});
 
   return (
     <>
@@ -124,20 +129,19 @@ function CalibrationsContainer() {
         <Table stickyHeader>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th style={{ width: "100px" }}>Source</Table.Th>
+              <Table.Th style={{ width: "100px" }}></Table.Th>
               <Table.Th>Description</Table.Th>
               <Table.Th style={{ width: "200px" }}>Actions</Table.Th>
             </Table.Tr>
           </Table.Thead>
-          <Table.Tbody>
-            {logs.map((item) => (
+          <Table.Tbody ref={parent}>
+            {logs.map((item, idx) => (
               <LogTableRow
                 actions={item.actions}
                 description={item.description}
                 id={item.id}
                 key={`4tr-${item.id}`}
                 source={item.source}
-                isVisible={filter === null || item.source === filter}
               />
             ))}
           </Table.Tbody>
@@ -151,16 +155,13 @@ function LogTableRow({
   actions,
   description,
   id,
-  isVisible,
   source,
-}: Pick<LogRecord, "actions" | "id" | "description" | "source"> & {
-  isVisible: boolean;
-}) {
+}: Pick<LogRecord, "actions" | "id" | "description" | "source"> & {}) {
   const contentSplit = description?.split("\n") ?? [];
   const router = useRouter();
 
   return (
-    <Table.Tr style={{ display: isVisible ? "" : "none" }}>
+    <Table.Tr style={{}}>
       <Table.Td>
         <div style={{ alignContent: "baseline", fontWeight: "bold" }}>
           {source}

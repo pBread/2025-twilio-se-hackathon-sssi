@@ -1,13 +1,19 @@
 import { selectCallById } from "@/state/calls";
 import { useAppSelector } from "@/state/hooks";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { HoverCard, Table } from "@mantine/core";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 export function RecallContainer() {
   const router = useRouter();
   const callSid = router.query.callSid as string;
 
   const call = useAppSelector((state) => selectCallById(state, callSid));
+
+  const [parent, enableAnimations] = useAutoAnimate({});
+
+  const [del, setDel] = useState(0);
 
   return (
     <Table verticalSpacing={2} stickyHeader>
@@ -18,8 +24,8 @@ export function RecallContainer() {
           <Table.Th>Notes</Table.Th>
         </Table.Tr>
       </Table.Thead>
-      <Table.Tbody>
-        {call?.callContext.similarCalls.map((item) => (
+      <Table.Tbody ref={parent}>
+        {call?.callContext?.similarCalls?.map((item) => (
           <RecallRow
             key={`rr29-${item.id}-${callSid}`}
             callSid={item.callSid}
