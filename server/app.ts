@@ -168,9 +168,6 @@ app.post("/call-handler", async (req, res) => {
           
           transcriptionProvider="${demoConfig.relayConfig.sttProvider}"
 
-          welcomeGreeting="${greeting}"
-          welcomeGreetingInterruptible="${WELCOME_INTERRUPTABLE}"
-
           dtmfDetection="true"
           interruptByDtmf="true"
           >
@@ -238,8 +235,13 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
 
     store.setInstructions(getInstructions(store.call.callContext));
 
-    const greeting = ev.customParameters?.greeting;
-    if (greeting) store.addBotText({ content: greeting, id: "greeting" });
+    const greeting =
+      "Hello you've reached Owl Tickets. It will be approximately 6 minutes to speak with a live agent. Can I gather a few details from you while we wait?";
+
+    if (greeting)
+      store.addBotText({ content: greeting, id: `greeting-${callSid}` });
+    const chunks = greeting.split(".");
+    chunks.forEach((chunk, idx) => relay.sendTextToken(chunk, true));
 
     if (ENABLE_GOVERNANCE) subconscious.startGovernance();
     if (ENABLE_RECALL) subconscious.startRecall();
