@@ -6,6 +6,7 @@ import type {
   AddHumanDTMF,
   AddHumanText,
   AddSystemMessage,
+  AIQuestion,
   BotDTMF,
   BotText,
   BotTool,
@@ -29,7 +30,6 @@ import {
 export class ConversationStore {
   constructor(call: CallRecord) {
     this.msgMap = new StoreMessageMap();
-    this.parkingLot = [];
 
     this._call = JSON.parse(JSON.stringify(call)) as CallRecord;
   }
@@ -47,9 +47,18 @@ export class ConversationStore {
     this._call = call;
   }
 
-  parkingLot: string[]; // will be injected before the next completion
-  setHumanInput = (content: string) => {
-    this.parkingLot.push(content);
+  parkingLot: string | undefined;
+  setHumanInput = (update: AIQuestion) => {
+    let content =
+      "IMPORTANT UPDATE: A human agent has responded to your previous question. It is critical that your next response informs the customer.\n";
+
+    if (update.status !== "new")
+      content += `The request has been ${update.status}. \n`;
+
+    content += `Here is the comment they provided: ${update.answer}. \n\n`;
+    content += `As a reminder, here is the question you asked: ${update.question}`;
+
+    this.parkingLot = content;
   };
 
   setInstructions = (instructions: string) => {

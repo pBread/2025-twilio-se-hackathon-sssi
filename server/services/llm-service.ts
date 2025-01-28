@@ -41,11 +41,8 @@ export class LLMService extends EventEmitter {
    */
   doCompletion = async (): Promise<undefined | Promise<any>> => {
     // inject the "parking lot" into system messages. this is to ensure human messages are injected into the conscious bot before the next completion so it's top of mind
-    if (this.store.parkingLot.length) {
-      while (this.store.parkingLot.length) {
-        const content = this.store.parkingLot.shift() as string;
-        this.store.addSystemMessage({ content });
-      }
+    if (this.store.parkingLot?.length) {
+      this.store.addSystemMessage({ content: this.store.parkingLot });
       this.store.addHumanText({
         content: "What did the human agent tell you?",
         flag: "no-display",

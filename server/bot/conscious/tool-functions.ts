@@ -570,16 +570,7 @@ export async function askAgent(args: AskAgent, svcs: FunctionServices) {
   let isCommentAdded = false;
 
   addSyncQuestionListener(question.id, (update) => {
-    let content =
-      "IMPORTANT UPDATE: A human agent has responded to your previous question. It is critical that your next response informs the customer.\n";
-
-    if (update.status !== "new")
-      content += `The request has been ${update.status}. \n`;
-
-    content += `Here is the comment they provided: ${question.answer}. \n\n`;
-    content += `As a reminder, here is the question you asked: ${question.question}`;
-
-    svcs.store.setHumanInput(content);
+    svcs.store.setHumanInput(update);
 
     if (update?.status !== "new" && !isApprovalAdded) {
       isApprovalAdded = true;
