@@ -95,7 +95,7 @@ const calls: CallRecord[] = [
     from: DEVELOPERS_PHONE_NUMBER,
     to: "+18444405503",
     createdAt: new Date().toString(),
-    summary: { title: "Customer called in to modify an order." },
+    summary: { title: "Mobile Ticket Access Issue" },
     callContext,
     hasVector: true,
     feedback: [
@@ -127,7 +127,7 @@ const calls: CallRecord[] = [
     callStatus: "completed",
     from: DEVELOPERS_PHONE_NUMBER,
     to: "+18444405503",
-    summary: { title: "Customer called in to modify an order." },
+    summary: { title: "Verify Event Date Change" },
     createdAt: new Date().toString(),
     hasVector: true,
     callContext: {

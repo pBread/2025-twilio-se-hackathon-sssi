@@ -100,3 +100,7 @@ Flex should be running on `localhost:3000`
 ### Update dummy data dates
 
 - add a make date function to ensure the database is constantly up to date
+
+### Check the TWILIO_FN_BASE_URL
+
+- only includes the base url, not the /sync-token

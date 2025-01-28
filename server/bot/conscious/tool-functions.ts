@@ -233,25 +233,25 @@ findEvents.getFillerPhrase = (
  Find Events By Fuzzy Search
 ****************************************************/
 
-interface FindEventsByFuzzySearch {
-  query: string;
-}
+// interface FindEventsByFuzzySearch {
+//   query: string;
+// }
 
-export async function findEventsByFuzzySearch(
-  args: FindEventsByFuzzySearch,
-  svcs: FunctionServices
-) {
-  // Placeholder for fuzzy search implementation
-  log.info("bot.fn", "findEventsByFuzzySearch placeholder called");
-  return [];
-}
+// export async function findEventsByFuzzySearch(
+//   args: FindEventsByFuzzySearch,
+//   svcs: FunctionServices
+// ) {
+//   // Placeholder for fuzzy search implementation
+//   log.info("bot.fn", "findEventsByFuzzySearch placeholder called");
+//   return [];
+// }
 
-findEventsByFuzzySearch.getFillerPhrase = (
-  args: FindEventsByFuzzySearch,
-  svcs: FunctionServices
-) => {
-  return "Looking up events that match your description. Just a moment.";
-};
+// findEventsByFuzzySearch.getFillerPhrase = (
+//   args: FindEventsByFuzzySearch,
+//   svcs: FunctionServices
+// ) => {
+//   return "Looking up events that match your description. Just a moment.";
+// };
 
 /****************************************************
  Find User
@@ -574,6 +574,8 @@ export async function askAgent(args: AskAgent, svcs: FunctionServices) {
   let isApprovalAdded = false;
   let isCommentAdded = false;
 
+  let isCompletionStarted = false;
+
   addSyncQuestionListener(question.id, (update) => {
     let content =
       "IMPORTANT UPDATE: A human agent has responded to your previous question. It is critical that your next response informs the customer.\n";
@@ -607,6 +609,11 @@ export async function askAgent(args: AskAgent, svcs: FunctionServices) {
         description: update?.answer,
         source: "Agent",
       });
+    }
+
+    if (!isCompletionStarted) {
+      isCompletionStarted = true;
+      svcs.llm.doCompletion();
     }
   });
 

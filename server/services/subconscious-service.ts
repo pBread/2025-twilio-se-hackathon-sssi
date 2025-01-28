@@ -32,8 +32,8 @@ export class SubsconsciousService {
     opts: Partial<SubconsciousOptions> = {}
   ) {
     this.opts = {
-      governanceFrequency: opts.governanceFrequency ?? 10 * 1000,
-      recallFrequency: opts.recallFrequency ?? 5 * 1000,
+      governanceFrequency: opts.governanceFrequency ?? 7 * 1000,
+      recallFrequency: opts.recallFrequency ?? 3 * 1000,
       summarizationFrequency: opts.summarizationFrequency ?? 5 * 1000,
     };
   }

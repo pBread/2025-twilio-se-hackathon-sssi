@@ -36,12 +36,14 @@ interface InitialState {
   connectionState: ConnectionState;
   callMessageListeners: Record<string, "new" | "done">;
   demo?: DemoConfiguration;
+  newCallId: string | undefined;
 }
 
 const initialState: InitialState = {
   connectionState: "unknown",
   callMessageListeners: {},
   demo: undefined,
+  newCallId: undefined,
 };
 
 export const syncSlice = createSlice({
@@ -62,14 +64,22 @@ export const syncSlice = createSlice({
     setSyncConnectionState(state, { payload }: PayloadAction<ConnectionState>) {
       state.connectionState = payload;
     },
+
+    setNewCallId(state, { payload }: PayloadAction<string | undefined>) {
+      state.newCallId = payload;
+    },
   },
 });
 
 /****************************************************
  Actions
 ****************************************************/
-export const { setCallMsgListener, setDemoConfig, setSyncConnectionState } =
-  syncSlice.actions;
+export const {
+  setCallMsgListener,
+  setDemoConfig,
+  setNewCallId,
+  setSyncConnectionState,
+} = syncSlice.actions;
 
 /****************************************************
  Selectors
@@ -84,6 +94,10 @@ export function getConnectionState(state: RootState) {
 
 function getListenerStatus(state: RootState, callSid: string) {
   return getSlice(state).callMessageListeners[callSid];
+}
+
+export function getNewCallSid(state: RootState) {
+  return getSlice(state).newCallId;
 }
 
 /****************************************************
@@ -188,6 +202,7 @@ export function useAddCallMapListeners() {
     syncClient.map(SYNC_CALL_MAP_NAME).then((map) => {
       map.on("itemAdded", (ev) => {
         dispatch(setOneCall(ev.item.data));
+        dispatch(setNewCallId(ev.item.data?.callSid));
       });
 
       map.on("itemUpdated", (ev) => {

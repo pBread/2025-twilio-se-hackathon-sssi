@@ -11,23 +11,6 @@ export const mockDatabase: {
   events: EventRecord[];
 } = {
   users: [
-    // Claire Dunphy has 3 kids.
-    // only books "family-friendly" events
-    // rarely buys options, never anything premium
-    // always buys 5 tickets
-    {
-      id: "us-100001",
-      firstName: "Claire",
-      lastName: "Dunphy",
-      email: "cdunphy@gmail.com",
-      mobilePhone: "+12223334444",
-      city: "Evanston",
-      state: "IL",
-      age: "34",
-      membership: "none",
-      paymentMethods: [{ type: "card", lastFour: "1234" }],
-    },
-
     // Jerry Maguire is an affluent guy who likes basketball & edm concerts
     // attends 21-over
     // often buys premium options
@@ -42,6 +25,23 @@ export const mockDatabase: {
       state: "IL",
       age: "26",
       membership: "gold",
+      paymentMethods: [{ type: "card", lastFour: "1234" }],
+    },
+
+    // Claire Dunphy has 3 kids.
+    // only books "family-friendly" events
+    // rarely buys options, never anything premium
+    // always buys 5 tickets
+    {
+      id: "us-100001",
+      firstName: "Claire",
+      lastName: "Dunphy",
+      email: "cdunphy@gmail.com",
+      mobilePhone: "+12223334444",
+      city: "Evanston",
+      state: "IL",
+      age: "34",
+      membership: "none",
       paymentMethods: [{ type: "card", lastFour: "1234" }],
     },
   ],
