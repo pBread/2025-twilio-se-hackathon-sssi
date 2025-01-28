@@ -161,16 +161,22 @@ function LogTableRow({
 
   return (
     <Table.Tr style={{ display: isVisible ? "" : "none" }}>
-      <Table.Td>{source}</Table.Td>
+      <Table.Td>
+        <div style={{ alignContent: "baseline", fontWeight: "bold" }}>
+          {source}
+        </div>
+      </Table.Td>
       <Table.Td>
         <div style={{ maxHeight: "85px", overflow: "scroll" }}>
-          {contentSplit?.length <= 1 && contentSplit?.join("")}
+          {contentSplit?.length <= 1 && contentSplit?.join("")}}
           {contentSplit?.length > 1 && (
             <div
               style={{ display: "flex", flexDirection: "column", gap: "6px" }}
             >
               {contentSplit?.map((content, idx) => (
-                <div key={`${router.asPath}-${content}-${idx}`}>{content}</div>
+                <div key={`${router.asPath}-${content}-${idx}`}>
+                  {content}
+                </div>
               ))}
             </div>
           )}
@@ -195,15 +201,14 @@ function LogTableRow({
 }
 
 function ActionBadge({ action }: { action: LogActions }) {
-  let color = ""; // https://mantine.dev/core/badge/
+  if (action === "Approval") return <Badge color="green">Approved</Badge>;
+  if (action === "Rejection") return <Badge color="red">Approved</Badge>;
 
-  if (action === "Approval") color = "green";
-  if (action === "Rejection") color = "red";
   // if (action === "Added System Message") color = "indigo";
   // if (action === "Updated Context") color = "teal";
-  if (action === "Updated Instructions") color = "gray";
+  // if (action === "Updated Instructions") color = "gray";
 
-  return <Badge color={color}>{action} </Badge>;
+  return <div>{action}</div>;
 }
 
 function Subconsciousness() {
