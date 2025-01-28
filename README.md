@@ -1,5 +1,9 @@
 # Twilio SE Hackathon 2025
 
+# Demo Checklist
+
+- Confirm parking lot is working
+
 # Getting Started
 
 ## Populate Root Env Variables
