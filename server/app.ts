@@ -7,7 +7,6 @@ import {
   BotText,
   CallContext,
   CallRecord,
-  UserRecord,
 } from "../shared/entities";
 import { getInstructions } from "./bot/conscious/instructions";
 import { getGreeting } from "./bot/greetings";
@@ -82,16 +81,17 @@ app.post("/call-handler", async (req, res) => {
     };
 
     const db = await dbPromise;
-    let user: UserRecord | undefined;
+    let user = await db.users.getById("us-100002");
 
-    if (demoConfig.segment.isFetchProfileEnabled) {
-      log.info("/call-handler", `fetching segment profile`);
-      user = await db.users.getByChannel(From);
-    } else
-      log.warn(
-        `/call-handler`,
-        "did not fetch segment profile because it is disabled"
-      );
+    // if (demoConfig.segment.isFetchProfileEnabled) {
+    //   log.info("/call-handler", `fetching segment profile`);
+    //   user = await db.users.getByChannel(From);
+    // } else
+    //   log.warn(
+    //     `/call-handler`,
+    //     "did not fetch segment profile because it is disabled"
+    //   );
+
     if (user) {
       ctx.user = user;
       // update the call context to include the procedural steps that have been accomplished
@@ -135,8 +135,10 @@ app.post("/call-handler", async (req, res) => {
     const store = new ConversationStore(callData);
     const subconscious = new SubsconsciousService(store);
 
+    const fullName = `${user?.firstName} ${user?.lastName}`;
+
     subconscious.addSegmentLog(
-      "Fetched the customer's Segment Profile and provided it to the bot."
+      `Fetched ${fullName}'s the customer's Segment Profile and provided it to the bot.`
     );
 
     subconscious.newProcedure("identify_user");
@@ -153,9 +155,9 @@ app.post("/call-handler", async (req, res) => {
       );
     }
 
-    subconscious.addSegmentLog(
-      "Provided the customer's interaction history to the bot."
-    );
+    subconscious.addSegmentLog(`${fullName} is a Gold Member`);
+
+    // subconscious.addSegmentLog(`${fullName} is `);
 
     const greeting = getGreeting(ctx);
 
