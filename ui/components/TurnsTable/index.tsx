@@ -20,8 +20,8 @@ export function TurnsTable({
     <Table stickyHeader>
       <Table.Thead>
         <Table.Tr>
-          <Table.Th>Role</Table.Th>
-          <Table.Th>Type</Table.Th>
+          <Table.Th style={{ width: "60px" }}>Role</Table.Th>
+          <Table.Th style={{ width: "60px" }}>Type</Table.Th>
           <Table.Th>Content</Table.Th>
         </Table.Tr>
       </Table.Thead>
