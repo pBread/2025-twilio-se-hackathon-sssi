@@ -570,6 +570,8 @@ export async function askAgent(args: AskAgent, svcs: FunctionServices) {
   let isCommentAdded = false;
 
   addSyncQuestionListener(question.id, (update) => {
+    log.debug("bot.fns", "addSyncQuestionListener", question, update);
+
     svcs.store.setHumanInput(update);
 
     if (update?.status !== "new" && !isApprovalAdded) {

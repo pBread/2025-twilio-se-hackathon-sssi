@@ -47,6 +47,8 @@ export class LLMService extends EventEmitter {
         content: "What did the human agent tell you?",
         flag: "no-display",
       });
+
+      this.store.parkingLot = undefined;
     }
 
     const messages = this.getMessageParams();
