@@ -384,6 +384,8 @@ app.post("/api/ai-question/:questionId", async (req, res) => {
  Demo Managment
 ****************************************************/
 app.get("/api/reset", async (req, res) => {
+  res.send("disabled");
+  return;
   await vectorDbBlocker;
   await setupSync();
   await clearSyncData();
@@ -396,6 +398,8 @@ app.get("/api/reset", async (req, res) => {
 });
 
 app.get("/api/clear", async (req, res) => {
+  res.send("disabled");
+  return;
   await vectorDbBlocker;
   await setupSync();
   await clearSyncData();
