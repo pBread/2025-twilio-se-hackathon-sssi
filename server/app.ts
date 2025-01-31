@@ -7,7 +7,6 @@ import {
   BotText,
   CallContext,
   CallRecord,
-  UserRecord,
 } from "../shared/entities";
 import { getInstructions } from "./bot/conscious/instructions";
 import { getGreeting } from "./bot/greetings";
@@ -43,6 +42,8 @@ const {
   PORT,
   RECORD_CALL,
   WELCOME_INTERRUPTABLE,
+  TTS_PROVIDER,
+  TTS_VOICE,
 } = env;
 
 const { app } = ExpressWs(express());
@@ -82,16 +83,17 @@ app.post("/call-handler", async (req, res) => {
     };
 
     const db = await dbPromise;
-    let user: UserRecord | undefined;
+    let user = await db.users.getById("us-100002");
 
-    if (demoConfig.segment.isFetchProfileEnabled) {
-      log.info("/call-handler", `fetching segment profile`);
-      user = await db.users.getByChannel(From);
-    } else
-      log.warn(
-        `/call-handler`,
-        "did not fetch segment profile because it is disabled"
-      );
+    // if (demoConfig.segment.isFetchProfileEnabled) {
+    //   log.info("/call-handler", `fetching segment profile`);
+    //   user = await db.users.getByChannel(From);
+    // } else
+    //   log.warn(
+    //     `/call-handler`,
+    //     "did not fetch segment profile because it is disabled"
+    //   );
+
     if (user) {
       ctx.user = user;
       // update the call context to include the procedural steps that have been accomplished
@@ -111,9 +113,9 @@ app.post("/call-handler", async (req, res) => {
         ],
       };
 
-    const title = user
-      ? `A call from ${user.firstName} ${user.lastName}`
-      : `A call from ${From}`;
+    const fullName = `${user?.firstName} ${user?.lastName}`;
+
+    const title = user ? `A call from ${fullName}` : `A call from ${From}`;
 
     const callData: CallRecord = {
       id: CallSid,
@@ -136,7 +138,7 @@ app.post("/call-handler", async (req, res) => {
     const subconscious = new SubsconsciousService(store);
 
     subconscious.addSegmentLog(
-      "Fetched the customer's Segment Profile and provided it to the bot."
+      `Fetched ${fullName}'s the customer's Segment Profile and provided it to the bot.`
     );
 
     subconscious.newProcedure("identify_user");
@@ -153,9 +155,9 @@ app.post("/call-handler", async (req, res) => {
       );
     }
 
-    subconscious.addSegmentLog(
-      "Provided the customer's interaction history to the bot."
-    );
+    subconscious.addSegmentLog(`${fullName} is a Gold Member`);
+
+    // subconscious.addSegmentLog(`${fullName} is `);
 
     const greeting = getGreeting(ctx);
 
@@ -163,10 +165,13 @@ app.post("/call-handler", async (req, res) => {
 <Response>
     <Connect action="https://${HOSTNAME}/live-agent-handoff">
         <ConversationRelay url="wss://${HOSTNAME}/convo-relay/${CallSid}" 
-          ttsProvider="${demoConfig.relayConfig.ttsProvider}" 
-          voice="${demoConfig.relayConfig.ttsVoice}"
+          ttsProvider="${TTS_PROVIDER}" 
+          voice="${TTS_VOICE}"
           
           transcriptionProvider="${demoConfig.relayConfig.sttProvider}"
+
+          welcomeGreeting="${greeting}"
+          welcomeGreetingInterruptible="${WELCOME_INTERRUPTABLE}"
 
           dtmfDetection="true"
           interruptByDtmf="true"
@@ -235,13 +240,8 @@ app.ws("/convo-relay/:callSid", async (ws, req) => {
 
     store.setInstructions(getInstructions(store.call.callContext));
 
-    const greeting =
-      "Hello you've reached Owl Tickets. It will be approximately 6 minutes to speak with a live agent. Can I gather a few details from you while we wait?";
-
-    if (greeting)
-      store.addBotText({ content: greeting, id: `greeting-${callSid}` });
-    const chunks = greeting.split(".");
-    chunks.forEach((chunk, idx) => relay.sendTextToken(chunk, true));
+    const greeting = ev.customParameters?.greeting;
+    if (greeting) store.addBotText({ content: greeting, id: "greeting" });
 
     if (ENABLE_GOVERNANCE) subconscious.startGovernance();
     if (ENABLE_RECALL) subconscious.startRecall();
@@ -386,6 +386,8 @@ app.post("/api/ai-question/:questionId", async (req, res) => {
  Demo Managment
 ****************************************************/
 app.get("/api/reset", async (req, res) => {
+  res.send("disabled");
+  return;
   await vectorDbBlocker;
   await setupSync();
   await clearSyncData();
@@ -398,6 +400,8 @@ app.get("/api/reset", async (req, res) => {
 });
 
 app.get("/api/clear", async (req, res) => {
+  res.send("disabled");
+  return;
   await vectorDbBlocker;
   await setupSync();
   await clearSyncData();
