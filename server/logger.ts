@@ -45,6 +45,8 @@ const COLORS = {
   cyan: "\x1b[36m",
   green: "\x1b[32m",
   magenta: "\x1b[35m",
+
+  clear: "\x1b[0m",
 };
 
 const Levels = {
@@ -184,6 +186,10 @@ export class StopwatchLogger {
   error = (ns: string, ...msg: any) => this.log("ERROR", ns, ...msg);
   info = (ns: string, ...msg: any) => this.log("INFO", ns, ...msg);
   warn = (ns: string, ...msg: any) => this.log("WARN", ns, ...msg);
+
+  green = (...msgs: any) => console.log(COLORS.green, ...msgs, COLORS.clear);
+  red = (...msgs: any) => console.log(COLORS.red, ...msgs, COLORS.clear);
+  yellow = (...msgs: any) => console.log(COLORS.yellow, ...msgs, COLORS.clear);
 }
 
 const log = new StopwatchLogger();

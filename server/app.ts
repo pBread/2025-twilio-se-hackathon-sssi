@@ -160,7 +160,7 @@ app.post("/call-handler", async (req, res) => {
     // subconscious.addSegmentLog(`${fullName} is `);
 
     const greeting = getGreeting(ctx);
-
+    // Jessica, Eric, Roger, Sarah, Alice, Aria, Bill, Brian, Callum, Charlie, Charlotte, Chris, Daniel, Eric, George, Jessica, Laura, Liam, Lily, Matilda, River, Roger, Sarah, Will
     const twiml = `\
 <Response>
     <Connect action="https://${HOSTNAME}/live-agent-handoff">
