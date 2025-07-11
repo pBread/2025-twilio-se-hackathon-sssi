@@ -1,5 +1,7 @@
 # Twilio SE Hackathon 2025
 
+[![Watch the video](https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg)](https://vimeo.com/1100705803)
+
 # Getting Started
 
 ## Populate Root Env Variables
