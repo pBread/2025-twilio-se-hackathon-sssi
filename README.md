@@ -1,6 +1,6 @@
 # Twilio SE Hackathon 2025
 
-[![Watch the video](https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg)](https://vimeo.com/1100705803)
+https://github.com/user-attachments/assets/a6f62d24-0001-449c-a952-8fb3a8635c58
 
 # Getting Started
 
