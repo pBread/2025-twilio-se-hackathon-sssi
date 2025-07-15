@@ -8,11 +8,11 @@ This repository demonstrates an experimental voice AI agent built on Twilio Conv
 
 The architecture implements a "conscious-subconscious" pattern, similar to [Talker-Reasoner](https://arxiv.org/abs/2410.08328). The primary LLM is solely focused on customer dialogue while background processes monitor and adjust its behavior through state updates.
 
-Three control mechanisms enable sophisticated agent management:
+The demo features three control layers:
 
 ### Recall
 
-Recall is cross-agent, episodic memory. Human-annotated transcripts are stored in a vector database. During active calls, the system retrieves similar historical conversations and injects relevant feedback into the primary LLM's context. This creates a learning loop without requiring model retraining or system prompt modifications.
+Recall is cross-agent, episodic memory. Human-annotated call transcripts are embedded in a vector store. During conversations, the system retrieves contextually similar historical calls and injects their feedback into the active LLM. This creates a learning loop without requiring model retraining or system prompt modifications.
 
 ### Governance Bot
 
