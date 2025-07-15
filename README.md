@@ -4,7 +4,7 @@ https://github.com/user-attachments/assets/a6f62d24-0001-449c-a952-8fb3a8635c58
 
 ## Overview
 
-This repository demonstrates an experimental voice AI agent built on Twilio ConversationRelay. The system explores novel architectural patterns for maintaining agent control in realtime voice interactions.
+This repository demonstrates an experimental voice AI agent built on Twilio ConversationRelay. The system explores novel patterns for maintaining agent control in realtime voice interactions.
 
 The architecture implements a "conscious-subconscious" pattern, similar to [Talker-Reasoner](https://arxiv.org/abs/2410.08328). The primary LLM is solely focused on customer dialogue while background processes monitor and adjust its behavior through state updates.
 
