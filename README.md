@@ -2,9 +2,9 @@
 
 https://github.com/user-attachments/assets/a6f62d24-0001-449c-a952-8fb3a8635c58
 
-# Getting Started
+## Getting Started
 
-## Populate Root Env Variables
+### Populate Root Env Variables
 
 Populate all of the required variables in the root `.env` file. The setup script will automatically populate the remaining.
 
@@ -32,7 +32,7 @@ PINECONE_API_KEY=
 PINECONE_INDEX_NAME=sample-data
 ```
 
-## Run Setup
+### Run Setup
 
 After you've populated the required env variables, run the setup script.
 
@@ -41,9 +41,9 @@ npm install
 npm run setup
 ```
 
-## Open Four (yes 4) Terminal Tabs
+### Open Four (yes 4) Terminal Tabs
 
-### Terminal 1: server
+#### Terminal 1: server
 
 ```bash
 npm run dev
@@ -51,19 +51,19 @@ npm run dev
 
 The server should be running on `localhost:3001`
 
-#### Populate Sample Data
+##### Populate Sample Data
 
 After you start your server, open `localhost:3001/api/reset` in a browser. This will populate your demo with sample data.
 
 _Note: You can reset your demo anytime by simply opening `localhost:3001/api/reset` in a browser._
 
-### Terminal 2: ngrok
+#### Terminal 2: ngrok
 
 ```bash
 npm run grok
 ```
 
-### Terminal 3: UI
+#### Terminal 3: UI
 
 ```bash
 cd ui
@@ -75,7 +75,7 @@ The UI will be running on `localhost:3002`.
 
 _Note: It will crash if you haven't populated your demo w/data, see above_
 
-### Terminal 4: Flex-Plugin
+#### Terminal 4: Flex-Plugin
 
 ```bash
 cd flex-plugin
