@@ -84,25 +84,3 @@ npm run dev
 ```
 
 Flex should be running on `localhost:3000`
-
-## To Do
-
-### Build Script
-
-### Update Table to Show Multiple Invocation Requests
-
-- Right now, the Turns table doesn't show multiple parralel tool requests. It should.
-
-### integrate the segment interaction history
-
-- Pull the previous conversations of this user and provide them to the bot.
-
-### Fix the selectors issue by including the fetch state in a reselect selector
-
-### Update dummy data dates
-
-- add a make date function to ensure the database is constantly up to date
-
-### Check the TWILIO_FN_BASE_URL
-
-- only includes the base url, not the /sync-token
