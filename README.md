@@ -2,6 +2,26 @@
 
 https://github.com/user-attachments/assets/a6f62d24-0001-449c-a952-8fb3a8635c58
 
+## Overview
+
+This repository demonstrates an experimental voice AI agent built on Twilio ConversationRelay. The system explores novel architectural patterns for maintaining agent control in realtime voice interactions.
+
+The architecture implements a "conscious-subconscious" pattern, similar to [Talker-Reasoner](https://arxiv.org/abs/2410.08328). The primary LLM is solely focused on customer dialogue while background processes monitor and adjust its behavior through state updates.
+
+Three control mechanisms enable sophisticated agent management:
+
+### Recall
+
+Recall is cross-agent, episodic memory. Human-annotated transcripts are stored in a vector database. During active calls, the system retrieves similar historical conversations and injects relevant feedback into the primary LLM's context. This creates a learning loop without requiring model retraining or system prompt modifications.
+
+### Governance Bot
+
+A supervisory agent continuously monitors conversations against business procedures. It provides real-time coaching to guide the primary agent's actions and enforces programmatic workflows.
+
+### Human in the Loop
+
+The primary LLM can escalate questions to human operators when needed. Critical actions require explicit human approval, creating hard stops that prevent unauthorized behaviors.
+
 ## Getting Started
 
 ### Populate Root Env Variables
