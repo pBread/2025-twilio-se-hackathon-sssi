@@ -27,6 +27,8 @@ The primary LLM can escalate questions to human operators when needed. Critical 
 
 ## Getting Started
 
+Note: This repo is the result of a hackathon; it is not designed to be easy to read or implement. The repo [pBread/twilio-agentic-voice-assistant](https://github.com/pBread/twilio-agentic-voice-assistant) is a cleaned up version of this repository and includes a 5-minute setup script.
+
 ### Populate Root Env Variables
 
 Populate all of the required variables in the root `.env` file. The setup script will automatically populate the remaining.
