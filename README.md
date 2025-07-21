@@ -1,4 +1,7 @@
-# Twilio SE Hackathon 2025
+<h1 align="center">
+    Super Safe Superintelligence<br>
+    Twilio SE 2025 Hackathon Demo
+</h1>
 
 https://github.com/user-attachments/assets/a6f62d24-0001-449c-a952-8fb3a8635c58
 
